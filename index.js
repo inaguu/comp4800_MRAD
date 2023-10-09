@@ -27,6 +27,12 @@ app.get('/', (req, res) => {
 
 // app.use(express.static(__dirname + "/public"));
 
+
+app.get("*", (req, res) => {
+    res.status(404)
+    res.render("404")
+})
+
 app.listen(port, () => {
 	console.log("Node application listening on port "+port);
 }); 
