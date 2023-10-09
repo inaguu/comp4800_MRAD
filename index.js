@@ -26,26 +26,27 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login', (req, res) => {
-    res.render("login", {
-        styles: ['/css/login.css']
-    })
+    res.render("login")
 })
 
 app.post('/login', (req, res) => {
-    res.render("login", {
-        styles: ['/css/login.css']
-    })
+    res.render("login")
 })
 
+app.get('/signup', (req, res) => {
+    res.render("signup")
+})
 
-
-app.use(express.static(__dirname + "/public"));
-
+app.post('/signup', (req, res) => {
+    res.render("signup")
+})
 
 app.get("*", (req, res) => {
     res.status(404)
     res.render("404")
 })
+
+app.use(express.static(__dirname + "/public"));
 
 app.listen(port, () => {
 	console.log("Node application listening on port "+port);
