@@ -1,5 +1,6 @@
 require('./utils');
 require('dotenv').config();
+const path = require('path');
 
 const express = require('express');
 const session = require('express-session');
@@ -8,7 +9,7 @@ const port = process.env.PORT || 3000;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 
 const app = express();
-
+app.use(express.static(path.join(__dirname, 'dist')))
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({extended: false}));
