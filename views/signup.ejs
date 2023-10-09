@@ -1,0 +1,20 @@
+<%- include("templates/header") %>
+<div class="container">
+    <h1>SIGNUP</h1>
+    <form action="/signup" method="post">
+        <div class="input-group">
+            <input name="username" type="text" placeholder="Username" required />
+        </div>
+        <div class="input-group">
+            <input name="email" type="text" placeholder="email" required />
+        </div>
+        <div class="input-group">
+            <input name="password" type="password" placeholder="password" required />
+        </div>
+        <button type="submit" id="signup">Submit</button>
+    </form>
+</div>
+
+<%- include ("templates/footer") %>
+
+
