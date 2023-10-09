@@ -14,13 +14,13 @@ app.set("view engine", "ejs");
 
 app.use(express.urlencoded({extended: false}));
 
-// app.use(session({ 
-//     secret: node_session_secret,
-//     //default is memory store 
-// 	saveUninitialized: false, 
-// 	resave: true
-// }
-// ));
+app.use(session({ 
+    secret: node_session_secret,
+    //default is memory store 
+	saveUninitialized: false, 
+	resave: true
+}
+));
 
 app.get('/', (req, res) => {
     res.render("index")

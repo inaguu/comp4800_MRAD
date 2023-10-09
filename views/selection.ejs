@@ -1,12 +1,44 @@
 <%- include("templates/header") %> 
 
-<h1>Selection</h1>
-<div>
-    <div>Choice Selection</div>
+<!-- <div class="flex justify-center items-center bg-orange-600 h-screen">
+    <div class="text-9xl">
+        Hello
+    </div>
     <div>
-        <form>
-            <label>Choice 1</label>
-        </form>
+        World
+    </div>
+</div> -->
+
+<div class='grid grid-cols-1 sm:grid-cols-2 h-screen w-full'>
+    <div>
+      <img class='w-full h-full object-cover' src="https://dummyimage.com/600x400/000/fff" alt='' />
+    </div>
+
+    <div class='bg-gray-800 flex flex-col justify-center'>
+      <form class='max-w-[400px] w-full mx-auto bg-gray-900 p-8 px-8 rounded-lg' onSubmit={handleForm}>
+        <h2 class='text-4xl dark:text-white font-bold text-center'>SIGN IN</h2>
+        <div>
+          <label class='flex text-gray-400 flex-col py-2'>
+            Username
+          </label>
+          <input class='w-full rounded-lg bg-gray-600 mt-2 p-2 focus:border-blue-500 focus:bg-gray-700 focus:outline-none' type='text'/>
+        </div>
+        <div>
+          <label class='flex text-gray-400 flex-col py-2'>
+            Password
+          </label>
+          <input class='w-full rounded-lg bg-gray-600 mt-2 p-2 focus:border-blue-500 focus:bg-gray-700 focus:outline-none' type='password' />
+        </div>
+        <div class='flex justify-between text-gray-400 py-2'>
+          <p class='flex items-center'><input class='mr-2' type="checkbox" /> Remember Me</p>
+          <p>Forgot Password</p>
+        </div>
+        <div class='flex justify-center py-2'>
+          <p class='pr-2 text-gray-400'>Don't have an account? </p>
+          <a href='/signup' class=' text-blue-800'> Sign up</a>
+        </div>
+        <button class='w-full my-5 py-2 bg-teal-500 shadow-lg text-white font-semibold rounded-lg' type='submit'>Sign In</button>
+      </form>
     </div>
 </div>
 
