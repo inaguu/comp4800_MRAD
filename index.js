@@ -25,7 +25,21 @@ app.get('/', (req, res) => {
     res.render("index")
 })
 
-// app.use(express.static(__dirname + "/public"));
+app.get('/login', (req, res) => {
+    res.render("login", {
+        styles: ['/css/login.css']
+    })
+})
+
+app.post('/login', (req, res) => {
+    res.render("login", {
+        styles: ['/css/login.css']
+    })
+})
+
+
+
+app.use(express.static(__dirname + "/public"));
 
 
 app.get("*", (req, res) => {
