@@ -1,39 +1,46 @@
 <%- include("templates/header") %> 
 
-<div class='grid grid-cols-1 sm:grid-cols-2 h-screen w-full'>
-    <div class="bg-blue-600 w-fit p-2">
-      <div>Choice 1</div>
-      <div>Choice 2</div>
-      <div>Choice 3</div>
-      <div>Choice 4</div>
-      <div>Choice 5</div>
-    </div>
+<div class="bg-blue-600 w-fit p-10 min-w-[15%] flex flex-col items-center h-screen fixed">
+    <div class="py-10">Choice 1</div>
+    <div class="py-10">Choice 2</div>
+    <div class="py-10">Choice 3</div>
+    <div class="py-10">Choice 4</div>
+    <div class="py-10">Choice 5</div>
 
-    <div class='bg-gray-800 flex flex-col justify-center'>
-      <form class='max-w-[400px] w-full mx-auto bg-gray-900 p-8 px-8 rounded-lg' onSubmit={handleForm}>
-        <h2 class='text-4xl dark:text-white font-bold text-center'>SIGN IN</h2>
-        <div>
-          <label class='flex text-gray-400 flex-col py-2'>
-            Username
-          </label>
-          <input class='w-full rounded-lg bg-gray-600 mt-2 p-2 focus:border-blue-500 focus:bg-gray-700 focus:outline-none' type='text'/>
+    <div>
+      <button class="rounded-md border p-3">Save</button>
+    </div>
+  </div>
+
+<div class='flex w-full pl-[15%]'>
+    <div class='bg-gray-800 grid grid-cols-4 gap-9 w-full'>
+        <div class="flex p-4 justify-center bg-red-200">
+                Option #
         </div>
-        <div>
-          <label class='flex text-gray-400 flex-col py-2'>
-            Password
-          </label>
-          <input class='w-full rounded-lg bg-gray-600 mt-2 p-2 focus:border-blue-500 focus:bg-gray-700 focus:outline-none' type='password' />
+        <div class="flex p-4 justify-center">
+                Location 1
         </div>
-        <div class='flex justify-between text-gray-400 py-2'>
-          <p class='flex items-center'><input class='mr-2' type="checkbox" /> Remember Me</p>
-          <p>Forgot Password</p>
+        <div class="flex p-4 justify-center">
+                Location 2
         </div>
-        <div class='flex justify-center py-2'>
-          <p class='pr-2 text-gray-400'>Don't have an account? </p>
-          <a href='/signup' class=' text-blue-800'> Sign up</a>
+        <div class="flex p-4 justify-center">
+                Location 3
         </div>
-        <button class='w-full my-5 py-2 bg-teal-500 shadow-lg text-white font-semibold rounded-lg' type='submit'>Sign In</button>
-      </form>
+
+        <% for (let i = 1; i <= 80; i++) { %>
+            <div class="p-2 bg-lime-600 h-10 flex justify-center">
+                <%= i %>
+            </div>
+            <div class="p-2 bg-lime-600 h-10">
+                VGH
+            </div>
+            <div class="p-2 bg-lime-600 h-10">
+                Burnaby
+            </div>
+            <div class="p-2 bg-lime-600 h-10">
+                Surrey
+            </div>
+        <% } %>
     </div>
 </div>
 
