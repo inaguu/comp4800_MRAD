@@ -2,10 +2,15 @@
 
 <div class="bg-green-700 text-white w-fit p-10 min-w-[15%] flex flex-col items-center h-screen fixed shadow-2xl">
     <div class="py-10">Choice 1</div>
+    <div class="" id="linenumber1"></div>
     <div class="py-10">Choice 2</div>
+    <div class="" id="linenumber2"></div>
     <div class="py-10">Choice 3</div>
+    <div class="" id="linenumber3"></div>
     <div class="py-10">Choice 4</div>
+    <div class="" id="linenumber4"></div>
     <div class="py-10">Choice 5</div>
+    <div class="" id="linenumber5"></div>
 
     <div>
       <button class="rounded-md border p-3">Save</button>
@@ -30,7 +35,7 @@
         </div>
 
         <% for (let i = 1; i <= 80; i++) { %>
-            <div class="grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg">
+            <div class="grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg" draggable="true">
                 <div class="flex p-4 justify-center items-center">
                     <%= i %>
                 </div>
