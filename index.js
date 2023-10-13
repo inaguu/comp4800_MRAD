@@ -43,6 +43,9 @@ app.get('/profile', (req, res) => {
     res.render("profile")
 })
 
+app.get('/clinical_sites', (req,res) =>{
+    res.render("clinical_sites")
+})
 
 // app.use(express.static(__dirname + "/public"));
 
