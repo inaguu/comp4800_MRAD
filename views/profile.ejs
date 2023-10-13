@@ -1,13 +1,15 @@
 <%- include("templates/header") %>
 
-<div class="flex items-center justify-center h-screen">
+<img class="absolute w-full overflow-hidden h-[500px]" src="/photos/profile_bg.jpg" alt="bg">
+
+<div class="flex items-center justify-center h-screen relative">
     <div class="bg-white overflow-hidden shadow rounded-lg border">
         <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900">
                 User Profile
             </h3>
             <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                This is some information about the user.
+                You can change your info by clicking.
             </p>
         </div>
         <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
@@ -17,7 +19,7 @@
                         Full name
                     </dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        John Doe
+                        <input type="text" placeholder="John Doe" class="full-name">
                     </dd>
                 </div>
                 <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -25,7 +27,7 @@
                         Email address
                     </dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        johndoe@example.com
+                        <input type="text" placeholder="johndoe@gmail.com" class="full-name">
                     </dd>
                 </div>
                 <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -33,7 +35,7 @@
                         Phone number
                     </dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        (123) 456-7890
+                        <input type="text" placeholder="(102)-245-457" class="full-name">
                     </dd>
                 </div>
                 <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
@@ -41,11 +43,13 @@
                         Address
                     </dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        123 Main St<br>
-                         Anytown, USA 12345
+                        <input type="text" placeholder="i live here" class="full-name">
                     </dd>
                 </div>
             </dl>
+        </div>
+        <div class="px-4 py-5 sm:px-6 flex flex-row-reverse">
+            <button class="button-solid rounded-lg px-4 bg-[#4CAF50] font-medium text-white">Save</button>
         </div>
     </div>
 </div>

@@ -10,6 +10,7 @@ const node_session_secret = process.env.NODE_SESSION_SECRET;
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')))
+app.use(express.static(__dirname + "/public"));
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({extended: false}));
