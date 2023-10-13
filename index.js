@@ -56,14 +56,65 @@ app.get("/", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-	res.render("login", {
-		error: "none",
-	});
+	res.render("login");
 });
 
 app.post("/loggingin", async (req, res) => {
 	var email = req.body.email;
 	var password = req.body.password;
+
+	var results = await db_users.getUser({
+		email: email,
+		hashedPassword: password,
+	});
+
+	//Checks DB for user credentials
+	//If user exists, session is created.
+	if (results) {
+		if (results.length == 1) {
+			//there should only be 1 user in the db that matches
+			if (bcrypt.compareSync(password, results[0].hashedPassword)) {
+				req.session.authenticated = true;
+				req.session.user_type = results[0].user_type;
+				req.session.username = results[0].username;
+				req.session.user_id = results[0].user_id;
+				req.session.cookie.maxAge = expireTime;
+
+				res.redirect("/home"); //Goes to landing page upon successful login
+
+				return;
+			} else {
+				console.log("invalid password");
+			}
+		} else {
+			console.log(
+				"invalid number of users matched: " + results.length + " (expected 1)."
+			);
+			res.render("login");
+			return;
+		}
+	}
+
+	console.log("user not found");
+	//user and password combination not found
+	res.render("login");
+});
+
+app.post("/logout", (req, res) => {
+	req.session.authenticated = false;
+	req.session.destroy();
+	res.redirect("/");
+});
+
+//requires session auth
+app.get("/home", (req, res) => {
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else {
+		res.render("landing_page", {
+			username: req.session.username,
+		});
+	}
 });
 
 app.get("/signup", (req, res) => {
@@ -79,10 +130,15 @@ app.get("*", (req, res) => {
 	res.render("404");
 });
 
+function isValidSession(req) {
+	if (req.session.authenticated) {
+		return true;
+	}
+	return false;
+}
+
 app.use(express.static(__dirname + "/public"));
 
 app.listen(port, () => {
 	console.log("Node application listening on port " + port);
 });
-
-// this is a test comment for my github (ian)
