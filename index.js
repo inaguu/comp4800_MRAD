@@ -21,7 +21,7 @@ const port = process.env.PORT || 3000;
 const mongodb_user = process.env.MONGODB_USER;
 const mongodb_password = process.env.MONGODB_PASSWORD;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-const mongodb_cluster = process.env.MONGODB_CLUSTER;
+const mongodb_host = process.env.MONGODB_REMOTE_HOST;
 
 const node_session_secret = process.env.NODE_SESSION_SECRET; //ensures only a logged-in user can access the site
 /* END secret section */
@@ -36,7 +36,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: false }));
 
 var mongoStore = MongoStore.create({
-	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}${mongodb_cluster}`,
+	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/?retryWrites=true&w=majority`,
 	crypto: {
 		secret: mongodb_session_secret,
 	},
