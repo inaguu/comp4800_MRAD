@@ -1,6 +1,6 @@
 <%- include("templates/header") %> 
 
-<div class="bg-blue-600 w-fit p-10 min-w-[15%] flex flex-col items-center h-screen fixed">
+<div class="bg-green-700 text-white w-fit p-10 min-w-[15%] flex flex-col items-center h-screen fixed shadow-2xl">
     <div class="py-10">Choice 1</div>
     <div class="py-10">Choice 2</div>
     <div class="py-10">Choice 3</div>
@@ -13,32 +13,36 @@
   </div>
 
 <div class='flex w-full pl-[15%]'>
-    <div class='bg-gray-800 grid grid-cols-4 gap-9 w-full'>
-        <div class="flex p-4 justify-center bg-red-200">
-                Option #
-        </div>
-        <div class="flex p-4 justify-center">
+    <div class='flex flex-col w-full'>
+        <div class="grid grid-cols-4 bg-green-600 text-white">
+            <div class="flex p-4 justify-center">
+                Line #
+            </div>
+            <div class="flex p-4 justify-center">
                 Location 1
-        </div>
-        <div class="flex p-4 justify-center">
+            </div>
+            <div class="flex p-4 justify-center">
                 Location 2
-        </div>
-        <div class="flex p-4 justify-center">
+            </div>
+            <div class="flex p-4 justify-center">
                 Location 3
+            </div>
         </div>
 
         <% for (let i = 1; i <= 80; i++) { %>
-            <div class="p-2 bg-lime-600 h-10 flex justify-center">
-                <%= i %>
-            </div>
-            <div class="p-2 bg-lime-600 h-10">
-                VGH
-            </div>
-            <div class="p-2 bg-lime-600 h-10">
-                Burnaby
-            </div>
-            <div class="p-2 bg-lime-600 h-10">
-                Surrey
+            <div class="grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg">
+                <div class="flex p-4 justify-center items-center">
+                    <%= i %>
+                </div>
+                <div class="flex p-4 justify-center items-center">
+                    VGH
+                </div>
+                <div class="flex p-4 justify-center items-center">
+                    Burnaby
+                </div>
+                <div class="flex p-4 justify-center items-center ">
+                    Surrey
+                </div>
             </div>
         <% } %>
     </div>
