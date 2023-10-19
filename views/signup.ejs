@@ -1,15 +1,15 @@
 <%- include("templates/header") %>
 <div>
     <h1>SIGNUP</h1>
-    <form action="/signup" method="post">
+    <form action="/submituser" method="post">
         <div>
             <input name="username" type="text" placeholder="Username" required />
         </div>
         <div>
-            <input name="email" type="text" placeholder="email" required />
+            <input name="email" type="text" placeholder="Email" required />
         </div>
         <div>
-            <input name="password" type="password" placeholder="password" required />
+            <input name="password" type="password" placeholder="Password" required />
         </div>
         <button type="submit" id="signup">Submit</button>
     </form>

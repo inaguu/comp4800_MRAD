@@ -121,8 +121,39 @@ app.get("/signup", (req, res) => {
 	res.render("signup");
 });
 
-app.post("/signup", (req, res) => {
-	res.render("signup");
+app.post("/submituser", async (req, res) => {
+	let username = req.body.username;
+	let email = req.body.email;
+	let password = req.body.password;
+
+	let hashedPassword = bcrypt.hashSync(password, saltRounds);
+
+	var success = await db_users.createUser({
+		username: username,
+		email: email,
+		hashedPassword: hashedPassword,
+	});
+	console.log(username);
+	console.log(email);
+	console.log(hashedPassword);
+
+	if (success) {
+		var results = await db_users.getUser({
+			email: email,
+			hashedPassword: password,
+		});
+		req.session.authenticated = true;
+		req.session.user_type = results[0].user_type;
+		req.session.username = results[0].username;
+		req.session.user_id = results[0].user_id;
+		req.session.cookie.maxAge = expireTime;
+		console.log(results[0].user_id);
+
+		res.redirect("/home"); //Goes to landing page upon successful login
+	} else {
+		//Redirect to 404 or Page with Generic Error Message??
+		console.log("error in creating the user");
+	}
 });
 
 app.get("*", (req, res) => {
