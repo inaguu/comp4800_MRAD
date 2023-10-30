@@ -16,7 +16,7 @@ const success = db_utils.printMySQLVersion();
 
 const port = process.env.PORT || 3000;
 
-/* secret information section */
+/* START secret information section */
 
 const mongodb_user = process.env.MONGODB_USER;
 const mongodb_password = process.env.MONGODB_PASSWORD;
@@ -24,7 +24,8 @@ const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const mongodb_host = process.env.MONGODB_REMOTE_HOST;
 
 const node_session_secret = process.env.NODE_SESSION_SECRET; //ensures only a logged-in user can access the site
-/* END secret section */
+
+/* END secret information section */
 
 const app = express();
 
@@ -54,6 +55,10 @@ app.use(
 app.get("/", (req, res) => {
 	res.render("index");
 });
+
+app.get('/profile', (req, res) => {
+    res.render("profile")
+})
 
 app.get("/login", (req, res) => {
 	res.render("login");
