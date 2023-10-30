@@ -1,21 +1,92 @@
 <%- include("templates/header") %>
-<div>
-    <h1>SIGNUP</h1>
-    <form action="/submituser" method="post">
-        <div>
-            <input name="name" type="text" placeholder="Name" required />
-        </div>
-        <div>
-            <input name="email" type="text" placeholder="Email" required />
-        </div>
-        <div>
-            <input name="password" type="password" placeholder="Password" required />
-        </div>
-        <div>
-            <input name="MRAD_id" type="text" placeholder="MRAD ID" required />
-        </div>
-        <button type="submit" id="signup">Submit</button>
-    </form>
+
+<div class="flex flex-wrap">
+    <div class="w-full sm:w-8/12 mb-10">
+        <div class="container mx-auto h-full sm:p-10">
+            <nav class="flex px-4 justify-between items-center">
+                <div class="text-4xl font-bold">
+                    MRAD<span class="text-green-700">.</span>
+                </div>
+            </nav>
+            <header class="container px-4 lg:flex mt-10 items-center h-[90%] lg:mt-0">
+                <div class="w-full">
+                    <div class="max-w-md mx-auto">
+                        <h1 class="text-4xl lg:text-6xl font-bold">Sign<span class="text-green-700">up</span></h1>
+                        <div class="w-20 h-2 bg-green-700 my-4"></div>
+                        <form class="p-4" method="post" action="/loggingin">
+                            <div class="mb-4">
+                                <label for="name" class="block text-gray-700 font-bold mb-2"
+                                    >Name</label
+                                >
+                                <input
+                                    type="name"
+                                    id="name"
+                                    name="name"
+                                    class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your full name"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="block text-gray-700 font-bold mb-2"
+                                    >Email</label
+                                >
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your email"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label for="password" class="block text-gray-700 font-bold mb-2"
+                                    >Password</label
+                                >
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your password"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label for="MRAD_id" class="block text-gray-700 font-bold mb-2"
+                                    >MRAD-ID</label
+                                >
+                                <input
+                                    type="MRAD_id"
+                                    id="MRAD_id"
+                                    name="MRAD_id"
+                                    class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter your MRAD ID"
+                                    required
+                                />
+                            </div>
+        
+                            <div class="flex items-center justify-between">
+                                <a
+                                    href="/"
+                                    class="text-gray-500 hover:text-blue-500 focus:outline-none focus:underline transition duration-150 ease-in-out"
+                                    >Login!</a
+                                >
+                                <button
+                                    type="submit"
+                                    class="bg-green-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out"
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </header>
+	    </div>
+    </div>
+    <img src="https://images.unsplash.com/photo-1536147116438-62679a5e01f2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80" alt="Leafs" class="w-full h-48 object-cover sm:h-screen sm:w-4/12">
 </div>
 
 <%- include ("templates/footer") %>
