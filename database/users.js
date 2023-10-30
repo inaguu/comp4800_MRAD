@@ -2,16 +2,17 @@ const database = include('database_connection');
 
 async function createUser(postData) {
 	let createUserSQL = `
-		INSERT INTO user
-		(username, email, hashedPassword, user_type_id)
+		INSERT INTO users
+		(name, email, password, MRAD_id, user_type_id)
 		VALUES
-		(:user, :email, :hashedPassword, 1);
+		(:name, :email, :hashedPassword, :MRAD_id, 2);
 	`;
 
 	let params = {
-		user: postData.username,
+		name: postData.name,
 		email: postData.email,
-		hashedPassword: postData.hashedPassword
+		hashedPassword: postData.hashedPassword,
+		MRAD_id: postData.MRAD_id
 	}
 
 	try {
@@ -29,8 +30,8 @@ async function createUser(postData) {
 
 async function getUsers(postData) {
 	let getUsersSQL = `
-		SELECT user_id, username, user_type
-		FROM user
+		SELECT user_id, name, email, MRAD_id, type
+		FROM users
 		JOIN user_type USING (user_type_id);
 	`;
 
@@ -49,8 +50,8 @@ async function getUsers(postData) {
 
 async function getUser(postData) {
 	let getUserSQL = `
-		SELECT user_id, username, email, hashedPassword, user_type_id, user_type
-		FROM user
+		SELECT user_id, name, email, password, MRAD_id, type
+		FROM users
 		JOIN user_type USING (user_type_id)
 		WHERE email = :email;
 	`;
