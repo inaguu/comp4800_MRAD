@@ -1,0 +1,9 @@
+<%- include("templates/header") %> 
+
+<h1 class="bg-orange-600 text-9xl">Hello <%= name %>, you are signed in!</h1>
+
+<form action='/logout' method='post'>
+    <button class="btn-logout">Log out</button>
+</form>
+
+<%- include("templates/footer") %> 
