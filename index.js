@@ -161,8 +161,10 @@ app.post("/submituser", async (req, res) => {
 });
 
 app.get('/selection', (req, res) => {
-    res.render("selection");
+    res.render("selection", { selectedValue: 0});
 })
+
+app.use(express.static(__dirname + "/public"));
 
 app.get("*", (req, res) => {
 	res.status(404);
@@ -175,8 +177,6 @@ function isValidSession(req) {
 	}
 	return false;
 }
-
-app.use(express.static(__dirname + "/public"));
 
 app.listen(port, () => {
 	console.log("Node application listening on port " + port);
