@@ -43,8 +43,8 @@ app.get('/profile', (req, res) => {
     res.render("profile")
 })
 
-app.get('/clinical_sites', (req,res) =>{
-    res.render("clinical_sites")
+app.get('/admin-site-list', (req,res) =>{
+    res.render("admin_site_list")
 })
 
 // app.use(express.static(__dirname + "/public"));
