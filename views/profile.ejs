@@ -37,7 +37,56 @@
                 <button class="button-solid rounded-lg px-4 bg-[#4CAF50] font-medium text-white">Save</button>            
             </div>
         </form>
+        <div class="px-4 py-5 sm:px-6">
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                If you would like to view or edit your selections, please scroll down.
+            </p>
+        </div>
     </div>
 </div>
+
+<div class="flex flex-col h-screen bg-gray-200">
+    <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Selections
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            You can change your info by clicking, editing, then hitting Save.
+        </p>
+    </div>
+    <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
+        <h2 class="text-gray-700 font-bold mb-4">Your Selections</h2>
+  
+        <!-- Users List -->
+        <div class="overflow-y-auto">
+            <ul id="usersList">
+                <% let choice_number = 1 %>
+                <% students.forEach(function(student) { %>
+                    <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Selection <%= choice_number %></span>
+                            <button
+                            class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+                            View
+                            </button>
+                        </div>
+                        <div class="flex mt-2">
+                            <% let selection_number = 1 %>
+                            <% for (var key in student.sites) { %>
+                                <% let site_name = student.sites[key] %>
+                                <label class="inline-flex items-center ml-4">
+                                    <span class="ml-2 text-gray-700"><%= selection_number %>. <%= site_name %></span>
+                                </label>
+                                <% selection_number++ %>
+                            <% } %>
+                        </div>
+                    </li>
+                    <% choice_number++ %>
+                <% }); %>
+            </ul>
+        </div>
+    </div>
+</div>
+
 
 <%- include ("templates/footer") %>

@@ -63,10 +63,19 @@ app.get('/profile', async (req, res) => {
 		let results = await db_users.getUser({
 			email: req.session.email
 		})
+
+		const students = [
+			{ id: 1, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 2, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 3, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 4, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 5, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+		]
 	
 		if (results) {
 			res.render("profile", {
-				results: results[0]
+				results: results[0],
+				students: students
 			})
 		}
 	}
