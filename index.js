@@ -157,6 +157,14 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
+app.get('/admin_user_list', async(req, res) => {
+	res.render("admin_user_list")
+})
+
+app.get('/admin_user', async(req, res) => {
+	res.render("admin_user")
+})
+
 app.get("*", (req, res) => {
 	res.status(404);
 	res.render("404");
