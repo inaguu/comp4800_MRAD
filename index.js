@@ -66,22 +66,30 @@ app.post("/loggingin", async (req, res) => {
 
 	var results = await db_users.getUser({
 		email: email,
-		hashedPassword: password,
 	});
 
 	//Checks DB for user credentials
 	//If user exists, session is created.
 	if (results) {
 		if (results.length == 1) {
+			console.log();
 			//there should only be 1 user in the db that matches
-			if (bcrypt.compareSync(password, results[0].hashedPassword)) {
+			if (bcrypt.compareSync(password, results[0].password)) {
 				req.session.authenticated = true;
-				req.session.user_type = results[0].user_type;
-				req.session.username = results[0].username;
+				req.session.user_type = results[0].type;
+				req.session.name = results[0].name;
 				req.session.user_id = results[0].user_id;
 				req.session.cookie.maxAge = expireTime;
+				console.log(req.session.user_type);
 
-				res.redirect("/home"); //Goes to landing page upon successful login
+				if (!isAdmin(req)) {
+					//Goes to student landing page upon successful login
+					res.redirect("/home", {
+						name: req.session.name,
+					});
+				} else {
+					res.redirect("/admin"); //Goes to admin landing page upon successful login
+				}
 
 				return;
 			} else {
@@ -113,8 +121,28 @@ app.get("/home", (req, res) => {
 		res.redirect("/");
 	} else {
 		res.render("landing_page", {
-			username: req.session.username,
+			name: req.session.name,
 		});
+	}
+});
+
+//requires session auth
+app.get("/admin", (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		res.render("admin_home");
+	}
+});
+
+//requires session auth
+app.post("/admin-view-students", (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		res.render("admin_user");
 	}
 });
 
@@ -141,7 +169,6 @@ app.post("/submituser", async (req, res) => {
 	if (success) {
 		var results = await db_users.getUser({
 			email: email,
-			hashedPassword: password,
 		});
 		req.session.authenticated = true;
 		req.session.user_type = results[0].user_type;
@@ -157,13 +184,33 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
-app.get('/admin_user_list', async(req, res) => {
-	res.render("admin_user_list")
-})
+app.get("/admin_user_list", async (req, res) => {
+	res.render("admin_user_list");
+});
 
-app.get('/admin_user', async(req, res) => {
-	res.render("admin_user")
-})
+app.get("/admin_user", async (req, res) => {
+	res.render("admin_user");
+});
+
+function isAdmin(req) {
+	console.log(req.session.user_type);
+	if (req.session.user_type == "admin") {
+		return true;
+	}
+	return false;
+}
+
+function adminAuthorization(req, res, next) {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403", {
+			error: "Not Authorized",
+		});
+		return;
+	} else {
+		next();
+	}
+}
 
 app.get("*", (req, res) => {
 	res.status(404);
