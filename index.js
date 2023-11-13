@@ -184,10 +184,6 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
-app.get("/admin_user_list", async (req, res) => {
-	res.render("admin_user_list");
-});
-
 app.get("/admin_user", async (req, res) => {
 	res.render("admin_user");
 });
@@ -211,6 +207,17 @@ function adminAuthorization(req, res, next) {
 		next();
 	}
 }
+
+app.get("/admin_user_list", async (req, res) => {
+	const students = [
+		{ id: 1, name: "Student 1" },
+		{ id: 2, name: "Student 2" },
+		// ...more students
+	];
+
+	// Render the admin_user.ejs template and pass the students data to it
+	res.render("admin_user_list", { students: students });
+});
 
 app.get("*", (req, res) => {
 	res.status(404);
