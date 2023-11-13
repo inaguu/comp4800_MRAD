@@ -28,10 +28,10 @@ const node_session_secret = process.env.NODE_SESSION_SECRET; //ensures only a lo
 /* END secret information section */
 
 const app = express();
+app.use(express.static(path.join(__dirname, 'dist')))
+app.use(express.static(__dirname + "/public"));
 
 const expireTime = 60 * 60 * 1000; //expires after 1 hour  (hours * minutes * seconds * millis)
-
-app.use(express.static(path.join(__dirname, "dist")));
 app.set("view engine", "ejs");
 
 app.use(express.urlencoded({ extended: false }));
@@ -56,8 +56,88 @@ app.get("/", (req, res) => {
 	res.render("login");
 });
 
-app.get('/profile', (req, res) => {
-    res.render("profile")
+app.get('/profile', async (req, res) => {
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else {
+		let results = await db_users.getUser({
+			email: req.session.email
+		})
+
+		const students = [
+			{ id: 1, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 2, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 3, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 4, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+			{ id: 5, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+		]
+	
+		if (results) {
+			res.render("profile", {
+				results: results[0],
+				students: students
+			})
+		}
+	}
+})
+
+app.post("/profile/update", async (req, res) => {
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else {
+		let results = await db_users.getUser({
+			email: req.session.email
+		})
+
+		let name = req.body.profile_name
+		let email = req.body.profile_email
+
+		if (name == '') {
+			let db_name = results[0].name
+
+			let update_status = await db_users.updateUser({
+				name: db_name,
+				email: email,
+				user_id: req.session.user_id
+			})
+
+			if (update_status) {
+				req.session.email = email
+				res.redirect("/profile")
+			} else {
+				console.log(update_status)
+			}
+
+		} else if (email == '') {
+			let db_email = results[0].email
+
+			let update_status = await db_users.updateUser({
+				name: name,
+				email: db_email,
+				user_id: req.session.user_id
+			})
+
+			if (update_status) {
+				req.session.name = name
+				res.redirect("/profile")
+			} else {
+				console.log(update_status)
+			}			
+
+		} else {
+			let update_status = await db_users.updateUser({
+				name: name,
+				email: email,
+				user_id: req.session.user_id
+			})
+
+			if (update_status) {
+				res.redirect("/profile")
+			} else {
+				console.log(update_status)
+			}
+		}
+	}
 })
 
 app.post("/loggingin", async (req, res) => {
