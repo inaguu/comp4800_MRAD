@@ -1,3 +1,71 @@
 <%- include("templates/header") %>
-    <div>This is a page</div>
+    <% var sites = [{site_id: 1, site_name : "UBC", clinical_spots: 5, is_active: "checked"}, 
+                    {site_id: 2, site_name : "Kelowna", clinical_spots: 10, is_active: "unchecked"}, 
+                    {site_id: 3, site_name : "VGH", clinical_spots: 13, is_active: "checked"}] %>
+
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Clinical Sites</h1>
+
+    <!-- Table -->
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                <th class="py-2 px-4 border-b">Clinical Site Name</th>
+                <th class="py-2 px-4 border-b">Clinical Site Spots</th>
+                <th class="py-2 px-4 border-b">Active?</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Sample data (replace with your actual data) -->
+                <% sites.forEach(function(site) { %>
+                    <tr>
+                    <td class="py-2 px-4 border-b"><%= site.site_name %></td>
+                    <td class="py-2 px-4 border-b"><%= site.clinical_spots %></td>
+                    <td class="py-2 px-4 border-b"><input type="checkbox" name="active" id="active" <%=site.is_active%> ></label></td>
+                    <td class="py-2 px-4 border-b"> <button type="button" id="<%=site.site_id%>">Delete</button></td>
+                    </tr>
+                <% }) %>
+                <% var total = 0;
+                sites.forEach(function(site) {
+                    total += site.clinical_spots;
+                }) %>
+                    <tr>
+                        <td class="py-2 px-4 border-b">Total</td>
+                        <td class="py-2 px-4 border-b"><%= total %></td>
+                    </tr>
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+
+        <br><br>
+
+            <!-- Centered Student Profile Form -->
+            <h2 class="text-gray-700 font-bold mb-4">Add Clinical Site</h2>
+              <form id="clinicalSiteForm" class="space-y-4" action="/addClinicalSite" method="get">
+                <div class="mb-4">
+                  <label for="studentName" class="block text-gray-700 font-bold mb-2">Site Name:</label>
+                  <input type="text" id="studentName" name="studentName" placeholder="Enter site name"
+                         class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
+                </div>
+          
+                <div class="mb-4">
+                  <label for="studentEmail" class="block text-gray-700 font-bold mb-2">Site Spots:</label>
+                  <input type="number" id="spotsNumber" name="spotsNumber" 
+                         class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
+                </div>
+          
+                <div class="mb-4">
+                    <label for="studentEmail" class="block text-gray-700 font-bold mb-2">Location:</label>
+                    <input type="text" id="location" name="location" placeholder="Enter site location"
+                           class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
+                  </div>
+          
+                <div class="form-group">
+                  <button type="submit"
+                          class="mt-4 w-full bg-green-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out">
+                    Add Clinical Site
+                  </button>
+                </div>
+              </form>
+    </div>
 <%- include ("templates/footer") %>
