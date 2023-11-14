@@ -9,129 +9,146 @@
  
  <aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
     <div class="h-full px-3 py-4 overflow-y-auto bg-green-50 dark:bg-green-700">
-       <ul class="space-y-2 font-medium">
-        <!-- TITLE -->
-        <li>
-        <span class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white group ml-3 text-2xl">Choices</span>
-        </li>     
-
-        <!-- CHOICE 1 -->
-        <li data-choice="1">
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-1" data-collapse-toggle="choice-1" onclick="toggleChoice(1)">
-            <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 1</span>
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-            </svg>
-            </button>
-            <ul id="choice-1" class="hidden py-2 space-y-2">
-            <li>
-                <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-1">1. None</span>
-            </li>
-            <li>
-                <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-2">2. None</span>
-            </li>
-            <li>
-                <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-3">3. None</span>
-            </li>
-            <!-- Add other choice options here -->
-            </ul>
-        </li>
-
-        <!-- CHOICE 2 -->
-        <li data-choice="2">
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-2" data-collapse-toggle="choice-2" onclick="toggleChoice(2)">
-            <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 2</span>
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-            </svg>
-            </button>
-            <ul id="choice-2" class="hidden py-2 space-y-2">
+        <form action="test" method="post">
+            <ul class="space-y-2 font-medium">
+                <!-- TITLE -->
                 <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-1">1. None</span>
+                <span class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white group ml-3 text-2xl">Choices</span>
+                </li>     
+        
+                <!-- CHOICE 1 -->
+                <li data-choice="1">
+                    <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-1" data-collapse-toggle="choice-1" onclick="toggleChoice(1)">
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 1</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                    </svg>
+                    </button>
+                    <ul id="choice-1" class="hidden py-2 space-y-2">
+                    <li>
+                        <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-1">1. None</span>
+                        <input type="text" name="1" data-choice="input-1-1" value="" hidden/>
+                    </li>
+                    <li>
+                        <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-2">2. None</span>
+                        <input type="text" name="1" data-choice="input-1-2" value="" hidden/>
+                    </li>
+                    <li>
+                        <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-3">3. None</span>
+                        <input type="text" name="1" data-choice="input-1-3" value="" hidden/>
+                    </li>
+                    <!-- Add other choice options here -->
+                    </ul>
                 </li>
+        
+                <!-- CHOICE 2 -->
+                <li data-choice="2">
+                    <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-2" data-collapse-toggle="choice-2" onclick="toggleChoice(2)">
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 2</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                    </svg>
+                    </button>
+                    <ul id="choice-2" class="hidden py-2 space-y-2">
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-1">1. None</span>
+                            <input type="text" name="2" data-choice="input-2-1" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-2">2. None</span>
+                            <input type="text" name="2" data-choice="input-2-2" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-3">3. None</span>
+                            <input type="text" name="2" data-choice="input-2-3" value="" hidden/>
+                        </li>
+                    <!-- Add other choice options here -->
+                    </ul>
+                </li>
+        
+                <!-- CHOICE 3 -->
+                <li data-choice="3">
+                    <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-3" data-collapse-toggle="choice-3" onclick="toggleChoice(3)">
+                        <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 3</span>
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                        </svg>
+                    </button>
+                    <ul id="choice-3" class="hidden py-2 space-y-2">
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-1">1. None</span>
+                            <input type="text" name="3" data-choice="input-3-1" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-2">2. None</span>
+                            <input type="text" name="3" data-choice="input-3-2" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-3">3. None</span>
+                            <input type="text" name="3" data-choice="input-3-3" value="" hidden/>
+                        </li>
+                        <!-- Add other choice options here -->
+                    </ul>
+                </li>
+        
+                <!-- CHOICE 4 -->
+                <li data-choice="4">
+                    <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-4" data-collapse-toggle="choice-4" onclick="toggleChoice(4)">
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 4</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                    </svg>
+                    </button>
+                    <ul id="choice-4" class="hidden py-2 space-y-2">
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-1">1. None</span>
+                            <input type="text" name="4" data-choice="input-4-1" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-2">2. None</span>
+                            <input type="text" name="4" data-choice="input-4-2" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-3">3. None</span>
+                            <input type="text" name="4" data-choice="input-4-3" value="" hidden/>
+                        </li>
+                    <!-- Add other choice options here -->
+                    </ul>
+                </li>
+        
+                <!-- CHOICE 5 -->
+                <li data-choice="5">
+                    <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-5" data-collapse-toggle="choice-5" onclick="toggleChoice(5)">
+                    <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 5</span>
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
+                    </svg>
+                    </button>
+                    <ul id="choice-5" class="hidden py-2 space-y-2">
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-1">1. None</span>
+                            <input type="text" name="5" data-choice="input-5-1" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-2">2. None</span>
+                            <input type="text" name="5" data-choice="input-5-2" value="" hidden/>
+                        </li>
+                        <li>
+                            <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-3">3. None</span>
+                            <input type="text" name="5" data-choice="input-5-3" value="" hidden/>
+                        </li>
+                    <!-- Add other choice options here -->
+                    </ul>
+        
+                 </li>
+                <!-- SAVE BUTTON -->
                 <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-2">2. None</span>
+                <button type="submit" class="border border-gray-100 flex items-center justify-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-green-100 dark:text-white dark:hover:bg-green-800">
+                    <span class="flex-1 ml-3 whitespace-nowrap">Save Choices</span>
+                </button>
                 </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-3">3. None</span>
-                </li>
-            <!-- Add other choice options here -->
-            </ul>
-        </li>
-
-        <!-- CHOICE 3 -->
-        <li data-choice="3">
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-3" data-collapse-toggle="choice-3" onclick="toggleChoice(3)">
-                <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 3</span>
-                <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-                </svg>
-            </button>
-            <ul id="choice-3" class="hidden py-2 space-y-2">
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-1">1. None</span>
-                </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-2">2. None</span>
-                </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-3">3. None</span>
-                </li>
-                <!-- Add other choice options here -->
-            </ul>
-        </li>
-
-        <!-- CHOICE 4 -->
-        <li data-choice="4">
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-4" data-collapse-toggle="choice-4" onclick="toggleChoice(4)">
-            <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 4</span>
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-            </svg>
-            </button>
-            <ul id="choice-4" class="hidden py-2 space-y-2">
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-1">1. None</span>
-                </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-2">2. None</span>
-                </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-3">3. None</span>
-                </li>
-            <!-- Add other choice options here -->
-            </ul>
-        </li>
-
-        <!-- CHOICE 5 -->
-        <li data-choice="5">
-            <button type="button" class="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group dark:text-white dark:hover-bg-green-800" aria-controls="choice-5" data-collapse-toggle="choice-5" onclick="toggleChoice(5)">
-            <span class="flex-1 ml-3 text-left whitespace-nowrap">Choice 5</span>
-            <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4" />
-            </svg>
-            </button>
-            <ul id="choice-5" class="hidden py-2 space-y-2">
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-1">1. None</span>
-                </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-2">2. None</span>
-                </li>
-                <li>
-                    <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-3">3. None</span>
-                </li>
-            <!-- Add other choice options here -->
-            </ul>
-
-         </li>
-        <!-- SAVE BUTTOn -->
-        <li>
-        <button type="button" class="border border-gray-100 flex items-center justify-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-green-100 dark:text-white dark:hover:bg-green-800">
-            <span class="flex-1 ml-3 whitespace-nowrap">Save Choices</span>
-        </button>
-        </li>
-       </ul>
+               </ul>
+        </form>
     </div>
  </aside>
  

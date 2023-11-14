@@ -27,6 +27,7 @@ function toggleChoice(choice) {
 }
 
 function selectChoice(lc1, lc2, lc3) {
+    console.log([lc1, lc2, lc3]);
     if (currentChoice !== 0) {
         choices.currentChoice = [lc1, lc2, lc3];
     } else {
@@ -47,16 +48,19 @@ function selectChoice(lc1, lc2, lc3) {
     const selectionOptionTwo = document.querySelector(`span[data-choice="${currentChoice}-2"]`);
     const selectionOptionThree = document.querySelector(`span[data-choice="${currentChoice}-3"]`);
 
+    const selectionOptionOneInput = document.querySelector(`input[data-choice="input-${currentChoice}-1"]`);
+    const selectionOptionTwoInput = document.querySelector(`input[data-choice="input-${currentChoice}-2"]`);
+    const selectionOptionThreeInput = document.querySelector(`input[data-choice="input-${currentChoice}-3"]`);
+    
+    selectionOptionOneInput.value = "VGH";
+    selectionOptionTwoInput.value = "Burnaby";
+    selectionOptionThreeInput.value = "Surrey";
+
     selectionOptionOne.innerHTML = `1. VGH`;
     selectionOptionTwo.innerHTML = `2. Burnaby`;
     selectionOptionThree.innerHTML = `3. Surrey`;
-
-
-    // selectionOptionOne.innerHTML = `1. ${lc1}`;
-    // selectionOptionTwo.innerHTML = `2. ${lc2}`;
-    // selectionOptionThree.innerHTML = `3. ${lc3}`;
 }
 
-function test() {
-    console.log("TEST");
-}
+// function handleSubmit(event) {
+//     console.log(choices);
+// }

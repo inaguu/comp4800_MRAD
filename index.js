@@ -164,6 +164,11 @@ app.get('/selection', (req, res) => {
     res.render("selection", { selectedValue: 0});
 })
 
+app.post('/test', (req, res) => {
+	console.log("TEST CALL");
+	console.log(req.body);
+})
+
 app.use(express.static(__dirname + "/public"));
 
 app.get("*", (req, res) => {
