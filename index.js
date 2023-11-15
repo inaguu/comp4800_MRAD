@@ -132,6 +132,8 @@ app.post("/profile/update", async (req, res) => {
 			})
 
 			if (update_status) {
+				req.session.name = name
+				req.session.email = email
 				res.redirect("/profile")
 			} else {
 				console.log(update_status)
