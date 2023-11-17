@@ -1,36 +1,36 @@
 <%- include("templates/header") %>
 
-<div class="flex flex-col h-screen bg-gray-200">
-  <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
-    <h2 class="text-gray-700 font-bold mb-4">Students (Admin)</h2>
+<div class="flex flex-col h-screen bg-[url('https://images.unsplash.com/photo-1536147116438-62679a5e01f2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80')] bg-cover">
+  <div class="m-auto w-full max-w-4xl p-8 bg-white/80 backdrop-blur-md shadow-xl rounded-xl">
+    <h2 class="text-blue-800 font-semibold mb-6">Students (Admin)</h2>
 
     <!-- Search box -->
-    <div class="mb-4">
+    <div class="mb-8">
       <input type="text" placeholder="Search"
-             class="w-full py-2 px-3 mb-6 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
+             class="w-full py-3 px-4 mb-8 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none"/>
     </div>
 
     <!-- Users List -->
     <div class="overflow-y-auto">
       <ul id="usersList">
         <% students.forEach(function(student) { %>
-          <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
-            <div class="flex justify-between">
-              <span class="font-medium text-gray-700"><%= student.MRAD_id %></span>
+          <li class="flex flex-col py-4 px-6 bg-gray-50 my-2 rounded-lg shadow-md">
+            <div class="flex justify-between items-center">
+              <span class="font-semibold text-gray-800"><%= student.name %></span>
               <button
-                class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out"
-              >
+                class="text-blue-600 hover:text-blue-800 focus:outline-none focus:underline transition duration-300 ease-in-out"
+              > 
                 View
               </button>
             </div>
-            <div class="flex mt-2">
+            <div class="flex mt-4">
               <label class="inline-flex items-center">
-                <input type="checkbox" class="form-checkbox text-blue-600" id="interiorBC<%= student.MRAD_id %>">
-                <span class="ml-2 text-gray-700">Interior BC Only</span>
+                <input type="checkbox" class="form-checkbox text-blue-500" id="interiorBC<%= student.id %>">
+                <span class="ml-2 text-gray-800">Interior BC Only</span>
               </label>
-              <label class="inline-flex items-center ml-4">
-                <input type="checkbox" class="form-checkbox text-blue-600" id="lowerMainland<%= student.MRAD_id %>">
-                <span class="ml-2 text-gray-700">Lower Mainland Only</span>
+              <label class="inline-flex items-center ml-6">
+                <input type="checkbox" class="form-checkbox text-blue-500" id="lowerMainland<%= student.id %>">
+                <span class="ml-2 text-gray-800">Lower Mainland Only</span>
               </label>
             </div>
           </li>
@@ -39,5 +39,4 @@
     </div>
   </div>
 </div>
-
 <%- include ("templates/footer") %>
