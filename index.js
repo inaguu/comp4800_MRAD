@@ -137,8 +137,8 @@ app.get("/admin", (req, res) => {
 	}
 });
 
-//requires session auth
-app.post("/admin-view-students", async (req, res) => {
+//requires admin auth
+app.get("/admin-view-students", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
 		res.render("403");
@@ -156,6 +156,32 @@ app.post("/admin-view-students", async (req, res) => {
 			console.log(
 				"Server: Error in retrieving Students MRAD IDs from database."
 			);
+		}
+	}
+});
+
+//requires admin auth
+app.get("/admin-view-students/:MRADid", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let results = await db_admin.getOneStudent({
+			MRADid: req.params.MRADid,
+		});
+
+		console.log(results);
+
+		if (results) {
+			console.log(
+				"Server: Successfully retrieved student details from database."
+			);
+			res.render("admin_profile_view", {
+				student: results,
+			});
+		} else {
+			console.log("Server: Error in retrieving student details from database.");
+			res.redirect("/admin-view-students");
 		}
 	}
 });
