@@ -6,6 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer")
 const saltRounds = 12;
 
 const database = include("database_connection");
@@ -27,6 +28,21 @@ const mongodb_host = process.env.MONGODB_REMOTE_HOST;
 const node_session_secret = process.env.NODE_SESSION_SECRET; //ensures only a logged-in user can access the site
 
 /* END secret information section */
+
+/* function for mail sending (auth and stuff) */
+
+const transporter = nodemailer.createTransport({
+	service: "gmail",
+    port: 465,
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'mrad.selection@gmail.com',
+        pass: 'nhwxozlwribtokpw',
+    },
+    secure: true, // upgrades later with STARTTLS -- change this based on the PORT
+});
+
+/* END */
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')))
@@ -56,6 +72,26 @@ app.use(
 app.get("/", (req, res) => {
 	res.render("login");
 });
+
+// This is how you send emails
+app.post("/send-mail", (req, res) => {
+	console.log("attempt to send email")
+
+	const data = {
+		from: 'mrad.selection@gmail.com',  // sender address
+		to: 'uberduper2@gmail.com',   // list of receivers
+		subject: 'Sending Email using Node.js',
+		text: 'That was easy!',
+	}
+
+	transporter.sendMail(data, (err, info) => {
+		if (err) {
+			console.log(err)
+		}
+		res.status(200).send({ message: "Mail send", message_id: info.messageId });
+	})
+})
+// end of sending emails
 
 app.get('/profile', async (req, res) => {
 	if (!isValidSession(req)) {
