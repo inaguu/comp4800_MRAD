@@ -26,15 +26,14 @@ function toggleChoice(choice) {
     }
 }
 
-function selectChoice(lc1, lc2, lc3) {
-    console.log([lc1, lc2, lc3]);
+function selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree) {
     if (currentChoice !== 0) {
-        choices.currentChoice = [lc1, lc2, lc3];
+        choices.currentChoice = [choiceOne, choiceTwo, choiceThree];
     } else {
         for (const key in choices) {
             const value = choices.key;
             if (value === null) {
-                choices.key = [lc1, lc2, lc3];
+                choices.key = [choiceOne, choiceTwo, choiceThree];
             }
         }
         currentChoice = 1;
@@ -42,24 +41,54 @@ function selectChoice(lc1, lc2, lc3) {
 
         const selected = document.querySelector(`#choice-1`);
         selected.classList.remove('hidden');
-        console.log(selected.classList);
     }
+
+    const selectedLineNumber = document.querySelector(`span[data-choice="line-${currentChoice}"]`);
     const selectionOptionOne = document.querySelector(`span[data-choice="${currentChoice}-1"]`);
     const selectionOptionTwo = document.querySelector(`span[data-choice="${currentChoice}-2"]`);
     const selectionOptionThree = document.querySelector(`span[data-choice="${currentChoice}-3"]`);
 
+    const lineNumberInput = document.querySelector(`input[data-choice="line-number-${currentChoice}"]`);
     const selectionOptionOneInput = document.querySelector(`input[data-choice="input-${currentChoice}-1"]`);
     const selectionOptionTwoInput = document.querySelector(`input[data-choice="input-${currentChoice}-2"]`);
     const selectionOptionThreeInput = document.querySelector(`input[data-choice="input-${currentChoice}-3"]`);
     
-    selectionOptionOneInput.value = "VGH";
-    selectionOptionTwoInput.value = "Burnaby";
-    selectionOptionThreeInput.value = "Surrey";
+    lineNumberInput.value = lineNumber;
+    selectionOptionOneInput.value = choiceOne;
+    selectionOptionTwoInput.value = choiceTwo;
+    selectionOptionThreeInput.value = choiceThree;
 
-    selectionOptionOne.innerHTML = `1. VGH`;
-    selectionOptionTwo.innerHTML = `2. Burnaby`;
-    selectionOptionThree.innerHTML = `3. Surrey`;
+    selectedLineNumber.innerHTML = `Line # ${lineNumber}`;
+    selectionOptionOne.innerHTML = `1. ${choiceOne}`;
+    selectionOptionTwo.innerHTML = `2. ${choiceTwo}`;
+    selectionOptionThree.innerHTML = `3. ${choiceThree}`;
 }
+
+function testFunction() {
+    const options = document.getElementsByClassName("test-option");
+    for (const child of options[0].children) {
+        console.log(child.textContent);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Code to be executed when the DOM is ready
+    const allOptions = document.getElementsByClassName("test-option");
+
+    for (const option of allOptions) {
+        option.addEventListener("click", function (e) {
+            const optionChildren = option.children;
+            const lineNumber = optionChildren[0].textContent;
+            const choiceOne = optionChildren[1].textContent;
+            const choiceTwo = optionChildren[2].textContent;
+            const choiceThree = optionChildren[3].textContent;
+            selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree)
+        })
+    }
+
+}); 
+
+
 
 // function handleSubmit(event) {
 //     console.log(choices);

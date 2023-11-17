@@ -164,8 +164,7 @@ app.get('/selection', (req, res) => {
     res.render("selection", { selectedValue: 0});
 })
 
-app.post('/test', (req, res) => {
-	console.log("TEST CALL");
+app.post('/saveChoices', (req, res) => {
 	console.log(req.body);
 })
 
