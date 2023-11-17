@@ -208,7 +208,7 @@ app.post("/loggingin", async (req, res) => {
 	res.render("login");
 });
 
-app.post("/logout", (req, res) => {
+app.get("/logout", (req, res) => {
 	req.session.authenticated = false;
 	req.session.destroy();
 	res.redirect("/");
