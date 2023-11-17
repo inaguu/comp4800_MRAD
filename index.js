@@ -11,6 +11,7 @@ const saltRounds = 12;
 const database = include("database_connection");
 const db_utils = include("database/db_utils");
 const db_users = include("database/users");
+const db_admin = include("database/admin");
 
 const success = db_utils.printMySQLVersion();
 
@@ -137,12 +138,25 @@ app.get("/admin", (req, res) => {
 });
 
 //requires session auth
-app.post("/admin-view-students", (req, res) => {
+app.post("/admin-view-students", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
 		res.render("403");
 	} else {
-		res.render("admin_user");
+		let results = await db_admin.getStudents();
+		console.log(results);
+		if (results) {
+			console.log(
+				"Server: Successfully retrieved Students MRAD IDs from database."
+			);
+			res.render("admin_user_list", {
+				students: results,
+			});
+		} else {
+			console.log(
+				"Server: Error in retrieving Students MRAD IDs from database."
+			);
+		}
 	}
 });
 
@@ -182,10 +196,6 @@ app.post("/submituser", async (req, res) => {
 		//Redirect to 404 or Page with Generic Error Message??
 		console.log("error in creating the user");
 	}
-});
-
-app.get("/admin_user", async (req, res) => {
-	res.render("admin_user");
 });
 
 function isAdmin(req) {
