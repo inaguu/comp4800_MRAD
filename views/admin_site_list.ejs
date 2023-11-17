@@ -1,7 +1,5 @@
 <%- include("templates/header") %>
-    <% var sites = [{site_id: 1, site_name : "UBC", clinical_spots: 5, is_active: "checked"}, 
-                    {site_id: 2, site_name : "Kelowna", clinical_spots: 10, is_active: "unchecked"}, 
-                    {site_id: 3, site_name : "VGH", clinical_spots: 13, is_active: "checked"}] %>
+    
 
     <div class="max-w-2xl mx-auto">
         <h1 class="text-2xl font-bold mb-4">Clinical Sites</h1>
@@ -20,14 +18,18 @@
                 <% sites.forEach(function(site) { %>
                     <tr>
                     <td class="py-2 px-4 border-b"><%= site.site_name %></td>
-                    <td class="py-2 px-4 border-b"><%= site.clinical_spots %></td>
-                    <td class="py-2 px-4 border-b"><input type="checkbox" name="active" id="active" <%=site.is_active%> ></label></td>
+                    <td class="py-2 px-4 border-b"><%= site.total_spots %></td>
+                    <% if (site.is_active === 1) { %>
+                        <td class="py-2 px-4 border-b"><input type="checkbox" name="active" id="active" checked></label></td>
+                    <%} else if(site.is_active === 2) { %>
+                        <td class="py-2 px-4 border-b"><input type="checkbox" name="active" id="active" ></label></td>
+                    <% } %>
                     <td class="py-2 px-4 border-b"> <button type="button" id="<%=site.site_id%>">Delete</button></td>
                     </tr>
                 <% }) %>
                 <% var total = 0;
                 sites.forEach(function(site) {
-                    total += site.clinical_spots;
+                    total += site.total_spots;
                 }) %>
                     <tr>
                         <td class="py-2 px-4 border-b">Total</td>
@@ -41,22 +43,22 @@
 
             <!-- Centered Student Profile Form -->
             <h2 class="text-gray-700 font-bold mb-4">Add Clinical Site</h2>
-              <form id="clinicalSiteForm" class="space-y-4" action="/addClinicalSite" method="get">
+              <form id="clinicalSiteForm" class="space-y-4" action="/addClinicalSite" method="post">
                 <div class="mb-4">
-                  <label for="studentName" class="block text-gray-700 font-bold mb-2">Site Name:</label>
-                  <input type="text" id="studentName" name="studentName" placeholder="Enter site name"
+                  <label for="siteName" class="block text-gray-700 font-bold mb-2">Site Name:</label>
+                  <input type="text" id="siteName" name="siteName" placeholder="Enter site name"
                          class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
                 </div>
           
                 <div class="mb-4">
-                  <label for="studentEmail" class="block text-gray-700 font-bold mb-2">Site Spots:</label>
+                  <label for="siteSpots" class="block text-gray-700 font-bold mb-2">Site Spots:</label>
                   <input type="number" id="spotsNumber" name="spotsNumber" 
                          class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
                 </div>
           
                 <div class="mb-4">
-                    <label for="studentEmail" class="block text-gray-700 font-bold mb-2">Location:</label>
-                    <input type="text" id="location" name="location" placeholder="Enter site location"
+                    <label for="siteLocation" class="block text-gray-700 font-bold mb-2">Zone:</label>
+                    <input type="text" id="siteLocation" name="siteLocation" placeholder="Enter site location (Interior BC or Lower Mainland)"
                            class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
                   </div>
           

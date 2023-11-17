@@ -11,6 +11,7 @@ const saltRounds = 12;
 const database = include("database_connection");
 const db_utils = include("database/db_utils");
 const db_users = include("database/users");
+const db_query = include("database/query")
 
 const success = db_utils.printMySQLVersion();
 
@@ -142,9 +143,29 @@ app.post("/profile/update", async (req, res) => {
 	}
 })
 
-app.get('/admin-site-list', (req,res) =>{
-    res.render("admin_site_list")
+app.post('/addClinicalSite', async (req,res) => {
+	var siteName = req.body.siteName;
+	var totalSpots = req.body.spotsNumber;
+	var siteZone = req.body.siteLocation;
+
+	var results = await db_query.insertClinicalSites({
+		siteName: siteName,
+		totalSpots: totalSpots,
+		siteZone: siteZone
+	})
+	res.redirect('admin-site-list');
 })
+
+app.get('/admin-site-list', async (req,res) =>{	
+	try {
+		var [results] = await db_query.getClinicalSites()
+
+	}catch(err) {
+		console.log("Missing clinical sites")
+	}
+    res.render("admin_site_list", {sites: results})
+})
+
 app.post("/loggingin", async (req, res) => {
 	var email = req.body.email;
 	var password = req.body.password;
