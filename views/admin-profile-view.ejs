@@ -1,3 +1,78 @@
 <%- include("templates/header") %>
 
-<%- include ("templates/footer") %>
+<div class="flex items-center justify-center min-h-screen">
+  <div class="bg-white overflow-hidden shadow rounded-lg border divide-y divide-gray-200">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">
+        Admin View: User Profile
+      </h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">
+        Manage and view detailed information about the user.
+      </p>
+    </div>
+    <div class="px-4 py-5 sm:p-0">
+      <dl class="sm:divide-y sm:divide-gray-200">
+        <!-- MRAD ID -->
+        <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            MRAD ID
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+            <%- user.mrad_id %>
+          </dd>
+        </div>
+        <!-- Forget Password Button -->
+        <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+          <dt class="text-sm font-medium text-gray-500">
+            Password
+          </dt>
+          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 text-right">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              Forget Password
+            </button>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+  </div>
+</div>
+
+<div class="flex flex-col h-screen bg-gray-200">
+  <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">
+      Selections
+    </h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+      You can change your info by clicking, editing, then hitting Save.
+    </p>
+  </div>
+  <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
+    <h2 class="text-gray-700 font-bold mb-4">Your Selections</h2>
+
+    <!-- Users List -->
+    <div class="overflow-y-auto">
+      <ul id="usersList">
+
+          <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-700">Selection</span>
+              <button class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+                Edit
+              </button>
+            </div>
+            <div class="flex mt-2">
+
+                <label class="inline-flex items-center ml-4">
+                  <span class="ml-2 text-gray-700">fgs</span>
+                </label>
+
+            </div>
+          </li>
+
+      </ul>
+    </div>
+  </div>
+</div>
+
+<%- include("templates/footer") %>

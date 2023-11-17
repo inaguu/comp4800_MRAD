@@ -198,6 +198,13 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
+app.get('/admin-view-students', async (req, res)=> {
+	const studentData = {
+		mrad: '1234',
+	}
+	res.render('admin-profile-view', {user: studentData})
+})
+
 function isAdmin(req) {
 	console.log(req.session.user_type);
 	if (req.session.user_type == "admin") {
