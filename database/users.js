@@ -73,9 +73,35 @@ async function getUser(postData) {
 	}
 }
 
+async function updateUser(postData) {
+	let updateUserSQL = `
+		UPDATE users
+		SET name = :name, email = :email
+		WHERE user_id = :user_id
+	`;
+
+	let params = {
+		name: postData.name,
+		email: postData.email,
+		user_id: postData.user_id
+	}
+
+	try {
+		const results = await database.query(updateUserSQL, params);
+		console.log("Successfully updated user");
+		console.log(results[0]);
+		return true;
+	} catch (err) {
+		console.log("Error trying to find user");
+		console.log(err);
+		return false;
+	}
+}
+
 
 module.exports = {
 	createUser,
 	getUsers,
-	getUser
+	getUser,
+	updateUser
 };
