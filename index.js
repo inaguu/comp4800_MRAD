@@ -85,9 +85,7 @@ app.post("/loggingin", async (req, res) => {
 
 				if (!isAdmin(req)) {
 					//Goes to student landing page upon successful login
-					res.redirect("/home", {
-						name: req.session.name,
-					});
+					res.redirect("/home");
 				} else {
 					res.redirect("/admin"); //Goes to admin landing page upon successful login
 				}
