@@ -165,7 +165,11 @@ app.get('/selection', (req, res) => {
 })
 
 app.post('/saveChoices', (req, res) => {
-	console.log(req.body);
+	console.log(parseInt(req.body.oneLine));
+	console.log(parseInt(req.body.twoLine));
+	console.log(parseInt(req.body.threeLine));
+	console.log(parseInt(req.body.fourLine));
+	console.log(parseInt(req.body.fiveLine));
 })
 
 app.use(express.static(__dirname + "/public"));
