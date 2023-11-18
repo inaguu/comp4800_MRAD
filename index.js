@@ -244,6 +244,50 @@ app.post("/loggingin", async (req, res) => {
 	res.render("login");
 });
 
+app.get("/forgot-password/enter-email", (req, res) => {
+	res.render("enter_email_fp")
+})
+
+app.post("/forgot-password/email-send", (req, res) => {
+	let email = req.body.email
+	req.session.email = email
+
+	const data = {
+		from: 'mrad.selection@gmail.com',  // sender address
+		to: email,   // list of receivers
+		subject: 'MRAD Password Reset',
+		text: `Please click the link to reset your password. \n\n http://localhost:3000/forgot-password/enter-password \n\n If this was not you, then dismiss this email.`,
+	}
+
+	transporter.sendMail(data, (err, info) => {
+		if (err) {
+			console.log(err)
+		}
+		res.render("enter_email_fp")
+	})
+})
+
+app.get("/forgot-password/enter-password", (req, res) => {
+	res.render("enter_password_fp")
+})
+
+app.post("/forgot-password/password-send", async (req, res) => {
+	let password = req.body.password
+
+	let hashedPassword = bcrypt.hashSync(password, saltRounds);
+
+	let updated_password = await db_users.updateUserPassword({
+		email: req.session.email,
+		password: hashedPassword
+	})
+
+	if (updated_password) {
+		res.redirect("/")
+	} else {
+		console.log(updated_password)
+	}
+})
+
 app.post("/logout", (req, res) => {
 	req.session.authenticated = false;
 	req.session.destroy();

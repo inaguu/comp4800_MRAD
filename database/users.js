@@ -98,10 +98,34 @@ async function updateUser(postData) {
 	}
 }
 
+async function updateUserPassword(postData) {
+	let updateUserPasswordSQL = `
+		UPDATE users
+		SET password = :password
+		WHERE email = :email
+	`;
+
+	let params = {
+		password: postData.password,
+		email: postData.email,
+	}
+
+	try {
+		const results = await database.query(updateUserPasswordSQL, params);
+		console.log("Successfully updated user password");
+		console.log(results[0]);
+		return true;
+	} catch (err) {
+		console.log("Error trying to find user");
+		console.log(err);
+		return false;
+	}
+}
 
 module.exports = {
 	createUser,
 	getUsers,
 	getUser,
-	updateUser
+	updateUser,
+	updateUserPassword
 };
