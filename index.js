@@ -6,6 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
+const nodemailer = require("nodemailer")
 const saltRounds = 12;
 
 const database = include("database_connection");
@@ -27,6 +28,21 @@ const mongodb_host = process.env.MONGODB_REMOTE_HOST;
 const node_session_secret = process.env.NODE_SESSION_SECRET; //ensures only a logged-in user can access the site
 
 /* END secret information section */
+
+/* function for mail sending (auth and stuff) */
+
+const transporter = nodemailer.createTransport({
+	service: "gmail",
+    port: 465,
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'mrad.selection@gmail.com',
+        pass: 'nhwxozlwribtokpw',
+    },
+    secure: true, // upgrades later with STARTTLS -- change this based on the PORT
+});
+
+/* END */
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'dist')))
@@ -56,6 +72,26 @@ app.use(
 app.get("/", (req, res) => {
 	res.render("login");
 });
+
+// This is how you send emails
+app.post("/send-mail", (req, res) => {
+	console.log("attempt to send email")
+
+	const data = {
+		from: 'mrad.selection@gmail.com',  // sender address
+		to: 'uberduper2@gmail.com',   // list of receivers
+		subject: 'Sending Email using Node.js',
+		text: 'That was easy!',
+	}
+
+	transporter.sendMail(data, (err, info) => {
+		if (err) {
+			console.log(err)
+		}
+		res.status(200).send({ message: "Mail send", message_id: info.messageId });
+	})
+})
+// end of sending emails
 
 app.get('/profile', async (req, res) => {
 	if (!isValidSession(req)) {
@@ -208,7 +244,51 @@ app.post("/loggingin", async (req, res) => {
 	res.render("login");
 });
 
-app.get("/logout", (req, res) => {
+app.get("/forgot-password/enter-email", (req, res) => {
+	res.render("enter_email_fp")
+})
+
+app.post("/forgot-password/email-send", (req, res) => {
+	let email = req.body.email
+	req.session.email = email
+
+	const data = {
+		from: 'mrad.selection@gmail.com',  // sender address
+		to: email,   // list of receivers
+		subject: 'MRAD Password Reset',
+		text: `Please click the link to reset your password. \n\n http://localhost:3000/forgot-password/enter-password \n\n If this was not you, then dismiss this email.`,
+	}
+
+	transporter.sendMail(data, (err, info) => {
+		if (err) {
+			console.log(err)
+		}
+		res.render("enter_email_fp")
+	})
+})
+
+app.get("/forgot-password/enter-password", (req, res) => {
+	res.render("enter_password_fp")
+})
+
+app.post("/forgot-password/password-send", async (req, res) => {
+	let password = req.body.password
+
+	let hashedPassword = bcrypt.hashSync(password, saltRounds);
+
+	let updated_password = await db_users.updateUserPassword({
+		email: req.session.email,
+		password: hashedPassword
+	})
+
+	if (updated_password) {
+		res.redirect("/")
+	} else {
+		console.log(updated_password)
+	}
+})
+
+app.post("/logout", (req, res) => {
 	req.session.authenticated = false;
 	req.session.destroy();
 	res.redirect("/");
