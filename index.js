@@ -65,6 +65,10 @@ app.get('/profile', async (req, res) => {
 			email: req.session.email
 		})
 
+		// let selections = await db_query.getStudentChoice({
+		// 	user_id: req.session.user_id
+		// })
+
 		const students = [
 			{ id: 1, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
 			{ id: 2, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
@@ -270,12 +274,29 @@ app.get('/selection', (req, res) => {
     res.render("selection", { selectedValue: 0});
 })
 
-app.post('/saveChoices', (req, res) => {
-	console.log(parseInt(req.body.oneLine));
-	console.log(parseInt(req.body.twoLine));
-	console.log(parseInt(req.body.threeLine));
-	console.log(parseInt(req.body.fourLine));
-	console.log(parseInt(req.body.fiveLine));
+app.post('/saveChoices', async (req, res) => {
+	var selection1 = parseInt(req.body.oneLine);
+	var selection2 = parseInt(req.body.twoLine);
+	var selection3 = parseInt(req.body.threeLine);
+	var selection4 = parseInt(req.body.fourLine);
+	var selection5 = parseInt(req.body.fiveLine);
+	var user_id = req.session.user_id;
+	
+	try {
+		var result = await db_query.saveSelection({
+			selection1 : selection1, 
+			selection2 : selection2,
+			selection3 : selection3,
+			selection4 : selection4,
+			selection5 : selection5,
+			user_id : user_id
+		})
+		console.log("Success")
+		res.redirect("/selection")
+	} catch (error) {
+		console.log("Failure")
+		res.redirect("/selection")
+	}
 })
 
 app.use(express.static(__dirname + "/public"));

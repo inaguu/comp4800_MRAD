@@ -25,14 +25,10 @@ async function insertClinicalSites(postData) {
 	}
 }
 
-async function getClinicalSites(postData) {
+async function getClinicalSites() {
 	let getClinicalSites = `
 		SELECT * FROM clinical_sites;
 	`;
-
-	let params = {
-		
-	}
 
 	try {
 		const results = await database.query(getClinicalSites);
@@ -46,7 +42,65 @@ async function getClinicalSites(postData) {
 	}
 }
 
+async function saveSelection(postData) {
+	let saveSelectionSQL = `
+		INSERT INTO student_choices (choice_1, choice_2, choice_3, choice_4, choice_5, user_id)
+		VALUES (:selection1, :selection2, :selection3, :selection4, :selection5, :user_id);
+	`;
+
+	let alternateQuery = `
+		UPDATE student_choices
+		SET choice_1 = :selection1, choice_2 = :selection2, choice_3 = :selection3, choice_4 = :selection4, choice_5 = :selection5
+		WHERE user_id = :user_id;
+	`;
+
+	let params = {
+
+		selection1 : postData.selection1,
+		selection2 : postData.selection2,
+		selection3 : postData.selection3,
+		selection4 : postData.selection4,
+		selection5 : postData.selection5,
+		user_id : postData.user_id
+	}
+
+	try {
+		const results = await database.query(alternateQuery, params);
+		console.log("Succesfully added selection to user")
+		console.log(results[0])
+		return true
+	} catch (error) {
+		console.log("Error adding selection to user")
+		console.log(error)
+		return false
+	}
+}
+
+async function getStudentChoice(postData) {
+	let getStudentChoiceSQL = `
+		SELECT * FROM student_choices
+		WHERE user_id = :user_id;
+	`;
+
+	let params = {
+		user_id : postData.user_id
+	}
+
+	try {
+		const results = await database.query(getStudentChoiceSQL, params);
+		console.log("Successfully retreived student choice");
+		console.log(results[0]);
+		return results;
+	} catch (err) {
+		console.log("Error trying to retreive student choice");
+		console.log(err);
+		return false;
+	}
+}
+
 module.exports = {
 	insertClinicalSites,
-    getClinicalSites
+    getClinicalSites,
+	saveSelection,
+	getStudentChoice
 };
