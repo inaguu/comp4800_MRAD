@@ -3,9 +3,9 @@ const database = include('database_connection');
 async function createUser(postData) {
 	let createUserSQL = `
 		INSERT INTO users
-		(name, email, password, MRAD_id, user_type_id)
+		(name, email, password, MRAD_id, user_type_id, intake_number)
 		VALUES
-		(:name, :email, :hashedPassword, :MRAD_id, 2);
+		(:name, :email, :hashedPassword, :MRAD_id, 2, (SELECT MAX(intake_id) FROM intake));
 	`;
 
 	let params = {

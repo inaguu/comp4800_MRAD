@@ -101,6 +101,10 @@ app.get('/profile', async (req, res) => {
 			email: req.session.email
 		})
 
+		// let selections = await db_query.getStudentChoice({
+		// 	user_id: req.session.user_id
+		// })
+
 		const students = [
 			{ id: 1, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
 			{ id: 2, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
@@ -205,7 +209,6 @@ app.get('/admin-site-list', async (req,res) =>{
 app.post("/loggingin", async (req, res) => {
 	var email = req.body.email;
 	var password = req.body.password;
-
 	var results = await db_users.getUser({
 		email: email,
 	});
@@ -323,6 +326,9 @@ app.post("/submituser", async (req, res) => {
 		hashedPassword: hashedPassword,
 		MRAD_id: MRAD_id
 	});
+
+
+	
 	console.log(name);
 	console.log(email);
 	console.log(hashedPassword);
@@ -332,6 +338,7 @@ app.post("/submituser", async (req, res) => {
 		var results = await db_users.getUser({
 			email: email
 		});
+		
 		req.session.authenticated = true;
 		req.session.user_type = results[0].type;
 		req.session.name = results[0].name;
@@ -340,12 +347,49 @@ app.post("/submituser", async (req, res) => {
 		req.session.user_id = results[0].user_id;
 		req.session.cookie.maxAge = expireTime;
 
+		await db_query.setSelectionFirstTime({user_id : results[0].user_id})
 		res.redirect("/home"); //Goes to landing page upon successful login
 	} else {
 		//Redirect to 404 or Page with Generic Error Message??
 		console.log("error in creating the user");
 	}
 });
+
+app.get('/selection', (req, res) => {
+    res.render("selection", { selectedValue: 0});
+})
+
+app.post('/saveChoices', async (req, res) => {
+	var selection1 = parseInt(req.body.oneLine);
+	var selection2 = parseInt(req.body.twoLine);
+	var selection3 = parseInt(req.body.threeLine);
+	var selection4 = parseInt(req.body.fourLine);
+	var selection5 = parseInt(req.body.fiveLine);
+	var user_id = req.session.user_id;
+
+	if(isNaN(selection1) || isNaN(selection2) || isNaN(selection3) || isNaN(selection4) || isNaN(selection5)){
+		console.log("You are missing a choice")
+		res.redirect("/selection")
+	} else {
+		try {
+			var result = await db_query.saveSelection({
+				selection1 : selection1, 
+				selection2 : selection2,
+				selection3 : selection3,
+				selection4 : selection4,
+				selection5 : selection5,
+				user_id : user_id
+			})
+			console.log("Success")
+			res.redirect("/selection")
+		} catch (error) {
+			console.log("Failure")
+			res.redirect("/selection")
+		}
+	}
+})
+
+app.use(express.static(__dirname + "/public"));
 
 app.get("*", (req, res) => {
 	res.status(404);
@@ -358,8 +402,6 @@ function isValidSession(req) {
 	}
 	return false;
 }
-
-app.use(express.static(__dirname + "/public"));
 
 app.listen(port, () => {
 	console.log("Node application listening on port " + port);
