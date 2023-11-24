@@ -44,11 +44,6 @@ async function getClinicalSites() {
 
 async function saveSelection(postData) {
 	let saveSelectionSQL = `
-		INSERT INTO student_choices (choice_1, choice_2, choice_3, choice_4, choice_5, user_id)
-		VALUES (:selection1, :selection2, :selection3, :selection4, :selection5, :user_id);
-	`;
-
-	let alternateQuery = `
 		UPDATE student_choices
 		SET choice_1 = :selection1, choice_2 = :selection2, choice_3 = :selection3, choice_4 = :selection4, choice_5 = :selection5
 		WHERE user_id = :user_id;
@@ -65,7 +60,7 @@ async function saveSelection(postData) {
 	}
 
 	try {
-		const results = await database.query(alternateQuery, params);
+		const results = await database.query(saveSelectionSQL, params);
 		console.log("Succesfully added selection to user")
 		console.log(results[0])
 		return true
@@ -73,6 +68,26 @@ async function saveSelection(postData) {
 		console.log("Error adding selection to user")
 		console.log(error)
 		return false
+	}
+}
+
+async function setSelectionFirstTime(postData){
+	let choiceOnCreation = `
+		INSERT INTO student_choices (choice_1, choice_2, choice_3, choice_4, choice_5, user_id)
+		VALUES (1, 2, 3, 4, 5, :user_id);
+	`;
+
+	let params = {
+		user_id : postData.user_id
+	}
+
+	try {
+		const results = await database.query(choiceOnCreation, params);
+		console.log("Successfully added selection choices on acccount creation")
+		console.log(results[0])
+	} catch(error) {
+		console.log("Failed to add selection choices on acccount creation")
+		console.log(results[0])
 	}
 }
 
@@ -102,5 +117,6 @@ module.exports = {
 	insertClinicalSites,
     getClinicalSites,
 	saveSelection,
-	getStudentChoice
+	getStudentChoice,
+	setSelectionFirstTime
 };

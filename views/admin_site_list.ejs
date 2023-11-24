@@ -29,7 +29,9 @@
                 <% }) %>
                 <% var total = 0;
                 sites.forEach(function(site) {
-                    total += site.total_spots;
+                    if(site.is_active === 1){
+                        total += site.total_spots;
+                    }
                 }) %>
                     <tr>
                         <td class="py-2 px-4 border-b">Total</td>
