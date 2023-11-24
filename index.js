@@ -133,21 +133,8 @@ app.post("/profile/update", async (req, res) => {
 		let name = req.body.profile_name
 		let email = req.body.profile_email
 
-		if (name == '') {
-			let db_name = results[0].name
-
-			let update_status = await db_users.updateUser({
-				name: db_name,
-				email: email,
-				user_id: req.session.user_id
-			})
-
-			if (update_status) {
-				req.session.email = email
-				res.redirect("/profile")
-			} else {
-				console.log(update_status)
-			}
+		if (name == '' && email == '') {
+			res.redirect("/profile")
 
 		} else if (email == '') {
 			let db_email = results[0].email
@@ -165,6 +152,21 @@ app.post("/profile/update", async (req, res) => {
 				console.log(update_status)
 			}			
 
+		} else if (name == '') {
+			let db_name = results[0].name
+
+			let update_status = await db_users.updateUser({
+				name: db_name,
+				email: email,
+				user_id: req.session.user_id
+			})
+
+			if (update_status) {
+				req.session.email = email
+				res.redirect("/profile")
+			} else {
+				console.log(update_status)
+			}
 		} else {
 			let update_status = await db_users.updateUser({
 				name: name,
