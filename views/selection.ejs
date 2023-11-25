@@ -8,7 +8,7 @@
  </button>
  
  <aside id="sidebar-multi-level-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
-    <div class="h-full px-3 py-4 overflow-y-auto bg-green-50 dark:bg-green-700">
+    <div class="h-full px-3 py-4 overflow-y-auto dark:bg-[#333d29]">
         <form action="saveChoices" method="post">
             <ul class="space-y-2 font-medium">
                 <!-- TITLE -->
@@ -172,10 +172,10 @@
     </div>
  </aside>
  
- <div class="p-4 sm:ml-64">
+ <div class="p-4 sm:ml-64" style="background-image: url(/photos/selection.jpg)">
     <div class='flex w-full'>
         <div class='flex flex-col w-full'>
-            <div class="grid grid-cols-4 bg-green-600 text-white rounded-lg">
+            <div class="grid grid-cols-4 bg-[#333d29] text-white rounded-lg">
                 <div class="flex p-4 justify-center">
                     Line #
                 </div>
@@ -191,7 +191,7 @@
             </div>
     
             <% for (let i = 1; i <= 80; i++) { %>
-                <div class="test-option grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg hover:cursor-pointer" draggable="true">
+                <div class="test-option grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg hover:cursor-pointer bg-white" draggable="true">
                     <div class="flex p-4 justify-center items-center mr-6">
                         <svg height="10" width="10" class="mr-2">
                             <circle cx="5" cy="5" r="5" fill="red" />
