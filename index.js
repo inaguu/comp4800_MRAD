@@ -13,6 +13,7 @@ const database = include("database_connection");
 const db_utils = include("database/db_utils");
 const db_users = include("database/users");
 const db_query = include("database/query")
+const db_selections = include("database/selections")
 
 const success = db_utils.printMySQLVersion();
 
@@ -101,22 +102,38 @@ app.get('/profile', async (req, res) => {
 			email: req.session.email
 		})
 
-		// let selections = await db_query.getStudentChoice({
-		// 	user_id: req.session.user_id
-		// })
+		let selectionsC1 = await db_selections.getStudentSelectionC1({
+			user_id: req.session.user_id
+		})
 
-		const students = [
-			{ id: 1, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 2, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 3, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 4, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 5, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+		let selectionsC2 = await db_selections.getStudentSelectionC2({
+			user_id: req.session.user_id
+		})
+
+		let selectionsC3 = await db_selections.getStudentSelectionC3({
+			user_id: req.session.user_id
+		})
+
+		let selectionsC4 = await db_selections.getStudentSelectionC4({
+			user_id: req.session.user_id
+		})
+
+		let selectionsC5 = await db_selections.getStudentSelectionC5({
+			user_id: req.session.user_id
+		})
+
+		const user_selection = [
+			{choice: 1, line_number: selectionsC1[0].line_number, sites: {site_1: selectionsC1[0].site_name_one, site_2: selectionsC1[0].site_name_two, site_3: selectionsC1[0].site_name_three }},
+			{choice: 2, line_number: selectionsC2[0].line_number, sites: {site_1: selectionsC2[0].site_name_one, site_2: selectionsC2[0].site_name_two, site_3: selectionsC2[0].site_name_three }},
+			{choice: 3, line_number: selectionsC3[0].line_number, sites: {site_1: selectionsC3[0].site_name_one, site_2: selectionsC3[0].site_name_two, site_3: selectionsC3[0].site_name_three }},
+			{choice: 4, line_number: selectionsC4[0].line_number, sites: {site_1: selectionsC4[0].site_name_one, site_2: selectionsC4[0].site_name_two, site_3: selectionsC4[0].site_name_three }},
+			{choice: 5, line_number: selectionsC5[0].line_number, sites: {site_1: selectionsC5[0].site_name_one, site_2: selectionsC5[0].site_name_two, site_3: selectionsC5[0].site_name_three }},			{choice: 5, sites: {site_1: selectionsC5[0].site_name_one, site_2: selectionsC1[0].site_name_two, site_3: selectionsC1[0].site_name_three }},
 		]
 	
 		if (results) {
 			res.render("profile", {
 				results: results[0],
-				students: students
+				user_selection: user_selection
 			})
 		}
 	}
