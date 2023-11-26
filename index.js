@@ -127,7 +127,7 @@ app.get('/profile', async (req, res) => {
 			{choice: 2, line_number: selectionsC2[0].line_number, sites: {site_1: selectionsC2[0].site_name_one, site_2: selectionsC2[0].site_name_two, site_3: selectionsC2[0].site_name_three }},
 			{choice: 3, line_number: selectionsC3[0].line_number, sites: {site_1: selectionsC3[0].site_name_one, site_2: selectionsC3[0].site_name_two, site_3: selectionsC3[0].site_name_three }},
 			{choice: 4, line_number: selectionsC4[0].line_number, sites: {site_1: selectionsC4[0].site_name_one, site_2: selectionsC4[0].site_name_two, site_3: selectionsC4[0].site_name_three }},
-			{choice: 5, line_number: selectionsC5[0].line_number, sites: {site_1: selectionsC5[0].site_name_one, site_2: selectionsC5[0].site_name_two, site_3: selectionsC5[0].site_name_three }},			{choice: 5, sites: {site_1: selectionsC5[0].site_name_one, site_2: selectionsC1[0].site_name_two, site_3: selectionsC1[0].site_name_three }},
+			{choice: 5, line_number: selectionsC5[0].line_number, sites: {site_1: selectionsC5[0].site_name_one, site_2: selectionsC5[0].site_name_two, site_3: selectionsC5[0].site_name_three }},
 		]
 	
 		if (results) {

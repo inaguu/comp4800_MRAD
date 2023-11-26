@@ -19,7 +19,7 @@ async function getStudentSelectionC1(postData) {
 		const results = await database.query(getStudentSelectionC1SQL, params);
 		console.log("Successfully retreived student choice 1");
 		console.log(results[0]);
-		return results;
+		return results[0];
 	} catch (err) {
 		console.log("Error trying to retreive student choice 1");
 		console.log(err);
@@ -46,7 +46,7 @@ async function getStudentSelectionC2(postData) {
 		const results = await database.query(getStudentSelectionC2SQL, params);
 		console.log("Successfully retreived student choice 2");
 		console.log(results[0]);
-		return results;
+		return results[0];
 	} catch (err) {
 		console.log("Error trying to retreive student choice 2");
 		console.log(err);
@@ -73,7 +73,7 @@ async function getStudentSelectionC3(postData) {
 		const results = await database.query(getStudentSelectionC3SQL, params);
 		console.log("Successfully retreived student choice 3");
 		console.log(results[0]);
-		return results;
+		return results[0];
 	} catch (err) {
 		console.log("Error trying to retreive student choice 3");
 		console.log(err);
@@ -100,7 +100,7 @@ async function getStudentSelectionC4(postData) {
 		const results = await database.query(getStudentSelectionC4SQL, params);
 		console.log("Successfully retreived student choice 4");
 		console.log(results[0]);
-		return results;
+		return results[0];
 	} catch (err) {
 		console.log("Error trying to retreive student choice 4");
 		console.log(err);
@@ -127,7 +127,7 @@ async function getStudentSelectionC5(postData) {
 		const results = await database.query(getStudentSelectionC5SQL, params);
 		console.log("Successfully retreived student choice 5");
 		console.log(results[0]);
-		return results;
+		return results[0];
 	} catch (err) {
 		console.log("Error trying to retreive student choice 5");
 		console.log(err);
