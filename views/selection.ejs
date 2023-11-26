@@ -167,6 +167,11 @@
                     <span class="flex-1 ml-3 whitespace-nowrap">Save Choices</span>
                 </button>
                 </li>
+                <% if (requestMsg) { %>
+                    <li>
+                        <span class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white group ml-3"><%= requestMsg %></span>
+                    </li>
+                <% } %>
                </ul>
         </form>
     </div>
