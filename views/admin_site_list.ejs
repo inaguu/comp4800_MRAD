@@ -18,18 +18,19 @@
                 <% sites.forEach(function(site) { %>
                     <tr>
                     <td class="py-2 px-4 border-b"><%= site.site_name %></td>
-                    <td class="py-2 px-4 border-b"><%= site.total_spots %></td>
+                    <td class="py-2 px-4 border-b text-center"><%= site.total_spots %></td>
                     <% if (site.is_active === 1) { %>
-                        <td class="py-2 px-4 border-b"><input type="checkbox" name="active" id="active" checked></label></td>
+                        <td class="py-2 px-4 border-b text-center"><input type="checkbox" name="active" id="active" checked></label></td>
                     <%} else if(site.is_active === 2) { %>
-                        <td class="py-2 px-4 border-b"><input type="checkbox" name="active" id="active" ></label></td>
+                        <td class="py-2 px-4 border-b text-center"><input type="checkbox" name="active" id="active" ></label></td>
                     <% } %>
-                    <td class="py-2 px-4 border-b"> <button type="button" id="<%=site.site_id%>">Delete</button></td>
                     </tr>
                 <% }) %>
                 <% var total = 0;
                 sites.forEach(function(site) {
-                    total += site.total_spots;
+                    if(site.is_active === 1){
+                        total += site.total_spots;
+                    }
                 }) %>
                     <tr>
                         <td class="py-2 px-4 border-b">Total</td>
