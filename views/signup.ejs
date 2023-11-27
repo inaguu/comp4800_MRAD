@@ -26,8 +26,6 @@
             <header class="container px-4 lg:flex mt-10 items-center h-[90%] lg:mt-0">
                 <div class="w-full">
                     <div class="max-w-md mx-auto">
-                        <!-- security code entry added here -->
-                        <input type="text" name="security_code" placeholder="Security Code" required>
                         <h1 class="text-4xl lg:text-6xl font-bold">Sign<span class="text-green-700">up</span></h1>
                         <div class="w-20 h-2 bg-green-700 my-4"></div>
                         <form class="p-4" method="post" action="/submituser">
@@ -94,6 +92,19 @@
                                     name="MRAD_id"
                                     class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
                                     placeholder="Enter your MRAD ID"
+                                    required
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label for="MRAD_id" class="block text-gray-700 font-bold mb-2"
+                                    >Security Code</label
+                                >
+                                <input
+                                    type="security_code"
+                                    id="security_code"
+                                    name="security_code"
+                                    class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"
+                                    placeholder="Enter the security code for your batch"
                                     required
                                 />
                             </div>
