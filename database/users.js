@@ -122,10 +122,33 @@ async function updateUserPassword(postData) {
 	}
 }
 
+// temporary db query till we have a table or column for it
+async function checkSecurityCode(postData){
+	let checkCodeSQL = `
+	SELECT COUNT(*) AS codeCount
+	FROM security_code_table
+	WHERE security_code = :code;
+	`;
+	
+	let params = {
+		code: postData.code
+	};
+
+	try {
+		const results = await database.query(checkCodeSQL, params);
+		return results[0];
+	} catch(err){
+		console.log("Error trying to validate security code");
+		console.log(err);
+		return false;
+	}
+}
+
 module.exports = {
 	createUser,
 	getUsers,
 	getUser,
 	updateUser,
-	updateUserPassword
+	updateUserPassword,
+	checkSecurityCode
 };

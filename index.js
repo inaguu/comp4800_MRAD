@@ -318,7 +318,22 @@ app.post("/submituser", async (req, res) => {
 	let name = req.body.name;
 	let email = req.body.email;
 	let password = req.body.password;
-	let MRAD_id = req.body.MRAD_id
+	let MRAD_id = req.body.MRAD_id;
+	let security_code = req.body.security_code;
+
+	// temporary list of valid security codes (need a db column for it)
+	const validCodes = ['code1', 'code2', 'code3'];
+
+	// security check against the valid codes
+	if (!validCodes.includes(security_code)){
+		return res.status(400).send('Invalid security code');
+	}
+
+	// how i'll actually do it from db instead of above:
+	// const isValidCode = await checkSecurityCode(security_code);
+	// if (!isValidCode) {
+	// 	return res.status(400).send('Invalid security code');
+	// }
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
