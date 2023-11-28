@@ -159,9 +159,8 @@ app.get("/admin-view-students", async (req, res) => {
 	}
 });
 
-// app.get('/admin_profile_view/:MRADid', async(req, res) => {
+// app.get('/admin_profile_view', async(req, res) => {
 // 	const mockData = {
-// 		MRAD_id: req.params.MRAD_id,
 // 		name: "Test student",
 // 		email: "testemail@gmail.com",
 // 		type: "student",
@@ -182,7 +181,7 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 		res.status(403);
 		res.render("403");
 	} else {
-		let results = await db_admin.getOneStudent({
+		let results = await db_admin.getSelectionResults({
 			MRADid: req.params.MRADid,
 		});
 
