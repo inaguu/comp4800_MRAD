@@ -34,68 +34,146 @@
         </div>
       </dl>
     </div>
-
-
+    <pre>Scroll down for your clinical selections!</pre>
   </div>
 </div>
- <!-- student selection starts here -->
+<!-- student selection starts here -->
 <div class="flex flex-col h-screen bg-gray-200">
-    <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">Clinical Selections</h3>
-        <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            You can change your info by clicking, editing, then hitting Save.
-        </p>
-    </div>
-    <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
-        <h2 class="text-gray-700 font-bold mb-4">Student Choices</h2>
+  <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">Clinical Selections</h3>
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+      You can change your info by clicking, editing, then hitting Save.
+    </p>
+  </div>
 
-        <!-- new users list -->
-        <div class="overflow-y-auto">
-          <ul id="usersList">
-            <!-- selections go here -->
-            <% if(student[0]) { %>
-              <li class="selection-item">Choice 1: <%= student[0].Site1 %>, <%= student[0].Site2 %>, <%= student[0].Site3 %>.</li>
+  <!-- test here -->
+
+  <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
+    <h2 class="text-gray-700 font-bold mb-4">Student Choices</h2>
+
+    <!-- Selections List -->
+    <div class="overflow-y-auto">
+      <ul id="usersList">
+        <% if(student[0]) { %>
+        <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+          <div class="flex justify-between">
+            <span class="font-medium text-gray-700">Choice 1</span>
+            <button
+              class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+              Edit
+            </button>
+          </div>
+          <div class="flex mt-2">
+            <label class="inline-flex items-center ml-4">
+              <span class="ml-2 text-gray-700">1. <%= student[0].Site1 %></span>
+            </label>
+            <label class="inline-flex items-center ml-4">
+              <span class="ml-2 text-gray-700">2. <%= student[0].Site2 %></span>
+            </label>
+            <label class="inline-flex items-center ml-4">
+              <span class="ml-2 text-gray-700">3. <%= student[0].Site3 %></span>
+            </label>
+          </div>
+        </li>
+        <% } %>
+
+        <% if(student[1]) { %>
+        <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+          <div class="flex justify-between">
+            <span class="font-medium text-gray-700">Choice 2</span>
+            <button
+              class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+              Edit
+            </button>
+          </div>
+          <div class="flex mt-2">
+            <label class="inline-flex items-center ml-4">
+              <span class="ml-2 text-gray-700">1. <%= student[1].Site1 %></span>
+            </label>
+            <label class="inline-flex items-center ml-4">
+              <span class="ml-2 text-gray-700">2. <%= student[1].Site2 %></span>
+            </label>
+            <label class="inline-flex items-center ml-4">
+              <span class="ml-2 text-gray-700">3. <%= student[1].Site3 %></span>
+            </label>
+          </div>
+        </li>
+        <% } %>
+
+        <% if(student[2]) { %>
+          <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+            <div class="flex justify-between">
+              <span class="font-medium text-gray-700">Choice 3</span>
+              <button
+                class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+                Edit
+              </button>
+            </div>
+            <div class="flex mt-2">
+              <label class="inline-flex items-center ml-4">
+                <span class="ml-2 text-gray-700">1. <%= student[2].Site1 %></span>
+              </label>
+              <label class="inline-flex items-center ml-4">
+                <span class="ml-2 text-gray-700">2. <%= student[2].Site2 %></span>
+              </label>
+              <label class="inline-flex items-center ml-4">
+                <span class="ml-2 text-gray-700">3. <%= student[2].Site3 %></span>
+              </label>
+            </div>
+          </li>
+          <% } %>
+
+          <% if(student[3]) { %>
+            <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+              <div class="flex justify-between">
+                <span class="font-medium text-gray-700">Choice 4</span>
+                <button
+                  class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+                  Edit
+                </button>
+              </div>
+              <div class="flex mt-2">
+                <label class="inline-flex items-center ml-4">
+                  <span class="ml-2 text-gray-700">1. <%= student[3].Site1 %></span>
+                </label>
+                <label class="inline-flex items-center ml-4">
+                  <span class="ml-2 text-gray-700">2. <%= student[3].Site2 %></span>
+                </label>
+                <label class="inline-flex items-center ml-4">
+                  <span class="ml-2 text-gray-700">3. <%= student[3].Site3 %></span>
+                </label>
+              </div>
+            </li>
             <% } %>
-            <% if(student[1]) { %>
-              <li class="selection-item">Choice 2: <%= student[1].Site1 %>, <%= student[1].Site2 %>, <%= student[1].Site3 %>.</li>
-            <% } %>
-            <% if(student[2]) { %>
-              <li class="selection-item">Choice 3: <%= student[2].Site1 %>, <%= student[2].Site2 %>, <%= student[2].Site3 %>.</li>
-            <% } %>
-            <% if(student[3]) { %>
-              <li class="selection-item">Choice 4: <%= student[3].Site1 %>, <%= student[3].Site2 %>, <%= student[3].Site3 %>.</li>
-            <% } %>
+
             <% if(student[4]) { %>
-              <li class="selection-item">Choice 5: <%= student[4].Site1 %>, <%= student[4].Site2 %>, <%= student[4].Site3 %>.</li>
-            <% } %>
-          </ul>
-        </div>
-
-        <!-- Users List -->
-        <!-- <div class="overflow-y-auto">
-            <ul id="usersList">
-
-                    <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
-                        <div class="flex justify-between">
-                            <span class="font-medium text-gray-700">Selection </span>
-                            <button
-                            class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
-                            Edit
-                            </button>
-                        </div>
-                        <div class="flex mt-2">
-
-                                <label class="inline-flex items-center ml-4">
-                                    <span class="ml-2 text-gray-700"></span>
-                                </label>
-
-                        </div>
-                    </li>
-
-           
-            </ul>
-        </div> -->
+              <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+                <div class="flex justify-between">
+                  <span class="font-medium text-gray-700">Choice 5</span>
+                  <button
+                    class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+                    Edit
+                  </button>
+                </div>
+                <div class="flex mt-2">
+                  <label class="inline-flex items-center ml-4">
+                    <span class="ml-2 text-gray-700">1. <%= student[4].Site1 %></span>
+                  </label>
+                  <label class="inline-flex items-center ml-4">
+                    <span class="ml-2 text-gray-700">2. <%= student[4].Site2 %></span>
+                  </label>
+                  <label class="inline-flex items-center ml-4">
+                    <span class="ml-2 text-gray-700">3. <%= student[4].Site3 %></span>
+                  </label>
+                </div>
+              </li>
+              <% } %>
+      </ul>
     </div>
+  </div>
+</div>
+
+<!-- test here -->
+</div>
 </div>
 <%- include ("templates/footer") %>
-
