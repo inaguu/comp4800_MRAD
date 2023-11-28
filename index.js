@@ -310,6 +310,10 @@ app.get("/home", (req, res) => {
 	}
 });
 
+app.get("/disclaimer", (req, res) => {
+	res.render("disclaimer");
+});
+
 app.get("/signup", (req, res) => {
 	res.render("signup");
 });
