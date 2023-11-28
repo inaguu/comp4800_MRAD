@@ -6,6 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
+const { getSelectionResults } = require("./database/admin");
 const saltRounds = 12;
 
 const database = include("database_connection");
@@ -157,6 +158,23 @@ app.get("/admin-view-students", async (req, res) => {
 		}
 	}
 });
+
+// app.get('/admin_profile_view/:MRADid', async(req, res) => {
+// 	const mockData = {
+// 		MRAD_id: req.params.MRAD_id,
+// 		name: "Test student",
+// 		email: "testemail@gmail.com",
+// 		type: "student",
+// 		choice_1_site_name: "Abby",
+// 		choice_2_site_name: "surrey",
+// 		choice_3_site_name: "richmond",
+// 		choice_4_site_name: "vancouver",
+// 		choice_5_site_name: "langley"
+// 	};
+// 	res.render('admin_profile_view', {student: mockData})
+
+	
+// })
 
 //requires admin auth
 app.get("/admin-view-students/:MRADid", async (req, res) => {

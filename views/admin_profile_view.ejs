@@ -17,7 +17,7 @@
             MRAD ID
           </dt>
           <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%- student.mrad_id %>
+
           </dd>
         </div>
         <!-- Forget Password Button -->
@@ -50,34 +50,52 @@
     <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
         <h2 class="text-gray-700 font-bold mb-4">Your Selections</h2>
 
-        <!-- Users List -->
+        <!-- new users list -->
         <div class="overflow-y-auto">
+          <ul id="usersList">
+            <!-- selections go here -->
+            <% if(student.choice_1_site_name) { %>
+              <li class="selection-item">Choice 1:<%= student.choice_1_site_name %></li>
+            <% } %>
+            <% if(student.choice_2_site_name) { %>
+              <li class="selection-item">Choice 2:<%= student.choice_2_site_name %></li>
+            <% } %>
+            <% if(student.choice_3_site_name) { %>
+              <li class="selection-item">Choice 3:<%= student.choice_3_site_name %></li>
+            <% } %>
+            <% if(student.choice_4_site_name) { %>
+              <li class="selection-item">Choice 4:<%= student.choice_4_site_name %></li>
+            <% } %>
+            <% if(student.choice_5_site_name) { %>
+              <li class="selection-item">Choice 5:<%= student.choice_5_site_name %></li>
+            <% } %>
+          </ul>
+        </div>
+
+        <!-- Users List -->
+        <!-- <div class="overflow-y-auto">
             <ul id="usersList">
-                <% let choice_number = 1 %>
-                <% student.forEach(function(data) { %>
+
                     <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
                         <div class="flex justify-between">
-                            <span class="font-medium text-gray-700">Selection <%= choice_number %></span>
+                            <span class="font-medium text-gray-700">Selection </span>
                             <button
                             class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
                             Edit
                             </button>
                         </div>
                         <div class="flex mt-2">
-                            <% let selection_number = 1 %>
-                            <% for (var key in data.sites) { %>
-                                <% let site_name = data.sites[key] %>
+
                                 <label class="inline-flex items-center ml-4">
-                                    <span class="ml-2 text-gray-700"><%= selection_number %>. <%= site_name %></span>
+                                    <span class="ml-2 text-gray-700"></span>
                                 </label>
-                                <% selection_number++ %>
-                            <% } %>
+
                         </div>
                     </li>
-                    <% choice_number++ %>
-                <% }); %>                
+
+           
             </ul>
-        </div>
+        </div> -->
     </div>
 </div>
 <%- include ("templates/footer") %>
