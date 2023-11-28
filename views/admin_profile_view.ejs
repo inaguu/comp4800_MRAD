@@ -41,34 +41,32 @@
  <!-- student selection starts here -->
 <div class="flex flex-col h-screen bg-gray-200">
     <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-            Selections
-        </h3>
+        <h3 class="text-lg leading-6 font-medium text-gray-900">Clinical Selections</h3>
         <p class="mt-1 max-w-2xl text-sm text-gray-500">
             You can change your info by clicking, editing, then hitting Save.
         </p>
     </div>
     <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
-        <h2 class="text-gray-700 font-bold mb-4">Your Selections</h2>
+        <h2 class="text-gray-700 font-bold mb-4">Student Choices</h2>
 
         <!-- new users list -->
         <div class="overflow-y-auto">
           <ul id="usersList">
             <!-- selections go here -->
-            <% if(student.choice_1_site_name) { %>
-              <li class="selection-item">Choice 1:<%= student.choice_1_site_name %></li>
+            <% if(student[0]) { %>
+              <li class="selection-item">Choice 1: <%= student[0].Site1 %>, <%= student[0].Site2 %>, <%= student[0].Site3 %>.</li>
             <% } %>
-            <% if(student.choice_2_site_name) { %>
-              <li class="selection-item">Choice 2:<%= student.choice_2_site_name %></li>
+            <% if(student[1]) { %>
+              <li class="selection-item">Choice 2: <%= student[1].Site1 %>, <%= student[1].Site2 %>, <%= student[1].Site3 %>.</li>
             <% } %>
-            <% if(student.choice_3_site_name) { %>
-              <li class="selection-item">Choice 3:<%= student.choice_3_site_name %></li>
+            <% if(student[2]) { %>
+              <li class="selection-item">Choice 3: <%= student[2].Site1 %>, <%= student[2].Site2 %>, <%= student[2].Site3 %>.</li>
             <% } %>
-            <% if(student.choice_4_site_name) { %>
-              <li class="selection-item">Choice 4:<%= student.choice_4_site_name %></li>
+            <% if(student[3]) { %>
+              <li class="selection-item">Choice 4: <%= student[3].Site1 %>, <%= student[3].Site2 %>, <%= student[3].Site3 %>.</li>
             <% } %>
-            <% if(student.choice_5_site_name) { %>
-              <li class="selection-item">Choice 5:<%= student.choice_5_site_name %></li>
+            <% if(student[4]) { %>
+              <li class="selection-item">Choice 5: <%= student[4].Site1 %>, <%= student[4].Site2 %>, <%= student[4].Site3 %>.</li>
             <% } %>
           </ul>
         </div>
