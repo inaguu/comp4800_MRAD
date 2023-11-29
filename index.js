@@ -12,7 +12,9 @@ const saltRounds = 12;
 const database = include("database_connection");
 const db_utils = include("database/db_utils");
 const db_users = include("database/users");
-const db_query = include("database/query")
+const db_query = include("database/query");
+
+const option_generator = include("generate_selections");
 
 const success = db_utils.printMySQLVersion();
 
@@ -196,6 +198,27 @@ app.post('/addClinicalSite', async (req,res) => {
 	res.redirect('admin-site-list');
 })
 
+app.post('/generateSiteOptions', async (req, res) => {
+	const sites = await db_query.getActiveClinicalSites();
+	let options = option_generator.generateOptions(sites);
+	const intake_res = await db_query.getMaxIntake();
+
+	const queryArr = []
+	for (let i = 0; i < options.length; i++) {
+		queryArr.push(
+			[
+				options[i][0].clinical_sites_id,
+				options[i][1].clinical_sites_id,
+				options[i][2].clinical_sites_id,
+				intake_res.intake_max,
+				options[i][3]
+			]
+		)
+	}
+	await db_query.insertOptionRows(queryArr);
+	res.send(queryArr);
+})
+
 app.get('/admin-site-list', async (req,res) =>{	
 	try {
 		var [results] = await db_query.getClinicalSites()
@@ -350,8 +373,11 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
-app.get('/selection', (req, res) => {
-    res.render("selection", { selectedValue: 0});
+app.get('/selection', async (req, res) => {
+	const optionLines = await db_query.getOptionRows();
+	// ALSO PASS IN USER CHOICES TO POPUPLATE SIDE BAR
+
+    res.render("selection", { options: optionLines});
 })
 
 app.post('/saveChoices', async (req, res) => {
@@ -377,6 +403,11 @@ app.post('/saveChoices', async (req, res) => {
 		console.log("Failure")
 		res.redirect("/selection")
 	}
+})
+
+app.get('/getSelections', async (req, res) => {
+	var [results] = await db_query.getActiveClinicalSites()
+	return res.json(results);
 })
 
 app.use(express.static(__dirname + "/public"));

@@ -42,6 +42,81 @@ async function getClinicalSites() {
 	}
 }
 
+async function getActiveClinicalSites() {
+	let getClinicalSites = `
+		SELECT * FROM clinical_sites WHERE is_active = 1;
+	`;
+
+	try {
+		const results = await database.query(getClinicalSites);
+		console.log("Successfully retreived clinical site");
+		return results[0];
+	} catch (err) {
+		console.log("Error trying to retreive clinical site");
+		console.log(err);
+		return false;
+	}
+}
+
+async function getMaxIntake() {
+	let getMaxIntake = `
+		SELECT Max(intake_id) AS intake_max FROM intake;
+	`;
+
+	try {
+		const results = await database.query(getMaxIntake);
+		console.log("Successfully retreived max intake");
+		console.log(results[0]);
+		return results[0][0];
+	} catch (err) {
+		console.log("Error trying to retreive max intake ");
+		console.log(err);
+		return false;
+	}
+}
+
+async function insertOptionRows(rows) {
+	let insertClinicalSites = `
+		INSERT INTO line_options
+		(placement_one, placement_two, placement_three, intake_number_fk, site_zone) 
+		VALUES 
+		?;
+	`;
+
+	try {
+		const results = await database.query(insertClinicalSites, [rows]);
+		console.log("Successfully inserted option rows");
+		console.log(results[0]);
+		return true;
+	} catch (err) {
+		console.log("Error trying to add option rows");
+		console.log(err);
+		return false;
+	}
+}
+
+async function getOptionRows() {
+	let getClinicalSites = `
+		SELECT one.site_name as one, two.site_name as two, three.site_name as three
+		FROM freedb_team2project.line_options
+		JOIN clinical_sites as one ON (placement_one = one.clinical_sites_id)
+		JOIN clinical_sites as two ON (placement_two = two.clinical_sites_id)
+		JOIN clinical_sites as three ON (placement_three = three.clinical_sites_id)
+		ORDER BY one.site_name ASC;
+	`;
+
+	try {
+		const results = await database.query(getClinicalSites);
+		console.log("Successfully retreived option rows");
+		return results[0];
+	} catch (err) {
+		console.log("Error trying to retreive option rows");
+		console.log(err);
+		return false;
+	}
+}
+
+
 async function saveSelection(postData) {
 	let saveSelectionSQL = `
 		INSERT INTO student_choices (choice_1, choice_2, choice_3, choice_4, choice_5, user_id)
@@ -102,5 +177,9 @@ module.exports = {
 	insertClinicalSites,
     getClinicalSites,
 	saveSelection,
-	getStudentChoice
+	getStudentChoice,
+	getActiveClinicalSites,
+	getMaxIntake,
+	insertOptionRows,
+	getOptionRows
 };
