@@ -56,24 +56,24 @@
     </div>
     <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
         <h2 class="text-gray-700 font-bold mb-4">Your Selections</h2>
-  
+
         <!-- Users List -->
         <div class="overflow-y-auto">
             <ul id="usersList">
                 <% let choice_number = 1 %>
-                <% students.forEach(function(student) { %>
+                <% user_selection.forEach(function(selection) { %>
                     <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
                         <div class="flex justify-between">
-                            <span class="font-medium text-gray-700">Selection <%= choice_number %></span>
-                            <button
+                            <span class="font-medium text-gray-700">Selection <%= choice_number %> - Line <%= selection.line_number %></span>
+                            <!-- <button
                             class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
                             Edit
-                            </button>
+                            </button> -->
                         </div>
                         <div class="flex mt-2">
                             <% let selection_number = 1 %>
-                            <% for (var key in student.sites) { %>
-                                <% let site_name = student.sites[key] %>
+                            <% for (var key in selection.sites) { %>
+                                <% let site_name = selection.sites[key] %>
                                 <label class="inline-flex items-center ml-4">
                                     <span class="ml-2 text-gray-700"><%= selection_number %>. <%= site_name %></span>
                                 </label>
@@ -87,6 +87,5 @@
         </div>
     </div>
 </div>
-
 
 <%- include ("templates/footer") %>
