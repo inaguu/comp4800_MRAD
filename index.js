@@ -327,6 +327,10 @@ app.get("/home", (req, res) => {
 	}
 });
 
+app.get("/disclaimer", (req, res) => {
+	res.render("disclaimer");
+});
+
 app.get("/signup", (req, res) => {
 	res.render("signup");
 });
@@ -365,8 +369,9 @@ app.post("/submituser", async (req, res) => {
 		req.session.MRAd_id = results[0].MRAD_id;
 		req.session.user_id = results[0].user_id;
 		req.session.cookie.maxAge = expireTime;
-
-		await db_query.setSelectionFirstTime({user_id : results[0].user_id})
+		if(req.session.user_type === "student"){
+			await db_query.setSelectionFirstTime({user_id : results[0].user_id})
+		}
 		res.redirect("/home"); //Goes to landing page upon successful login
 	} else {
 		//Redirect to 404 or Page with Generic Error Message??
@@ -375,8 +380,29 @@ app.post("/submituser", async (req, res) => {
 });
 
 app.get('/selection', (req, res) => {
-    res.render("selection", { selectedValue: 0});
+    res.render("selection", { selectedValue: 0, requestMsg : ""});
 })
+
+app.post('/updateSites', async (req, res) => {
+    const siteName = req.body.siteName;
+    const siteSpots = req.body.siteSpots;
+    const isActive = req.body.active === 'on' ? 1 : 2;
+	const clinical_id = req.body.siteID;
+
+	if (siteName !== "" || siteSpots !== "") {
+		var results = await db_query.updateClinicalSites({
+			siteName : siteName,
+			siteSpots : siteSpots,
+			isActive : isActive,
+			clinical_id : clinical_id
+		})
+		console.log("Sucess Updating Clinical Site")
+		res.redirect("admin-site-list")
+	} else {
+		console.log("Failed to update")
+		res.redirect("admin-site-list")
+	}
+});
 
 app.post('/saveChoices', async (req, res) => {
 	var selection1 = parseInt(req.body.oneLine);
@@ -386,25 +412,32 @@ app.post('/saveChoices', async (req, res) => {
 	var selection5 = parseInt(req.body.fiveLine);
 	var user_id = req.session.user_id;
 
-	if(isNaN(selection1) || isNaN(selection2) || isNaN(selection3) || isNaN(selection4) || isNaN(selection5)){
-		console.log("You are missing a choice")
-		res.redirect("/selection")
-	} else {
-		try {
-			var result = await db_query.saveSelection({
-				selection1 : selection1, 
-				selection2 : selection2,
-				selection3 : selection3,
-				selection4 : selection4,
-				selection5 : selection5,
-				user_id : user_id
-			})
-			console.log("Success")
-			res.redirect("/selection")
-		} catch (error) {
-			console.log("Failure")
-			res.redirect("/selection")
+	if((selection1 !== selection2 && selection1 !== selection3 && selection1 !== selection4 && selection1 !== selection5 && 
+		selection2 !== selection3 && selection2 !== selection4 && selection2 !== selection5 && 
+		selection3 !== selection4 && selection3 !== selection5 && 
+		selection4 !== selection5)){
+		if(isNaN(selection1) || isNaN(selection2) || isNaN(selection3) || isNaN(selection4) || isNaN(selection5)){
+			res.render("selection", {requestMsg : "You are missing a choice"})
+		} else {
+			try {
+				var result = await db_query.saveSelection({
+					selection1 : selection1, 
+					selection2 : selection2,
+					selection3 : selection3,
+					selection4 : selection4,
+					selection5 : selection5,
+					user_id : user_id
+				})
+				console.log("Success")
+				res.render("selection", {requestMsg : "Successfully Saved!"})
+			} catch (error) {
+				console.log("Failure")
+				res.render("selection", {requestMsg : "Failed to Save"})
+			}
 		}
+	} else {
+		res.render("selection", {requestMsg : "Please pick 5 unique choices."})
+		console.log("Non-unique selections.")
 	}
 })
 

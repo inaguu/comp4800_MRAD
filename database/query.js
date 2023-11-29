@@ -25,6 +25,32 @@ async function insertClinicalSites(postData) {
 	}
 }
 
+async function updateClinicalSites(postData){
+	let updateClinicalSites = `
+		UPDATE clinical_sites
+		SET site_name = :site_name, total_spots = :total_spots, is_active = :is_active
+		WHERE clinical_sites_id = :clinical_id;
+	`;
+
+	let params = {
+		site_name: postData.siteName,
+		total_spots: postData.siteSpots,
+		is_active: postData.isActive,
+		clinical_id: postData.clinical_id
+	}
+
+	try {
+		const results = await database.query(updateClinicalSites, params);
+		console.log("Successfully updated clinical site");
+		console.log(results[0]);
+		return true;
+	} catch (err) {
+		console.log("Error trying to update clinical site");
+		console.log(err);
+		return false;
+	}
+}
+
 async function getClinicalSites() {
 	let getClinicalSites = `
 		SELECT * FROM clinical_sites;
@@ -33,7 +59,7 @@ async function getClinicalSites() {
 	try {
 		const results = await database.query(getClinicalSites);
 		console.log("Successfully retreived clinical site");
-		console.log(results[0]);
+		// console.log(results[0]);
 		return results;
 	} catch (err) {
 		console.log("Error trying to retreive clinical site");
@@ -118,5 +144,6 @@ module.exports = {
     getClinicalSites,
 	saveSelection,
 	getStudentChoice,
-	setSelectionFirstTime
+	setSelectionFirstTime,
+	updateClinicalSites
 };
