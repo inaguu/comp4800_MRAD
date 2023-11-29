@@ -248,6 +248,8 @@ app.post("/loggingin", async (req, res) => {
 				req.session.authenticated = true;
 				req.session.user_type = results[0].type;
 				req.session.name = results[0].name;
+				req.session.email = results[0].email;
+				req.session.MRAd_id = results[0].MRAD_id;
 				req.session.user_id = results[0].user_id;
 				req.session.cookie.maxAge = expireTime;
 				console.log(req.session.user_type);
@@ -324,7 +326,7 @@ app.post("/forgot-password/password-send", async (req, res) => {
 app.post("/logout", (req, res) => {
 	req.session.authenticated = false;
 	req.session.destroy();
-	res.redirect("/");
+	res.redirect("/login");
 });
 
 //requires session auth
