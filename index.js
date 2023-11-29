@@ -349,6 +349,9 @@ app.post("/submituser", async (req, res) => {
 		hashedPassword: hashedPassword,
 		MRAD_id: MRAD_id
 	});
+
+
+	
 	console.log(name);
 	console.log(email);
 	console.log(hashedPassword);
@@ -358,6 +361,7 @@ app.post("/submituser", async (req, res) => {
 		var results = await db_users.getUser({
 			email: email
 		});
+		
 		req.session.authenticated = true;
 		req.session.user_type = results[0].type;
 		req.session.name = results[0].name;
@@ -366,6 +370,7 @@ app.post("/submituser", async (req, res) => {
 		req.session.user_id = results[0].user_id;
 		req.session.cookie.maxAge = expireTime;
 
+		await db_query.setSelectionFirstTime({user_id : results[0].user_id})
 		res.redirect("/home"); //Goes to landing page upon successful login
 	} else {
 		//Redirect to 404 or Page with Generic Error Message??
@@ -387,21 +392,26 @@ app.post('/saveChoices', async (req, res) => {
 	var selection4 = parseInt(req.body.fourLine);
 	var selection5 = parseInt(req.body.fiveLine);
 	var user_id = req.session.user_id;
-	
-	try {
-		var result = await db_query.saveSelection({
-			selection1 : selection1, 
-			selection2 : selection2,
-			selection3 : selection3,
-			selection4 : selection4,
-			selection5 : selection5,
-			user_id : user_id
-		})
-		console.log("Success")
+
+	if(isNaN(selection1) || isNaN(selection2) || isNaN(selection3) || isNaN(selection4) || isNaN(selection5)){
+		console.log("You are missing a choice")
 		res.redirect("/selection")
-	} catch (error) {
-		console.log("Failure")
-		res.redirect("/selection")
+	} else {
+		try {
+			var result = await db_query.saveSelection({
+				selection1 : selection1, 
+				selection2 : selection2,
+				selection3 : selection3,
+				selection4 : selection4,
+				selection5 : selection5,
+				user_id : user_id
+			})
+			console.log("Success")
+			res.redirect("/selection")
+		} catch (error) {
+			console.log("Failure")
+			res.redirect("/selection")
+		}
 	}
 })
 
