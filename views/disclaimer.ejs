@@ -1,0 +1,36 @@
+<%- include("templates/header") %> 
+
+<div class="relative overflow-hidden bg-cover bg-no-repeat" style="
+    background-position: 50%;
+    background-image: url('/photos/home_bg.jpg');
+    height: 895px;
+    ">
+<div
+    class="absolute top-0 right-0 bottom-0 left-0 h-full w-full overflow-hidden bg-[hsla(0,0%,0%,0.75)] bg-fixed">
+    <div class="flex h-full items-center justify-center">
+        <div class="px-6 text-center text-white md:px-12">
+            <h1 class="mt-2 mb-16 text-5xl font-bold tracking-tight md:text-6xl xl:text-7xl">
+                Disclaimer
+            </h1>
+            <h2>
+                <li>I understand that even though the Medical Radiography program takes every precaution to ensure that the results of this site selection process is current and accurate, given the changing nature of the clinical landscape, there may be revisions required at anytime.  The Medical Radiography program reserves the right to modify clinical site appointments with reasonable notice to the learner.</li>
+                <li>I have reviewed the Medical Radiography program’s policy regarding  conflict of interest and will make site selection choices accordingly.  Failure to comply with the policy will null and void my site selection and clinical sites will be chosen on my behalf by the program.</li>
+                <li>Anonymized data, metrics and results of the site selection tool may be shared within BCIT, with members of the Health Authority and other third parties for the purpose of process improvement, research and knowledge translation.  I agree to these terms.</li>
+                <li>In the event that clinical choices aren’t available, I agree to be assigned at a alternate site.</li>
+                <li>One of the 5 choices must include a site from Interior Health.</li>
+                <li>Questions or Concerns? Please contact "insert email here"</li>
+            </h2>
+            <br />
+            <form action="/home" method="GET">
+                <button
+                    class="rounded border-2 border-neutral-50 px-[46px] pt-[14px] pb-[12px] text-sm font-medium uppercase leading-normal text-neutral-50 transition duration-150 ease-in-out hover:border-neutral-100 hover:bg-neutral-100 hover:bg-opacity-10 hover:text-neutral-100 focus:border-neutral-100 focus:text-neutral-100 focus:outline-none focus:ring-0 active:border-neutral-200 active:text-neutral-200"
+                    data-te-ripple-init data-te-ripple-color="light">
+                    Acknowledgeacknowledge
+                </button>
+            </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include("templates/footer") %> 

@@ -1,0 +1,12 @@
+.full-name::placeholder {
+    color: black;
+    opacity: 1;
+}
+
+.full-name::-ms-input-placeholder {
+    color: black;
+}
+
+.full-name:hover {
+    opacity: 50%;
+}

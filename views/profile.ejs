@@ -1,51 +1,89 @@
 <%- include("templates/header") %>
 
-<div class="flex items-center justify-center h-screen">
-    <div class="bg-white overflow-hidden shadow rounded-lg border">
+<img class="absolute w-full overflow-hidden h-screen" src="/photos/profile_bg.jpg" alt="bg">
+
+<div class="flex items-center justify-center h-screen relative">
+    <div class="bg-white overflow-hidden shadow rounded-lg border mb-[60px]">
         <div class="px-4 py-5 sm:px-6">
             <h3 class="text-lg leading-6 font-medium text-gray-900">
                 User Profile
             </h3>
             <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                This is some information about the user.
+                You can change your info by clicking, editing, then hitting Save.
             </p>
         </div>
-        <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
-            <dl class="sm:divide-y sm:divide-gray-200">
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        Full name
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        John Doe
-                    </dd>
-                </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        Email address
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        johndoe@example.com
-                    </dd>
-                </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        Phone number
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        (123) 456-7890
-                    </dd>
-                </div>
-                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        Address
-                    </dt>
-                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        123 Main St<br>
-                         Anytown, USA 12345
-                    </dd>
-                </div>
-            </dl>
+        <form action="/profile/update" method="POST">
+            <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+                <dl class="sm:divide-y sm:divide-gray-200">
+                    <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Full name
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <input type="text" placeholder="<%= results.name %>" class="profile-name" name="profile_name">
+                        </dd>
+                    </div>
+                    <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Email address
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <input type="text" placeholder="<%= results.email %>" class="profile-email" name="profile_email">
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+            <div class="px-4 py-2 sm:px-6 flex flex-row-reverse">
+                <button class="button-solid rounded-lg px-4 bg-[#4CAF50] font-medium text-white">Save</button>            
+            </div>
+        </form>
+        <div class="px-4 py-5 sm:px-6">
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                If you would like to view or edit your selections, please scroll down.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="flex flex-col h-screen bg-gray-200">
+    <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Selections
+        </h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            You can change your info by clicking, editing, then hitting Save.
+        </p>
+    </div>
+    <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
+        <h2 class="text-gray-700 font-bold mb-4">Your Selections</h2>
+
+        <!-- Users List -->
+        <div class="overflow-y-auto">
+            <ul id="usersList">
+                <% let choice_number = 1 %>
+                <% user_selection.forEach(function(selection) { %>
+                    <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+                        <div class="flex justify-between">
+                            <span class="font-medium text-gray-700">Selection <%= choice_number %></span>
+                            <!-- <button
+                            class="text-blue-500 hover:text-blue-700 focus:outline-none focus:underline transition duration-150 ease-in-out">
+                            Edit
+                            </button> -->
+                        </div>
+                        <div class="flex mt-2">
+                            <% let selection_number = 1 %>
+                            <% for (var key in selection.sites) { %>
+                                <% let site_name = selection.sites[key] %>
+                                <label class="inline-flex items-center ml-4">
+                                    <span class="ml-2 text-gray-700"><%= selection_number %>. <%= site_name %></span>
+                                </label>
+                                <% selection_number++ %>
+                            <% } %>
+                        </div>
+                    </li>
+                    <% choice_number++ %>
+                <% }); %>
+            </ul>
         </div>
     </div>
 </div>

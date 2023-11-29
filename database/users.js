@@ -3,9 +3,9 @@ const database = include('database_connection');
 async function createUser(postData) {
 	let createUserSQL = `
 		INSERT INTO users
-		(name, email, password, MRAD_id, user_type_id)
+		(name, email, password, MRAD_id, user_type_id, intake_number)
 		VALUES
-		(:name, :email, :hashedPassword, :MRAD_id, 2);
+		(:name, :email, :hashedPassword, :MRAD_id, 2, (SELECT MAX(intake_id) FROM intake));
 	`;
 
 	let params = {
@@ -73,9 +73,59 @@ async function getUser(postData) {
 	}
 }
 
+async function updateUser(postData) {
+	let updateUserSQL = `
+		UPDATE users
+		SET name = :name, email = :email
+		WHERE user_id = :user_id
+	`;
+
+	let params = {
+		name: postData.name,
+		email: postData.email,
+		user_id: postData.user_id
+	}
+
+	try {
+		const results = await database.query(updateUserSQL, params);
+		console.log("Successfully updated user");
+		console.log(results[0]);
+		return true;
+	} catch (err) {
+		console.log("Error trying to find user");
+		console.log(err);
+		return false;
+	}
+}
+
+async function updateUserPassword(postData) {
+	let updateUserPasswordSQL = `
+		UPDATE users
+		SET password = :password
+		WHERE email = :email
+	`;
+
+	let params = {
+		password: postData.password,
+		email: postData.email,
+	}
+
+	try {
+		const results = await database.query(updateUserPasswordSQL, params);
+		console.log("Successfully updated user password");
+		console.log(results[0]);
+		return true;
+	} catch (err) {
+		console.log("Error trying to find user");
+		console.log(err);
+		return false;
+	}
+}
 
 module.exports = {
 	createUser,
 	getUsers,
-	getUser
+	getUser,
+	updateUser,
+	updateUserPassword
 };

@@ -1,0 +1,82 @@
+<%- include("templates/header") %>
+    
+
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-2xl font-bold mb-4">Clinical Sites</h1>
+
+    <!-- Table -->
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                <th class="py-2 px-4 border-b">Clinical Site Name</th>
+                <th class="py-2 px-4 border-b">Clinical Site Spots</th>
+                <th class="py-2 px-4 border-b">Active?</th>
+                <th class="py-2 px-4 border-b">Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% sites.forEach(function(site) { %>
+                    <form action="/updateSites" method="post">
+                        <tr>
+                            <input type="hidden" name="siteID" value="<%= site.clinical_sites_id %>">
+                            <td class="py-2 px-4 border-b"><input type="text" name="siteName" value="<%= site.site_name %>" class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/></td>
+                            <td class="py-2 px-4 border-b text-center"><input type="text" name="siteSpots" value="<%= site.total_spots %>" class="w-1/4 py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/></td>
+                        <% if (site.is_active === 1) { %>
+                            <td class="py-2 px-4 border-b text-center"><input type="checkbox" name="active" id="active" checked></label></td>
+                        <%} else if(site.is_active === 2) { %>
+                            <td class="py-2 px-4 border-b text-center"><input type="checkbox" name="active" id="active" ></label></td>
+                            <% } %>
+                            <td class="py-2 px-4 border-b text-center">
+                                <button type="submit" class="mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out">Update Sites
+                            </td>
+                        </tr>
+                    </form>
+                <% }) %>
+                <% var total = 0;
+                sites.forEach(function(site) {
+                    if(site.is_active === 1){
+                        total += site.total_spots;
+                    }
+                }) %>
+                    <tr>
+                        <td class="py-2 px-4 border-b">Total</td>
+                        <td class="py-2 px-4 border-b text-center"><%= total %></td>
+                    </tr>
+            </tbody>
+        </table>
+
+        <br><br>
+
+            <!-- Centered Student Profile Form -->
+            <h2 class="text-black font-bold mb-4">Add Clinical Site</h2>
+              <form id="clinicalSiteForm" class="space-y-4 pb-4" action="/addClinicalSite" method="post">
+                <div class="mb-4">
+                  <label for="siteName" class="block text-gray-700 font-bold mb-2">Site Name:</label>
+                  <input type="text" id="siteName" name="siteName" placeholder="Enter site name"
+                         class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
+                </div>
+          
+                <div class="mb-4">
+                  <label for="siteSpots" class="block text-gray-700 font-bold mb-2">Site Spots:</label>
+                  <input type="number" id="spotsNumber" name="spotsNumber" placeholder="Enter a number" 
+                         class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500"/>
+                </div>
+          
+                <div class="mb-4">
+                    <label for="siteLocation" class="block text-gray-700 font-bold mb-2">Zone:</label>
+                    <select id="siteLocation" name="siteLocation" class="w-full py-2 px-3 border border-gray-400 rounded-md shadow-sm focus:outline-none focus:border-blue-500">
+                        <option value="" disabled selected>Select site location</option>
+                        <option value="Interior BC">Interior BC</option>
+                        <option value="Lower Mainland">Lower Mainland</option>
+                    </select>
+                  </div>
+          
+                <div class="form-group">
+                  <button type="submit"
+                          class="mt-4 w-full bg-green-500 text-white py-2 px-4 rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:shadow-outline-blue active:bg-blue-800 transition duration-150 ease-in-out">
+                    Add Clinical Site
+                  </button>
+                </div>
+              </form>
+    </div>
+<%- include ("templates/footer") %>
