@@ -106,6 +106,7 @@ app.get('/profile', async (req, res) => {
 		let results = await db_users.getUser({
 			email: req.session.email
 		})
+		console.log(results[0])
 
 		let selectionsC1 = await db_selections.getStudentSelectionC1({
 			user_id: req.session.user_id
