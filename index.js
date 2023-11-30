@@ -75,7 +75,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-	res.render("index");
+	res.render("login");
 });
 
 app.get("/login", (req, res) => {
@@ -475,7 +475,6 @@ app.post("/submituser", async (req, res) => {
 
 app.get('/selection', async (req, res) => {
 	const optionLines = await db_query.getOptionRows();
-	// ALSO PASS IN USER CHOICES TO POPUPLATE SIDE BAR
 
     res.render("selection", { options: optionLines, requestMsg : ""});
 })
@@ -502,6 +501,8 @@ app.post('/updateSites', async (req, res) => {
 });
 
 app.post('/saveChoices', async (req, res) => {
+	const optionLines = await db_query.getOptionRows();
+
 	var selection1 = parseInt(req.body.oneLine);
 	var selection2 = parseInt(req.body.twoLine);
 	var selection3 = parseInt(req.body.threeLine);
@@ -509,16 +510,17 @@ app.post('/saveChoices', async (req, res) => {
 	var selection5 = parseInt(req.body.fiveLine);
 	var user_id = req.session.user_id;
 
+	
 	if((selection1 !== selection2 && selection1 !== selection3 && selection1 !== selection4 && selection1 !== selection5 && 
 		selection2 !== selection3 && selection2 !== selection4 && selection2 !== selection5 && 
 		selection3 !== selection4 && selection3 !== selection5 && 
 		selection4 !== selection5)){
 		if(isNaN(selection1) || isNaN(selection2) || isNaN(selection3) || isNaN(selection4) || isNaN(selection5)){
-			res.render("selection", {requestMsg : "You are missing a choice"})
+			res.render("selection", {options: optionLines, requestMsg : "You are missing a choice"})
 		} else {
 			try {
 				var result = await db_query.saveSelection({
-					selection1 : selection1, 
+					selection1 : selection1,
 					selection2 : selection2,
 					selection3 : selection3,
 					selection4 : selection4,
@@ -526,14 +528,14 @@ app.post('/saveChoices', async (req, res) => {
 					user_id : user_id
 				})
 				console.log("Success")
-				res.render("selection", {requestMsg : "Successfully Saved!"})
+				res.render("selection", {options: optionLines, requestMsg : "Successfully Saved!"})
 			} catch (error) {
 				console.log("Failure")
-				res.render("selection", {requestMsg : "Failed to Save"})
+				res.render("selection", {options: optionLines, requestMsg : "Failed to Save"})
 			}
 		}
 	} else {
-		res.render("selection", {requestMsg : "Please pick 5 unique choices."})
+		res.render("selection", {options: optionLines, requestMsg : "Please pick 5 unique choices."})
 		console.log("Non-unique selections.")
 	}
 })
