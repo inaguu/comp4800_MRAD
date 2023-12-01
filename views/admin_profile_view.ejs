@@ -37,7 +37,7 @@
     <pre>Scroll down for your clinical selections!</pre>
   </div>
 </div>
-<!-- student selection starts here -->
+<!-- clinical selection starts here -->
 <div class="flex flex-col h-screen bg-gray-200">
   <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
     <h3 class="text-lg leading-6 font-medium text-gray-900">Clinical Selections</h3>
@@ -45,6 +45,31 @@
       Admin can make changes to the final clinical placement only.
     </p>
   </div>
+
+  <!-- final placement starts here -->
+  <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
+    <h2 class="text-gray-700 font-bold mb-4"><%= student[0].MRAD_id%>'s Final Clinical Placement</h2>
+    <div class="overflow-y-auto">
+      <ul>
+        <% if(student[0]) { %>
+          <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+            <div class="flex mt-2">
+              <label class="inline-flex items-center ml-4">
+                <span class="ml-2 text-gray-700">Site 1: <%= student[0].Site1 %></span>
+              </label>
+              <label class="inline-flex items-center ml-4">
+                <span class="ml-2 text-gray-700">Site 2: <%= student[0].Site2 %></span>
+              </label>
+              <label class="inline-flex items-center ml-4">
+                <span class="ml-2 text-gray-700">Site 3: <%= student[0].Site3 %></span>
+              </label>
+            </div>
+          </li>
+          <% } %>
+      </ul>
+    </div>
+  </div>
+
 
   <!-- test here -->
 
