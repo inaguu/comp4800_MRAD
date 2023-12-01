@@ -7,6 +7,7 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
 const { getSelectionResults } = require("./database/admin");
+// const { insertSecurityCode } = require('./database/admin');
 const nodemailer = require("nodemailer")
 const saltRounds = 12;
 
@@ -437,18 +438,18 @@ app.post("/submituser", async (req, res) => {
 	let security_code = req.body.security_code;
 
 	// temporary list of valid security codes (need a db column for it)
-	const validCodes = ['code1', 'code2', 'code3'];
+	// const validCodes = ['code1', 'code2', 'code3'];
 
-	// security check against the valid codes
-	if (!validCodes.includes(security_code)){
-		return res.status(400).send('Invalid security code');
-	}
-
-	// how i'll actually do it from db instead of above:
-	// const isValidCode = await checkSecurityCode(security_code);
-	// if (!isValidCode) {
+	// // security check against the valid codes
+	// if (!validCodes.includes(security_code)){
 	// 	return res.status(400).send('Invalid security code');
 	// }
+
+	// how i'll actually do it from db instead of above:
+	const isValidCode = await db_query.checkSecurityCode(security_code);
+	if (!isValidCode) {
+		return res.status(400).send('Invalid security code');
+	}
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
@@ -486,6 +487,37 @@ app.post("/submituser", async (req, res) => {
 		//Redirect to 404 or Page with Generic Error Message??
 		console.log("error in creating the user");
 	}
+});
+
+async function generateSecurityCodes(num) {
+	let codes = new Set(); // set for unique selection of codes
+	while (codes.size < num) {
+		let code = '';
+		// special chars added into possible characters
+		let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
+		let charactersLength = characters.length;
+		for (let j = 0; j < 5; j++) {
+			code += characters.charAt(Math.floor(Math.random() * charactersLength));
+		}
+
+		// checking if code is unique in db
+		if (await db_query.isCodeUnique(code)) {
+			codes.add(code);
+		}
+	}
+	// ... takes all values from Set and spreads them into new array
+	return[...codes] // convert Set into array
+};
+
+app.post('/generate-codes', async (req, res) => {
+	let numCodes = parseInt(req.body.num_codes, 10)
+	let codes = await generateSecurityCodes(numCodes)
+
+	for (let code of codes){
+		await db_query.insertSecurityCode(code)
+	}
+
+	res.redirect('/admin');
 });
 
 app.get('/selection', async (req, res) => {

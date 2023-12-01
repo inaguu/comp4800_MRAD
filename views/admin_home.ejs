@@ -7,6 +7,16 @@
             <button type="submit" id="signup">View Students</button>
         </div>
     </form>
+
+    <form action="/generate-codes" method="post">
+        <div>
+            <label for="num_codes">Number of codes to generate</label>
+            <input type="number" id="num_codes" name="num_codes" min="1" required>
+            <button type="submit" id="generate">Generate Codes</button>
+        </div>
+
+    </form>
+
     <form action="/logout" method="post">
         <div>
             <button type="submit" id="signup">Logout</button>

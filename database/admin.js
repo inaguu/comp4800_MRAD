@@ -110,8 +110,75 @@ async function getSelectionResults(postData) {
 	}
 }
 
+
+async function insertSecurityCode(postData){
+	let insertSecurityCodeSQL = `
+	INSERT INTO security_code (security_code)
+	VALUES (:code);
+	`;
+
+	let params = {
+		code: postData.code
+	};
+
+	try {
+		await database.query(insertSecurityCodeSQL, params);
+		console.log(`Successfully inserted code: ${code}`);
+	} catch(err) {
+		console.log(`Error trying to insert code: ${code}`);
+		console.log(err);
+	}
+}
+
+async function isCodeUnique(postData){
+	let isCodeUniqueSQL = `
+	SELECT COUNT(*) as count
+	FROM security_code
+	WHERE security_code = :code;
+	`;
+
+	let params = {
+		code: postData.code
+	};
+
+	try {
+		const results = await database.query(isCodeUniqueSQL, params);
+		console.log(`Check for code uniqueness: ${code}`)
+		return results[0].count === 0;
+	} catch(err) {
+		console.log(`Error trying to check code uniqueness: ${code}`);
+		console.log(err);
+		return false;
+	}
+}
+
+async function checkSecurityCode(postData) {
+	let checkSecurityCodeSQL = `
+	SELECT COUNT(*) as count
+	FROM security_code
+	WHERE security_code = :security_code;
+	`;
+
+	let params = {
+		security_code: postData.security_code
+	};
+
+	try {
+		const results = await database.query(checkSecurityCodeSQL, params);
+		console.log(`Check for code: ${code}, count: ${results[0].count}`);
+		return results[0].count > 0;
+	} catch(err) {
+		console.log(`Error trying to check security code: ${code}`);
+		console.log(err);
+		return false;
+	}
+}
+
 module.exports = {
 	getStudents,
 	getOneStudent,
 	getSelectionResults,
+	insertSecurityCode,
+	isCodeUnique,
+	checkSecurityCode
 };
