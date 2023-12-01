@@ -1,4 +1,4 @@
-const database = include('database_connection');
+const database = include("database_connection");
 
 async function getStudentSelectionC1(postData) {
 	let getStudentSelectionC1SQL = `
@@ -12,8 +12,8 @@ async function getStudentSelectionC1(postData) {
 	`;
 
 	let params = {
-		user_id : postData.user_id
-	}
+		user_id: postData.user_id,
+	};
 
 	try {
 		const results = await database.query(getStudentSelectionC1SQL, params);
@@ -38,8 +38,8 @@ async function getStudentSelectionC2(postData) {
 	`;
 
 	let params = {
-		user_id : postData.user_id
-	}
+		user_id: postData.user_id,
+	};
 
 	try {
 		const results = await database.query(getStudentSelectionC2SQL, params);
@@ -64,8 +64,8 @@ async function getStudentSelectionC3(postData) {
 	`;
 
 	let params = {
-		user_id : postData.user_id
-	}
+		user_id: postData.user_id,
+	};
 
 	try {
 		const results = await database.query(getStudentSelectionC3SQL, params);
@@ -90,8 +90,8 @@ async function getStudentSelectionC4(postData) {
 	`;
 
 	let params = {
-		user_id : postData.user_id
-	}
+		user_id: postData.user_id,
+	};
 
 	try {
 		const results = await database.query(getStudentSelectionC4SQL, params);
@@ -116,8 +116,8 @@ async function getStudentSelectionC5(postData) {
 	`;
 
 	let params = {
-		user_id : postData.user_id
-	}
+		user_id: postData.user_id,
+	};
 
 	try {
 		const results = await database.query(getStudentSelectionC5SQL, params);
@@ -132,8 +132,8 @@ async function getStudentSelectionC5(postData) {
 
 module.exports = {
 	getStudentSelectionC1,
-    getStudentSelectionC2,
-    getStudentSelectionC3,
-    getStudentSelectionC4,
-    getStudentSelectionC5
+	getStudentSelectionC2,
+	getStudentSelectionC3,
+	getStudentSelectionC4,
+	getStudentSelectionC5,
 };

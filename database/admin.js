@@ -149,30 +149,6 @@ async function getSecurityCode() {
 	}
 }
 
-
-
-// async function checkSecurityCode(postData) {
-// 	let checkSecurityCodeSQL = `
-// 	SELECT COUNT(*) as count
-// 	FROM security_code
-// 	WHERE security_code = :security_code;
-// 	`;
-
-// 	let params = {
-// 		security_code: postData.security_code
-// 	};
-
-// 	try {
-// 		const results = await database.query(checkSecurityCodeSQL, params);
-// 		console.log(`Check for code: ${code}, count: ${results[0].count}`);
-// 		return results[0].count > 0;
-// 	} catch(err) {
-// 		console.log(`Error trying to check security code: ${code}`);
-// 		console.log(err);
-// 		return false;
-// 	}
-// }
-
 module.exports = {
 	getStudents,
 	getOneStudent,
