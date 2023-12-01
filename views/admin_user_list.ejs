@@ -1,41 +1,71 @@
 <%- include("templates/admin_header") %>
 
-<div class="flex flex-col h-screen bg-[url('https://images.unsplash.com/photo-1536147116438-62679a5e01f2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=634&q=80')] bg-cover">
-  <div class="m-auto w-full max-w-4xl p-8 bg-white/80 backdrop-blur-md shadow-xl rounded-xl">
-    <h2 class="text-blue-800 font-semibold mb-6">Students (Admin)</h2>
+<div class="bg-gray-200 p-3">
 
-    <!-- Search box -->
-    <div class="mb-8">
-      <input type="text" placeholder="Search"
-             class="w-full py-3 px-4 mb-8 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none"/>
-    </div>
+  <div class="m-auto w-full max-w-6xl p-8 bg-white/80 backdrop-blur-md shadow-xl rounded-xl">
+      <h2 class="text-blue-800 font-semibold mb-6">Students (Admin)</h2>
+    
+    <div class="flex flex-col gap-4 h-full items-center justify-center">
+      
+      <input type="search" id="searchbar" 
+      class="w-full py-3 px-4 mb-8 border border-gray-300 rounded-lg shadow focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+      placeholder="Search students by MRAD ID" onkeyup="search_student()"
+      >
+      
+      <% students.forEach(function(student) { %>
+      <!-- Card 1 -->
+      <div class="rounded-sm w-5/6 grid grid-cols-12 bg-white shadow p-3 gap-2 items-center hover:shadow-lg transition delay-150 duration-300 ease-in-out hover:scale-105 transform" id="student_card">
+        
+        <!-- Icon -->
+        <div class="col-span-12 md:col-span-1">
+          <svg class="svg-icon" viewBox="0 0 20 20">
+            <path d="M12.075,10.812c1.358-0.853,2.242-2.507,2.242-4.037c0-2.181-1.795-4.618-4.198-4.618S5.921,4.594,5.921,6.775c0,1.53,0.884,3.185,2.242,4.037c-3.222,0.865-5.6,3.807-5.6,7.298c0,0.23,0.189,0.42,0.42,0.42h14.273c0.23,0,0.42-0.189,0.42-0.42C17.676,14.619,15.297,11.677,12.075,10.812 M6.761,6.775c0-2.162,1.773-3.778,3.358-3.778s3.359,1.616,3.359,3.778c0,2.162-1.774,3.778-3.359,3.778S6.761,8.937,6.761,6.775 M3.415,17.69c0.218-3.51,3.142-6.297,6.704-6.297c3.562,0,6.486,2.787,6.705,6.297H3.415z"></path>
+          </svg>
+        </div>
+        
+        <!-- Title -->
+        <div class="col-span-11 xl:-ml-5">
+          <p class="text-blue-600 font-semibold" id="MRAD_id"> <%= student.MRAD_id %> </p>
+        </div>
+        
+        <!-- Description -->
+        <div class="md:col-start-2 col-span-11 xl:-ml-5">
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox text-blue-500" id="interiorBC<%= student.MRAD_id %>">
+            <span class="ml-2 text-gray-800">Interior BC Only</span>
+          </label>
+          <label class="inline-flex items-center ml-6">
+            <input type="checkbox" class="form-checkbox text-blue-500" id="lowerMainland<%= student.MRAD_id %>">
+            <span class="ml-2 text-gray-800">Lower Mainland Only</span>
+          </label>
+        </div>
+        
+        <form action="/admin-view-students/<%= student.MRAD_id %>" method="GET" class="md:col-start-2 col-span-11 xl:-ml-5">
+          <button class="text-blue-600 hover:text-blue-800 focus:outline-none focus:underline transition duration-300 ease-in-out">View</button>
+        </form>
 
-    <!-- Users List -->
-    <div class="overflow-y-auto">
-      <ul id="usersList">
-        <% students.forEach(function(student) { %>
-          <li class="flex flex-col py-4 px-6 bg-gray-50 my-2 rounded-lg shadow-md">
-            <div class="flex justify-between items-center">
-              <span class="font-semibold text-gray-800"><%= student.MRAD_id %></span>
-              <form action="/admin-view-students/<%= student.MRAD_id %>" method="GET">
-                <button class="text-blue-600 hover:text-blue-800 focus:outline-none focus:underline transition duration-300 ease-in-out">View</button>
-            </form>
-              <a href=""</a>
-            </div>
-            <div class="flex mt-4">
-              <label class="inline-flex items-center">
-                <input type="checkbox" class="form-checkbox text-blue-500" id="interiorBC<%= student.MRAD_id %>">
-                <span class="ml-2 text-gray-800">Interior BC Only</span>
-              </label>
-              <label class="inline-flex items-center ml-6">
-                <input type="checkbox" class="form-checkbox text-blue-500" id="lowerMainland<%= student.MRAD_id %>">
-                <span class="ml-2 text-gray-800">Lower Mainland Only</span>
-              </label>
-            </div>
-          </li>
-        <% }); %>
-      </ul>
+      </div>
+      <% }) %>
     </div>
   </div>
 </div>
+
+<script>
+  function search_student() { 
+    let input = document.getElementById('searchbar').value 
+    input = input.toLowerCase(); 
+    let x = document.querySelectorAll("#student_card")
+    let MRAD_id = document.getElementsByTagName("p")
+    
+    for (i = 0; i < x.length; i++) {  
+      if (!MRAD_id[i].innerHTML.toLowerCase().includes(input)) { 
+        x[i].style.display="none"; 
+      } 
+      else { 
+        x[i].style.display="";                  
+      } 
+    } 
+} 
+</script>
+
 <%- include ("templates/footer") %>
