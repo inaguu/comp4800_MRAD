@@ -9,11 +9,14 @@
     </form>
 
     <form action="/generate-code" method="post">
-        <div>
+
+        <button type="button" id="generate" onclick="generateAndDisplayCode()">Generate Code</button>
+        <input type="text" id="code_display" readonly>
+        <!-- <div>
             <label for="num_codes">Number of codes to generate</label>
             <input type="number" id="num_codes" name="num_codes" min="1" required>
-            <button type="submit" id="generate">Generate Codes</button>
-        </div>
+            <button type="submit" id="generate">Generate Code</button>
+        </div> -->
 
     </form>
 
@@ -23,6 +26,32 @@
         </div>
     </form>
 </div>
+
+<script>
+    function generateAndDisplayCode() {
+
+    fetch('/generate-code', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Display the generated code in the text box
+            document.getElementById('code_display').value = data.code;
+        } else {
+            // Handle the error
+            alert('Failed to generate code');
+        }
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+}
+</script>
 
 <%- include ("templates/footer") %>
 

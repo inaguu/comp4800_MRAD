@@ -6,7 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
-const { getSelectionResults } = require("./database/admin");
+const { getSelectionResults, insertSecurityCode } = require("./database/admin");
 // const { insertSecurityCode } = require('./database/admin');
 const nodemailer = require("nodemailer")
 const saltRounds = 12;
@@ -489,9 +489,9 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
-function generateSecurityCode(num) {
+
+function generateSecurityCode() {
 	let code = '';
-		// special chars added into possible characters
 	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
 	let charactersLength = characters.length;
 	for (let j = 0; j < 5; j++) {
@@ -501,13 +501,37 @@ function generateSecurityCode(num) {
 };
 
 app.post('/generate-code', async (req, res) => {
-	let numCodes = parseInt(req.body.num_codes, 10)
-	let code = await generateSecurityCode(numCodes)
-	
-	let result = code;
+	let code = generateSecurityCode(); // generate only one code now
 
-	res.redirect('/admin');
+	try {
+		await insertSecurityCode({code: code}); // inserting to db
+		res.json({ success: true, code: code}); // res with generated code
+	} catch(err){
+		console.log(`Error inserting code: ${code}`);
+		console.log(err)
+		res.status(500).json({ success: false, error: "failed to insert security code properly"});
+	}
 });
+
+// function generateSecurityCode(num) {
+// 	let code = '';
+// 		// special chars added into possible characters
+// 	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
+// 	let charactersLength = characters.length;
+// 	for (let j = 0; j < 5; j++) {
+// 		code += characters.charAt(Math.floor(Math.random() * charactersLength));
+// 	}
+// 	return code;
+// };
+
+// app.post('/generate-code', async (req, res) => {
+// 	let numCodes = parseInt(req.body.num_codes, 10)
+// 	let code = await generateSecurityCode(numCodes)
+	
+// 	let result = code;
+
+// 	res.redirect('/admin');
+// });
 
 app.get('/selection', async (req, res) => {
 	const optionLines = await db_query.getOptionRows();

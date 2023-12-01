@@ -123,18 +123,18 @@ async function insertSecurityCode(postData){
 
 	try {
 		await database.query(insertSecurityCodeSQL, params);
-		console.log(`Successfully inserted code: ${code}`);
+		console.log(`Successfully inserted code: ${postData.code}`);
 	} catch(err) {
-		console.log(`Error trying to insert code: ${code}`);
+		console.log(`Error trying to insert code: ${postData.code}`);
 		console.log(err);
 	}
 }
 
-async function getSecurityCode() {
-	let getSecurityCodeSQL = `
+// async function getSecurityCode() {
+// 	let getSecurityCodeSQL = `
 
-	`;
-}
+// 	`;
+// }
 
 
 async function checkSecurityCode(postData) {
