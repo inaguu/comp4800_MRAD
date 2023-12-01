@@ -492,9 +492,9 @@ app.post("/submituser", async (req, res) => {
 
 function generateSecurityCode() {
 	let code = '';
-	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
+	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
 	let charactersLength = characters.length;
-	for (let j = 0; j < 5; j++) {
+	for (let j = 0; j < 7; j++) {
 		code += characters.charAt(Math.floor(Math.random() * charactersLength));
 	}
 	return code;
@@ -513,25 +513,6 @@ app.post('/generate-code', async (req, res) => {
 	}
 });
 
-// function generateSecurityCode(num) {
-// 	let code = '';
-// 		// special chars added into possible characters
-// 	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
-// 	let charactersLength = characters.length;
-// 	for (let j = 0; j < 5; j++) {
-// 		code += characters.charAt(Math.floor(Math.random() * charactersLength));
-// 	}
-// 	return code;
-// };
-
-// app.post('/generate-code', async (req, res) => {
-// 	let numCodes = parseInt(req.body.num_codes, 10)
-// 	let code = await generateSecurityCode(numCodes)
-	
-// 	let result = code;
-
-// 	res.redirect('/admin');
-// });
 
 app.get('/selection', async (req, res) => {
 	const optionLines = await db_query.getOptionRows();

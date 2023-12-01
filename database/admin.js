@@ -130,39 +130,63 @@ async function insertSecurityCode(postData){
 	}
 }
 
-// async function getSecurityCode() {
-// 	let getSecurityCodeSQL = `
-
-// 	`;
-// }
-
-
-async function checkSecurityCode(postData) {
-	let checkSecurityCodeSQL = `
-	SELECT COUNT(*) as count
+async function getSecurityCode() {
+	let getSecurityCodeSQL = `
+	SELECT security_code
 	FROM security_code
-	WHERE security_code = :security_code;
+	ORDER BY security_id DESC
+	LIMIT 1;
 	`;
 
-	let params = {
-		security_code: postData.security_code
-	};
-
 	try {
-		const results = await database.query(checkSecurityCodeSQL, params);
-		console.log(`Check for code: ${code}, count: ${results[0].count}`);
-		return results[0].count > 0;
-	} catch(err) {
-		console.log(`Error trying to check security code: ${code}`);
+		const results = await database.query(getSecurityCodeSQL);
+		console.log("Successfully retrieved the latest security code");
+		return results[0];
+	} catch (err) {
+		console.log("Error trying to retrieve the latest security code");
 		console.log(err);
 		return false;
 	}
 }
+
+async function checkSecurityCode(postData) {
+	let latestCode = await getSecurityCode();
+	if (latestCode && latestCode === postData.security_code) {
+		console.log(`Entered code matches the latest security code.`);
+		return true;
+	} else {
+		console.log(`Entered code does not match the latest security code.`);
+		return false;
+	}
+}
+
+// async function checkSecurityCode(postData) {
+// 	let checkSecurityCodeSQL = `
+// 	SELECT COUNT(*) as count
+// 	FROM security_code
+// 	WHERE security_code = :security_code;
+// 	`;
+
+// 	let params = {
+// 		security_code: postData.security_code
+// 	};
+
+// 	try {
+// 		const results = await database.query(checkSecurityCodeSQL, params);
+// 		console.log(`Check for code: ${code}, count: ${results[0].count}`);
+// 		return results[0].count > 0;
+// 	} catch(err) {
+// 		console.log(`Error trying to check security code: ${code}`);
+// 		console.log(err);
+// 		return false;
+// 	}
+// }
 
 module.exports = {
 	getStudents,
 	getOneStudent,
 	getSelectionResults,
 	insertSecurityCode,
-	checkSecurityCode
+	checkSecurityCode,
+	getSecurityCode
 };
