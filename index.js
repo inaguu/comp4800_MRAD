@@ -473,38 +473,42 @@ app.post("/submituser", async (req, res) => {
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
-	var success = await db_users.createUser({
-		name: name,
-		email: email,
-		hashedPassword: hashedPassword,
-		MRAD_id: MRAD_id,
-	});
-
-	console.log(name);
-	console.log(email);
-	console.log(hashedPassword);
-	console.log(MRAD_id);
-
-	if (success) {
-		var results = await db_users.getUser({
-			email: email,
-		});
-
-		req.session.authenticated = true;
-		req.session.user_type = results[0].type;
-		req.session.name = results[0].name;
-		req.session.email = results[0].email;
-		req.session.MRAd_id = results[0].MRAD_id;
-		req.session.user_id = results[0].user_id;
-		req.session.cookie.maxAge = expireTime;
-		if (req.session.user_type === "student") {
-			await db_query.setSelectionFirstTime({ user_id: results[0].user_id });
-		}
-		res.redirect("/home"); //Goes to landing page upon successful login
+	let code = await db_admin.getSecurityCode();
+	console.log(code)	
+	
+	if(security_code !== code[0].security_code){
+		res.redirect('signup')
+		
 	} else {
-		//Redirect to 404 or Page with Generic Error Message??
-		console.log("error in creating the user");
+		var success = await db_users.createUser({
+			name: name,
+			email: email,
+			hashedPassword: hashedPassword,
+			MRAD_id: MRAD_id,
+		});
+	
+		if (success) {
+			var results = await db_users.getUser({
+				email: email,
+			});
+	
+			req.session.authenticated = true;
+			req.session.user_type = results[0].type;
+			req.session.name = results[0].name;
+			req.session.email = results[0].email;
+			req.session.MRAd_id = results[0].MRAD_id;
+			req.session.user_id = results[0].user_id;
+			req.session.cookie.maxAge = expireTime;
+			if (req.session.user_type === "student") {
+				await db_query.setSelectionFirstTime({ user_id: results[0].user_id });
+			}
+			res.redirect("/home"); //Goes to landing page upon successful login
+		} else {
+			//Redirect to 404 or Page with Generic Error Message??
+			console.log("error in creating the user");
+		}
 	}
+
 });
 
 
