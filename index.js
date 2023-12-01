@@ -6,7 +6,8 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
-const { getSelectionResults } = require("./database/admin");
+const { getSelectionResults, insertSecurityCode } = require("./database/admin");
+// const { insertSecurityCode } = require('./database/admin');
 const nodemailer = require("nodemailer")
 const saltRounds = 12;
 
@@ -364,12 +365,13 @@ app.get("/home", (req, res) => {
 });
 
 //requires session auth
-app.get("/admin", (req, res) => {
+app.get("/admin", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
 		res.render("403");
 	} else {
-		res.render("admin_home");
+		let code = await db_admin.getSecurityCode();
+		res.render("admin_home", {code : code[0].security_code});
 	}
 });
 
@@ -433,7 +435,22 @@ app.post("/submituser", async (req, res) => {
 	let name = req.body.name;
 	let email = req.body.email;
 	let password = req.body.password;
-	let MRAD_id = req.body.MRAD_id
+	let MRAD_id = req.body.MRAD_id;
+	let security_code = req.body.security_code;
+
+	// temporary list of valid security codes (need a db column for it)
+	// const validCodes = ['code1', 'code2', 'code3'];
+
+	// // security check against the valid codes
+	// if (!validCodes.includes(security_code)){
+	// 	return res.status(400).send('Invalid security code');
+	// }
+
+	// how i'll actually do it from db instead of above:
+	const isValidCode = await db_query.checkSecurityCode(security_code);
+	if (!isValidCode) {
+		return res.status(400).send('Invalid security code');
+	}
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
@@ -472,6 +489,32 @@ app.post("/submituser", async (req, res) => {
 		console.log("error in creating the user");
 	}
 });
+
+
+function generateSecurityCode() {
+	let code = '';
+	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
+	let charactersLength = characters.length;
+	for (let j = 0; j < 7; j++) {
+		code += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return code;
+};
+
+app.post('/generate-code', async (req, res) => {
+	let code = generateSecurityCode(); // generate only one code now
+
+	try {
+		await insertSecurityCode({code: code}); // inserting to db
+		// res.json({ success: true, code: code}); // res with generated code
+		res.redirect("admin");
+	} catch(err){
+		console.log(`Error inserting code: ${code}`);
+		console.log(err)
+		res.status(500).json({ success: false, error: "failed to insert security code properly"});
+	}
+});
+
 
 app.get('/selection', async (req, res) => {
 	const optionLines = await db_query.getOptionRows();

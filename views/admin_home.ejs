@@ -1,16 +1,25 @@
 <%- include("templates/admin_header") %>
 
 <div>
-    <h1>ADMIN PAGE</h1>
+    <h1>Administrative Tools</h1>
+</br>
     <form action="/admin-view-students" method="get">
         <div>
             <button type="submit" id="signup">View Students</button>
         </div>
     </form>
-    <form action="/logout" method="post">
-        <div>
-            <button type="submit" id="signup">Logout</button>
-        </div>
+</br>
+    <form action="/generate-code" method="post">
+        <button type="submit" id="generate" style="color: blue;">Generate Code</button>
+        <input type="text" id="code_display" value="<%= code %>" readonly>
+    </form>
+
+</br>
+
+    <form action="" method="post">
+        <span>Current Intake</span>
+        <input type="text" id="intake_display" value="1" readonly>
+        <button type="button" id="generate" style="color: blue;">New Intake</button>
     </form>
 </div>
 
