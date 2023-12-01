@@ -13,7 +13,9 @@
             <ul class="space-y-2 font-medium">
                 <!-- TITLE -->
                 <li>
-                <span class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white group ml-3 text-2xl">Choices</span>
+                    <div class="text-4xl font-bold text-white">
+                        MRAD<span class="text-green-700">.</span>
+                    </div>
                 </li>     
         
                 <!-- CHOICE 1 -->
@@ -195,22 +197,22 @@
                 </div>
             </div>
     
-            <% for (let i = 1; i <= 80; i++) { %>
-                <div class="test-option grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg hover:cursor-pointer bg-white" draggable="true">
+            <% for (let i = 0; i < options.length; i++) { %>
+                <div class="test-option grid grid-cols-4 rounded-lg border-[2px] border-gray-500 h-32 m-3 shadow-lg hover:cursor-pointer bg-white opacity-70" draggable="true">
                     <div class="flex p-4 justify-center items-center mr-6">
-                        <svg height="10" width="10" class="mr-2">
+                        <!-- <svg height="10" width="10" class="mr-2">
                             <circle cx="5" cy="5" r="5" fill="red" />
-                        </svg>
-                        <%= i %>
+                        </svg> -->
+                        <%= i + 1 %>
                     </div>
                     <div class="flex p-4 justify-center items-center">
-                        TEST
+                        <%= options[i].one %>
                     </div>
                     <div class="flex p-4 justify-center items-center">
-                        Burnaby
+                        <%= options[i].two %>
                     </div>
                     <div class="flex p-4 justify-center items-center ">
-                        Surrey
+                        <%= options[i].three %>
                     </div>
                 </div>
             <% } %>

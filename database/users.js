@@ -28,25 +28,25 @@ async function createUser(postData) {
 	}
 }
 
-async function getUsers(postData) {
-	let getUsersSQL = `
-		SELECT user_id, name, email, MRAD_id, type
-		FROM users
-		JOIN user_type USING (user_type_id);
-	`;
+// async function getUsers(postData) {
+// 	let getUsersSQL = `
+// 		SELECT user_id, name, email, MRAD_id, type
+// 		FROM users
+// 		JOIN user_type USING (user_type_id);
+// 	`;
 
-	try {
-		const results = await database.query(getUsersSQL);
+// 	try {
+// 		const results = await database.query(getUsersSQL);
 
-		console.log("Successfully retrieved users");
-		console.log(results[0]);		
-		return results[0];			//!! Gets ALL users and returns the first user account !!
-	} catch (err) {
-		console.log("Error getting users");
-		console.log(err);
-		return false;
-	}
-}
+// 		console.log("Successfully retrieved users");
+// 		console.log(results[0]);		
+// 		return results[0];			//!! Gets ALL users and returns the first user account !!
+// 	} catch (err) {
+// 		console.log("Error getting users");
+// 		console.log(err);
+// 		return false;
+// 	}
+// }
 
 async function getUser(postData) {
 	let getUserSQL = `
@@ -59,6 +59,7 @@ async function getUser(postData) {
 	let params = {
 		email: postData.email
 	}
+	console.log(postData.email)
 
 	try {
 		const results = await database.query(getUserSQL, params);
@@ -146,7 +147,6 @@ async function checkSecurityCode(postData){
 
 module.exports = {
 	createUser,
-	getUsers,
 	getUser,
 	updateUser,
 	updateUserPassword,

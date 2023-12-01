@@ -6,13 +6,18 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
+const { getSelectionResults } = require("./database/admin");
 const nodemailer = require("nodemailer")
 const saltRounds = 12;
 
 const database = include("database_connection");
 const db_utils = include("database/db_utils");
 const db_users = include("database/users");
+
+const option_generator = include("generate_selections");
+const db_admin = include("database/admin");
 const db_query = include("database/query")
+const db_selections = include("database/selections")
 
 const success = db_utils.printMySQLVersion();
 
@@ -73,6 +78,9 @@ app.get("/", (req, res) => {
 	res.render("login");
 });
 
+app.get("/login", (req, res) => {
+	res.render("login");
+});
 // This is how you send emails
 app.post("/send-mail", (req, res) => {
 	console.log("attempt to send email")
@@ -100,23 +108,40 @@ app.get('/profile', async (req, res) => {
 		let results = await db_users.getUser({
 			email: req.session.email
 		})
+		console.log(results[0])
 
-		// let selections = await db_query.getStudentChoice({
-		// 	user_id: req.session.user_id
-		// })
+		let selectionsC1 = await db_selections.getStudentSelectionC1({
+			user_id: req.session.user_id
+		})
 
-		const students = [
-			{ id: 1, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 2, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 3, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 4, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
-			{ id: 5, sites: {site_1: 'VGH', site_2: 'Kelowna', site_3: 'Richmond', site_4: 'Port Coquitlam', site_5: 'North Vancouver' }},
+		let selectionsC2 = await db_selections.getStudentSelectionC2({
+			user_id: req.session.user_id
+		})
+
+		let selectionsC3 = await db_selections.getStudentSelectionC3({
+			user_id: req.session.user_id
+		})
+
+		let selectionsC4 = await db_selections.getStudentSelectionC4({
+			user_id: req.session.user_id
+		})
+
+		let selectionsC5 = await db_selections.getStudentSelectionC5({
+			user_id: req.session.user_id
+		})
+
+		const user_selection = [
+			{choice: 1, line_number: selectionsC1[0].line_number, sites: {site_1: selectionsC1[0].site_name_one, site_2: selectionsC1[0].site_name_two, site_3: selectionsC1[0].site_name_three }},
+			{choice: 2, line_number: selectionsC2[0].line_number, sites: {site_1: selectionsC2[0].site_name_one, site_2: selectionsC2[0].site_name_two, site_3: selectionsC2[0].site_name_three }},
+			{choice: 3, line_number: selectionsC3[0].line_number, sites: {site_1: selectionsC3[0].site_name_one, site_2: selectionsC3[0].site_name_two, site_3: selectionsC3[0].site_name_three }},
+			{choice: 4, line_number: selectionsC4[0].line_number, sites: {site_1: selectionsC4[0].site_name_one, site_2: selectionsC4[0].site_name_two, site_3: selectionsC4[0].site_name_three }},
+			{choice: 5, line_number: selectionsC5[0].line_number, sites: {site_1: selectionsC5[0].site_name_one, site_2: selectionsC5[0].site_name_two, site_3: selectionsC5[0].site_name_three }},
 		]
 	
 		if (results) {
 			res.render("profile", {
 				results: results[0],
-				students: students
+				user_selection: user_selection
 			})
 		}
 	}
@@ -198,6 +223,27 @@ app.post('/addClinicalSite', async (req,res) => {
 	res.redirect('admin-site-list');
 })
 
+app.post('/generateSiteOptions', async (req, res) => {
+	const sites = await db_query.getActiveClinicalSites();
+	let options = option_generator.generateOptions(sites);
+	const intake_res = await db_query.getMaxIntake();
+
+	const queryArr = []
+	for (let i = 0; i < options.length; i++) {
+		queryArr.push(
+			[
+				options[i][0].clinical_sites_id,
+				options[i][1].clinical_sites_id,
+				options[i][2].clinical_sites_id,
+				intake_res.intake_max,
+				options[i][3]
+			]
+		)
+	}
+	await db_query.insertOptionRows(queryArr);
+	res.send(queryArr);
+})
+
 app.get('/admin-site-list', async (req,res) =>{	
 	try {
 		var [results] = await db_query.getClinicalSites()
@@ -219,6 +265,7 @@ app.post("/loggingin", async (req, res) => {
 	//If user exists, session is created.
 	if (results) {
 		if (results.length == 1) {
+			console.log();
 			//there should only be 1 user in the db that matches
 			if (bcrypt.compareSync(password, results[0].password)) {
 				req.session.authenticated = true;
@@ -228,8 +275,14 @@ app.post("/loggingin", async (req, res) => {
 				req.session.MRAd_id = results[0].MRAD_id;
 				req.session.user_id = results[0].user_id;
 				req.session.cookie.maxAge = expireTime;
+				console.log(req.session.user_type);
 
-				res.redirect("/home"); //Goes to landing page upon successful login
+				if (!isAdmin(req)) {
+					//Goes to student landing page upon successful login
+					res.redirect("/home");
+				} else {
+					res.redirect("/admin"); //Goes to admin landing page upon successful login
+				}
 
 				return;
 			} else {
@@ -296,7 +349,7 @@ app.post("/forgot-password/password-send", async (req, res) => {
 app.post("/logout", (req, res) => {
 	req.session.authenticated = false;
 	req.session.destroy();
-	res.redirect("/");
+	res.redirect("/login");
 });
 
 //requires session auth
@@ -308,6 +361,68 @@ app.get("/home", (req, res) => {
 			name: req.session.name,
 		});
 	}
+});
+
+//requires session auth
+app.get("/admin", (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		res.render("admin_home");
+	}
+});
+
+//requires admin auth
+app.get("/admin-view-students", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let results = await db_admin.getStudents();
+		console.log(results);
+		if (results) {
+			console.log(
+				"Server: Successfully retrieved Students MRAD IDs from database."
+			);
+			res.render("admin_user_list", {
+				students: results,
+			});
+		} else {
+			console.log(
+				"Server: Error in retrieving Students MRAD IDs from database."
+			);
+		}
+	}
+});
+
+app.get("/admin-view-students/:MRADid", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let results = await db_admin.getSelectionResults({
+			MRADid: req.params.MRADid,
+		})
+
+		console.log(results);
+
+		if (results) {
+			console.log(
+				"Server: Successfully retrieved student details from database."
+			);
+			res.render("admin_profile_view", {
+				student: results,
+			});
+		} else {
+			console.log("Server: Error in retrieving student details from database.");
+			res.redirect("/admin-view-students");
+		}
+	}
+});
+
+app.get("/disclaimer", (req, res) => {
+	res.render("disclaimer");
 });
 
 app.get("/signup", (req, res) => {
@@ -363,8 +478,9 @@ app.post("/submituser", async (req, res) => {
 		req.session.MRAd_id = results[0].MRAD_id;
 		req.session.user_id = results[0].user_id;
 		req.session.cookie.maxAge = expireTime;
-
-		await db_query.setSelectionFirstTime({user_id : results[0].user_id})
+		if(req.session.user_type === "student"){
+			await db_query.setSelectionFirstTime({user_id : results[0].user_id})
+		}
 		res.redirect("/home"); //Goes to landing page upon successful login
 	} else {
 		//Redirect to 404 or Page with Generic Error Message??
@@ -372,11 +488,36 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
-app.get('/selection', (req, res) => {
-    res.render("selection", { selectedValue: 0, requestMsg : ""});
+app.get('/selection', async (req, res) => {
+	const optionLines = await db_query.getOptionRows();
+
+    res.render("selection", { options: optionLines, requestMsg : ""});
 })
 
+app.post('/updateSites', async (req, res) => {
+    const siteName = req.body.siteName;
+    const siteSpots = req.body.siteSpots;
+    const isActive = req.body.active === 'on' ? 1 : 2;
+	const clinical_id = req.body.siteID;
+
+	if (siteName !== "" || siteSpots !== "") {
+		var results = await db_query.updateClinicalSites({
+			siteName : siteName,
+			siteSpots : siteSpots,
+			isActive : isActive,
+			clinical_id : clinical_id
+		})
+		console.log("Sucess Updating Clinical Site")
+		res.redirect("admin-site-list")
+	} else {
+		console.log("Failed to update")
+		res.redirect("admin-site-list")
+	}
+});
+
 app.post('/saveChoices', async (req, res) => {
+	const optionLines = await db_query.getOptionRows();
+
 	var selection1 = parseInt(req.body.oneLine);
 	var selection2 = parseInt(req.body.twoLine);
 	var selection3 = parseInt(req.body.threeLine);
@@ -384,16 +525,17 @@ app.post('/saveChoices', async (req, res) => {
 	var selection5 = parseInt(req.body.fiveLine);
 	var user_id = req.session.user_id;
 
+	
 	if((selection1 !== selection2 && selection1 !== selection3 && selection1 !== selection4 && selection1 !== selection5 && 
 		selection2 !== selection3 && selection2 !== selection4 && selection2 !== selection5 && 
 		selection3 !== selection4 && selection3 !== selection5 && 
 		selection4 !== selection5)){
 		if(isNaN(selection1) || isNaN(selection2) || isNaN(selection3) || isNaN(selection4) || isNaN(selection5)){
-			res.render("selection", {requestMsg : "You are missing a choice"})
+			res.render("selection", {options: optionLines, requestMsg : "You are missing a choice"})
 		} else {
 			try {
 				var result = await db_query.saveSelection({
-					selection1 : selection1, 
+					selection1 : selection1,
 					selection2 : selection2,
 					selection3 : selection3,
 					selection4 : selection4,
@@ -401,16 +543,21 @@ app.post('/saveChoices', async (req, res) => {
 					user_id : user_id
 				})
 				console.log("Success")
-				res.render("selection", {requestMsg : "Successfully Saved!"})
+				res.render("selection", {options: optionLines, requestMsg : "Successfully Saved!"})
 			} catch (error) {
 				console.log("Failure")
-				res.render("selection", {requestMsg : "Failed to Save"})
+				res.render("selection", {options: optionLines, requestMsg : "Failed to Save"})
 			}
 		}
 	} else {
-		res.render("selection", {requestMsg : "Please pick 5 unique choices."})
+		res.render("selection", {options: optionLines, requestMsg : "Please pick 5 unique choices."})
 		console.log("Non-unique selections.")
 	}
+})
+
+app.get('/getSelections', async (req, res) => {
+	var [results] = await db_query.getActiveClinicalSites()
+	return res.json(results);
 })
 
 app.use(express.static(__dirname + "/public"));
@@ -420,6 +567,25 @@ app.get("*", (req, res) => {
 	res.render("404");
 });
 
+function isAdmin(req) {
+	console.log(req.session.user_type);
+	if (req.session.user_type == "admin") {
+		return true;
+	}
+	return false;
+}
+
+function adminAuthorization(req, res, next) {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403", {
+			error: "Not Authorized",
+		});
+		return;
+	} else {
+		next();
+	}
+}
 function isValidSession(req) {
 	if (req.session.authenticated) {
 		return true;
