@@ -130,27 +130,12 @@ async function insertSecurityCode(postData){
 	}
 }
 
-async function isCodeUnique(postData){
-	let isCodeUniqueSQL = `
-	SELECT COUNT(*) as count
-	FROM security_code
-	WHERE security_code = :code;
+async function getSecurityCode() {
+	let getSecurityCodeSQL = `
+
 	`;
-
-	let params = {
-		code: postData.code
-	};
-
-	try {
-		const results = await database.query(isCodeUniqueSQL, params);
-		console.log(`Check for code uniqueness: ${code}`)
-		return results[0].count === 0;
-	} catch(err) {
-		console.log(`Error trying to check code uniqueness: ${code}`);
-		console.log(err);
-		return false;
-	}
 }
+
 
 async function checkSecurityCode(postData) {
 	let checkSecurityCodeSQL = `
@@ -179,6 +164,5 @@ module.exports = {
 	getOneStudent,
 	getSelectionResults,
 	insertSecurityCode,
-	isCodeUnique,
 	checkSecurityCode
 };

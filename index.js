@@ -489,33 +489,22 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
-async function generateSecurityCodes(num) {
-	let codes = new Set(); // set for unique selection of codes
-	while (codes.size < num) {
-		let code = '';
+function generateSecurityCode(num) {
+	let code = '';
 		// special chars added into possible characters
-		let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
-		let charactersLength = characters.length;
-		for (let j = 0; j < 5; j++) {
-			code += characters.charAt(Math.floor(Math.random() * charactersLength));
-		}
-
-		// checking if code is unique in db
-		if (await db_query.isCodeUnique(code)) {
-			codes.add(code);
-		}
+	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=';
+	let charactersLength = characters.length;
+	for (let j = 0; j < 5; j++) {
+		code += characters.charAt(Math.floor(Math.random() * charactersLength));
 	}
-	// ... takes all values from Set and spreads them into new array
-	return[...codes] // convert Set into array
+	return code;
 };
 
-app.post('/generate-codes', async (req, res) => {
+app.post('/generate-code', async (req, res) => {
 	let numCodes = parseInt(req.body.num_codes, 10)
-	let codes = await generateSecurityCodes(numCodes)
-
-	for (let code of codes){
-		await db_query.insertSecurityCode(code)
-	}
+	let code = await generateSecurityCode(numCodes)
+	
+	let result = code;
 
 	res.redirect('/admin');
 });
