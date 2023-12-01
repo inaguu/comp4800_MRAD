@@ -1,57 +1,27 @@
 <%- include("templates/admin_header") %>
 
 <div>
-    <h1>ADMIN PAGE</h1>
+    <h1>Administrative Tools</h1>
+</br>
     <form action="/admin-view-students" method="get">
         <div>
             <button type="submit" id="signup">View Students</button>
         </div>
     </form>
-
+</br>
     <form action="/generate-code" method="post">
-
-        <button type="button" id="generate" onclick="generateAndDisplayCode()">Generate Code</button>
-        <input type="text" id="code_display" readonly>
-        <!-- <div>
-            <label for="num_codes">Number of codes to generate</label>
-            <input type="number" id="num_codes" name="num_codes" min="1" required>
-            <button type="submit" id="generate">Generate Code</button>
-        </div> -->
-
+        <button type="submit" id="generate" style="color: blue;">Generate Code</button>
+        <input type="text" id="code_display" value="<%= code %>" readonly>
     </form>
 
-    <form action="/logout" method="post">
-        <div>
-            <button type="submit" id="signup">Logout</button>
-        </div>
+</br>
+
+    <form action="" method="post">
+        <span>Current Intake</span>
+        <input type="text" id="intake_display" value="1" readonly>
+        <button type="button" id="generate" style="color: blue;">New Intake</button>
     </form>
 </div>
-
-<script>
-    function generateAndDisplayCode() {
-
-    fetch('/generate-code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Display the generated code in the text box
-            document.getElementById('code_display').value = data.code;
-        } else {
-            // Handle the error
-            alert('Failed to generate code');
-        }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-    });
-}
-</script>
 
 <%- include ("templates/footer") %>
 

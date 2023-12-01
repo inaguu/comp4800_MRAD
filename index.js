@@ -365,12 +365,13 @@ app.get("/home", (req, res) => {
 });
 
 //requires session auth
-app.get("/admin", (req, res) => {
+app.get("/admin", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
 		res.render("403");
 	} else {
-		res.render("admin_home");
+		let code = await db_admin.getSecurityCode();
+		res.render("admin_home", {code : code[0].security_code});
 	}
 });
 
@@ -505,7 +506,8 @@ app.post('/generate-code', async (req, res) => {
 
 	try {
 		await insertSecurityCode({code: code}); // inserting to db
-		res.json({ success: true, code: code}); // res with generated code
+		// res.json({ success: true, code: code}); // res with generated code
+		res.redirect("admin");
 	} catch(err){
 		console.log(`Error inserting code: ${code}`);
 		console.log(err)
