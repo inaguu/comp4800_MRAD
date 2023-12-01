@@ -149,16 +149,7 @@ async function getSecurityCode() {
 	}
 }
 
-async function checkSecurityCode(postData) {
-	let latestCode = await getSecurityCode();
-	if (latestCode && latestCode === postData.security_code) {
-		console.log(`Entered code matches the latest security code.`);
-		return true;
-	} else {
-		console.log(`Entered code does not match the latest security code.`);
-		return false;
-	}
-}
+
 
 // async function checkSecurityCode(postData) {
 // 	let checkSecurityCodeSQL = `
@@ -187,6 +178,5 @@ module.exports = {
 	getOneStudent,
 	getSelectionResults,
 	insertSecurityCode,
-	checkSecurityCode,
 	getSecurityCode
 };
