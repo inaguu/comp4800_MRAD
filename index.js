@@ -6,7 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer");
 const saltRounds = 12;
 
 const database = include("database_connection");
@@ -457,14 +457,17 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 
 app.get("/admin/tools", async (req, res) => {
 	if (!isAdmin(req)) {
-		res.status(403)
-		res.render("403")
+		res.status(403);
+		res.render("403");
 	} else {
 		let intake = await db_query.getMaxIntake();
 		let code = await db_admin.getSecurityCode();
-		res.render("admin_tools", {code : code[0].security_code, intake: intake.intake_max})
+		res.render("admin_tools", {
+			code: code[0].security_code,
+			intake: intake.intake_max,
+		});
 	}
-})
+});
 
 app.get("/disclaimer", (req, res) => {
 	res.render("disclaimer");
@@ -478,17 +481,16 @@ app.post("/submituser", async (req, res) => {
 	let name = req.body.name;
 	let email = req.body.email;
 	let password = req.body.password;
-	let MRAD_id = req.body.MRAD_id;;
+	let MRAD_id = req.body.MRAD_id;
 	let security_code = req.body.security_code;
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
 	let code = await db_admin.getSecurityCode();
-	console.log(code)	
-	
-	if(security_code !== code[0].security_code){
-		res.redirect('signup')
-		
+	console.log(code);
+
+	if (security_code !== code[0].security_code) {
+		res.redirect("signup");
 	} else {
 		var success = await db_users.createUser({
 			name: name,
@@ -496,12 +498,12 @@ app.post("/submituser", async (req, res) => {
 			hashedPassword: hashedPassword,
 			MRAD_id: MRAD_id,
 		});
-	
+
 		if (success) {
 			var results = await db_users.getUser({
 				email: email,
 			});
-	
+
 			req.session.authenticated = true;
 			req.session.user_type = results[0].type;
 			req.session.name = results[0].name;
@@ -518,30 +520,33 @@ app.post("/submituser", async (req, res) => {
 			console.log("error in creating the user");
 		}
 	}
-
 });
 
-
 function generateSecurityCode() {
-	let code = '';
-	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
+	let code = "";
+	let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$";
 	let charactersLength = characters.length;
 	for (let j = 0; j < 7; j++) {
 		code += characters.charAt(Math.floor(Math.random() * charactersLength));
 	}
 	return code;
-};
+}
 
-app.post('/generate-code', async (req, res) => {
+app.post("/generate-code", async (req, res) => {
 	let code = generateSecurityCode(); // generate only one code now
 
 	try {
-		await db_admin.insertSecurityCode({code: code}); // inserting to db
+		await db_admin.insertSecurityCode({ code: code }); // inserting to db
 		res.redirect("admin");
-	} catch(err){
+	} catch (err) {
 		console.log(`Error inserting code: ${code}`);
-		console.log(err)
-		res.status(500).json({ success: false, error: "failed to insert security code properly"});
+		console.log(err);
+		res
+			.status(500)
+			.json({
+				success: false,
+				error: "failed to insert security code properly",
+			});
 	}
 });
 
@@ -642,10 +647,10 @@ app.get("/getSelections", async (req, res) => {
 	return res.json(results);
 });
 
-app.post("/newIntake", async (req,res) => {
+app.post("/newIntake", async (req, res) => {
 	await db_admin.createNewIntake();
 	res.redirect("admin");
-})
+});
 
 app.use(express.static(__dirname + "/public"));
 
