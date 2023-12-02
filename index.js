@@ -403,9 +403,7 @@ app.get("/admin", async (req, res) => {
 		res.status(403);
 		res.render("403");
 	} else {
-		let intake = await db_query.getMaxIntake();
-		let code = await db_admin.getSecurityCode();
-		res.render("admin_home", {code : code[0].security_code, intake: intake.intake_max});
+		res.render("admin_home");
 	}
 });
 
@@ -456,6 +454,17 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 		}
 	}
 });
+
+app.get("/admin/tools", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403)
+		res.render("403")
+	} else {
+		let intake = await db_query.getMaxIntake();
+		let code = await db_admin.getSecurityCode();
+		res.render("admin_tools", {code : code[0].security_code, intake: intake.intake_max})
+	}
+})
 
 app.get("/disclaimer", (req, res) => {
 	res.render("disclaimer");
