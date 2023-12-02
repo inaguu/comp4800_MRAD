@@ -546,7 +546,7 @@ app.post('/generate-code', async (req, res) => {
 });
 
 app.get("/selection", async (req, res) => {
-	const optionLines = await db_query.getOptionRows();
+	const optionLines = await db_query.getOptionRows(req.session.user_id);
 
 	res.render("selection", { options: optionLines, requestMsg: "" });
 });
@@ -573,7 +573,7 @@ app.post("/updateSites", async (req, res) => {
 });
 
 app.post("/saveChoices", async (req, res) => {
-	const optionLines = await db_query.getOptionRows();
+	const optionLines = await db_query.getOptionRows(req.session.user_id);
 
 	var selection1 = parseInt(req.body.oneLine);
 	var selection2 = parseInt(req.body.twoLine);

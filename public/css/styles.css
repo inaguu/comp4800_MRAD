@@ -26,3 +26,33 @@
     stroke: #4691f6;
     stroke-width: 1;
 }
+
+@tailwind base;
+@tailwind components;
+
+.has-tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip {
+    visibility: hidden;
+    width: 200px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+  
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+    
+}
+  
+.has-tooltip:hover .tooltip {
+    visibility: visible;
+}
+
+@tailwind utilities;
