@@ -466,6 +466,29 @@ app.get("/admin/tools", async (req, res) => {
 	}
 })
 
+app.post("/admin/send-email", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403)
+		res.render("403")
+	} else {
+		let emails = await db_admin.getStudentEmails()
+
+		const data = {
+			from: "mrad.selection@gmail.com", // sender address
+			to: emails[0], // list of receivers
+			subject: "MRAD Final Selection",
+			text: `yo`,
+		};
+	
+		transporter.sendMail(data, (err, info) => {
+			if (err) {
+				console.log(err);
+			}
+			res.redirect("/admin/tools");
+		});
+	}
+})
+
 app.get("/disclaimer", (req, res) => {
 	res.render("disclaimer");
 });

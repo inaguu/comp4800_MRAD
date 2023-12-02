@@ -165,6 +165,25 @@ async function createNewIntake(){
 	}
 }
 
+async function getStudentEmails(){
+	let getStudentEmailsSQL = `
+		SELECT email
+		FROM users
+		JOIN user_type USING (user_type_id)
+        WHERE type = 'student';
+	`;
+
+	try {
+		const results = await database.query(getStudentEmailsSQL);
+		console.log("Successfully grabbed all students email");
+		console.log(results);
+		return results[0];
+	} catch(err) {
+		console.log("Error grabbing all students emails");
+		console.log(err);
+		return false;
+	}
+}
 
 module.exports = {
 	getStudents,
@@ -172,5 +191,6 @@ module.exports = {
 	getSelectionResults,
 	insertSecurityCode,
 	getSecurityCode,
-	createNewIntake
+	createNewIntake,
+	getStudentEmails
 };
