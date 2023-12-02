@@ -149,10 +149,28 @@ async function getSecurityCode() {
 	}
 }
 
+async function createNewIntake(){
+	let newIntake = `
+	INSERT INTO intake (start_date, end_date)
+	VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL 2 YEAR);
+	`
+
+	try {
+		await database.query(newIntake);
+		console.log("New Intake Created");
+		return true;
+	} catch (err) {
+		console.log("Could not complete");
+		return false;
+	}
+}
+
+
 module.exports = {
 	getStudents,
 	getOneStudent,
 	getSelectionResults,
 	insertSecurityCode,
-	getSecurityCode
+	getSecurityCode,
+	createNewIntake
 };

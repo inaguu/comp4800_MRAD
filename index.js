@@ -403,8 +403,9 @@ app.get("/admin", async (req, res) => {
 		res.status(403);
 		res.render("403");
 	} else {
+		const intake_res = await db_query.getMaxIntake();
 		let code = await db_admin.getSecurityCode();
-		res.render("admin_home", {code : code[0].security_code});
+		res.render("admin_home", {code : code[0].security_code, intake: intake_res});
 	}
 });
 
@@ -658,6 +659,11 @@ app.get("/getSelections", async (req, res) => {
 	var [results] = await db_query.getActiveClinicalSites();
 	return res.json(results);
 });
+
+app.post("/newIntake", async (req,res) => {
+	await db_admin.createNewIntake();
+	res.redirect("admin");
+})
 
 app.use(express.static(__dirname + "/public"));
 
