@@ -1,42 +1,51 @@
 <%- include("templates/admin_header") %>
-<div class="flex items-center justify-center min-h-screen">
-  <div class="bg-white overflow-hidden shadow rounded-lg border divide-y divide-gray-200">
-    <div class="px-4 py-5 sm:px-6">
-      <h3 class="text-lg leading-6 font-medium text-gray-900">
-        Admin View: User Profile
-      </h3>
-      <p class="mt-1 max-w-2xl text-sm text-gray-500">
-        Manage and view detailed information about the user.
-      </p>
-    </div>
-    <div class="px-4 py-5 sm:p-0">
-      <dl class="sm:divide-y sm:divide-gray-200">
-        <!-- MRAD ID -->
-        <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">
-            MRAD ID
-          </dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-            <%= student.MRAD_id %>
-
-          </dd>
+<div class="flex items-center justify-center h-screen relative">
+  <div class="bg-white overflow-hidden shadow rounded-lg border mb-[60px]">
+      <div class="px-4 py-5 sm:px-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+              User Profile
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+              You can change your info by clicking, editing, then hitting Save.
+          </p>
+      </div>
+        <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+            <dl class="sm:divide-y sm:divide-gray-200">
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                      MRAD_ID
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <%= student[0].mrad_id %>
+                    </dd>
+                </div>
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">
+                      Name
+                    </dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                      <%= student[0].name %>
+                    </dd>
+                </div>
+                <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 text-left">
+                    <form action="">
+                      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        Reset Password
+                      </button>
+                    </form>
+                  </dt>
+              </div>
+            </dl>
         </div>
-        <!-- Forget Password Button -->
-        <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-          <dt class="text-sm font-medium text-gray-500">
-            Password
-          </dt>
-          <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2 text-right">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-              Reset Password
-            </button>
-          </dd>
-        </div>
-      </dl>
-    </div>
-    <pre>Scroll down for your clinical selections!</pre>
+      <div class="px-4 py-5 sm:px-6">
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+              If you would like to view their selections, please scroll down.
+          </p>
+      </div>
   </div>
 </div>
+
 <!-- clinical selection starts here -->
 <div class="flex flex-col h-screen bg-gray-200">
   <div class="flex flex-col items-center justify-center px-4 py-5 sm:px-6 relative">
