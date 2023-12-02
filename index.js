@@ -403,9 +403,9 @@ app.get("/admin", async (req, res) => {
 		res.status(403);
 		res.render("403");
 	} else {
-		const intake_res = await db_query.getMaxIntake();
+		let intake = await db_query.getMaxIntake();
 		let code = await db_admin.getSecurityCode();
-		res.render("admin_home", {code : code[0].security_code, intake: intake_res});
+		res.render("admin_home", {code : code[0].security_code, intake: intake.intake_max});
 	}
 });
 
@@ -527,7 +527,7 @@ app.post('/generate-code', async (req, res) => {
 	let code = generateSecurityCode(); // generate only one code now
 
 	try {
-		await insertSecurityCode({code: code}); // inserting to db
+		await db_admin.insertSecurityCode({code: code}); // inserting to db
 		res.redirect("admin");
 	} catch(err){
 		console.log(`Error inserting code: ${code}`);
@@ -535,33 +535,6 @@ app.post('/generate-code', async (req, res) => {
 		res.status(500).json({ success: false, error: "failed to insert security code properly"});
 	}
 });
-
-
-
-function generateSecurityCode() {
-	let code = '';
-	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
-	let charactersLength = characters.length;
-	for (let j = 0; j < 7; j++) {
-		code += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return code;
-};
-
-app.post('/generate-code', async (req, res) => {
-	let code = generateSecurityCode(); // generate only one code now
-
-	try {
-		await insertSecurityCode({code: code}); // inserting to db
-		// res.json({ success: true, code: code}); // res with generated code
-		res.redirect("admin");
-	} catch(err){
-		console.log(`Error inserting code: ${code}`);
-		console.log(err)
-		res.status(500).json({ success: false, error: "failed to insert security code properly"});
-	}
-});
-
 
 app.get("/selection", async (req, res) => {
 	const optionLines = await db_query.getOptionRows();

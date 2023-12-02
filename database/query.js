@@ -92,7 +92,6 @@ async function getMaxIntake() {
 	try {
 		const results = await database.query(getMaxIntake);
 		console.log("Successfully retreived max intake");
-		console.log(results[0]);
 		return results[0][0];
 	} catch (err) {
 		console.log("Error trying to retreive max intake ");
