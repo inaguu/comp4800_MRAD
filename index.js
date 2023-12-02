@@ -6,8 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
-const { getSelectionResults } = require("./database/admin");
-const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer")
 const saltRounds = 12;
 
 const database = include("database_connection");
@@ -399,12 +398,13 @@ app.get("/home", (req, res) => {
 });
 
 //requires session auth
-app.get("/admin", (req, res) => {
+app.get("/admin", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
 		res.render("403");
 	} else {
-		res.render("admin_home");
+		let code = await db_admin.getSecurityCode();
+		res.render("admin_home", {code : code[0].security_code});
 	}
 });
 
@@ -468,43 +468,99 @@ app.post("/submituser", async (req, res) => {
 	let name = req.body.name;
 	let email = req.body.email;
 	let password = req.body.password;
-	let MRAD_id = req.body.MRAD_id;
+	let MRAD_id = req.body.MRAD_id;;
+	let security_code = req.body.security_code;
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
-	var success = await db_users.createUser({
-		name: name,
-		email: email,
-		hashedPassword: hashedPassword,
-		MRAD_id: MRAD_id,
-	});
-
-	console.log(name);
-	console.log(email);
-	console.log(hashedPassword);
-	console.log(MRAD_id);
-
-	if (success) {
-		var results = await db_users.getUser({
-			email: email,
-		});
-
-		req.session.authenticated = true;
-		req.session.user_type = results[0].type;
-		req.session.name = results[0].name;
-		req.session.email = results[0].email;
-		req.session.MRAd_id = results[0].MRAD_id;
-		req.session.user_id = results[0].user_id;
-		req.session.cookie.maxAge = expireTime;
-		if (req.session.user_type === "student") {
-			await db_query.setSelectionFirstTime({ user_id: results[0].user_id });
-		}
-		res.redirect("/home"); //Goes to landing page upon successful login
+	let code = await db_admin.getSecurityCode();
+	console.log(code)	
+	
+	if(security_code !== code[0].security_code){
+		res.redirect('signup')
+		
 	} else {
-		//Redirect to 404 or Page with Generic Error Message??
-		console.log("error in creating the user");
+		var success = await db_users.createUser({
+			name: name,
+			email: email,
+			hashedPassword: hashedPassword,
+			MRAD_id: MRAD_id,
+		});
+	
+		if (success) {
+			var results = await db_users.getUser({
+				email: email,
+			});
+	
+			req.session.authenticated = true;
+			req.session.user_type = results[0].type;
+			req.session.name = results[0].name;
+			req.session.email = results[0].email;
+			req.session.MRAd_id = results[0].MRAD_id;
+			req.session.user_id = results[0].user_id;
+			req.session.cookie.maxAge = expireTime;
+			if (req.session.user_type === "student") {
+				await db_query.setSelectionFirstTime({ user_id: results[0].user_id });
+			}
+			res.redirect("/home"); //Goes to landing page upon successful login
+		} else {
+			//Redirect to 404 or Page with Generic Error Message??
+			console.log("error in creating the user");
+		}
+	}
+
+});
+
+
+function generateSecurityCode() {
+	let code = '';
+	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
+	let charactersLength = characters.length;
+	for (let j = 0; j < 7; j++) {
+		code += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return code;
+};
+
+app.post('/generate-code', async (req, res) => {
+	let code = generateSecurityCode(); // generate only one code now
+
+	try {
+		await insertSecurityCode({code: code}); // inserting to db
+		res.redirect("admin");
+	} catch(err){
+		console.log(`Error inserting code: ${code}`);
+		console.log(err)
+		res.status(500).json({ success: false, error: "failed to insert security code properly"});
 	}
 });
+
+
+
+function generateSecurityCode() {
+	let code = '';
+	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
+	let charactersLength = characters.length;
+	for (let j = 0; j < 7; j++) {
+		code += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return code;
+};
+
+app.post('/generate-code', async (req, res) => {
+	let code = generateSecurityCode(); // generate only one code now
+
+	try {
+		await insertSecurityCode({code: code}); // inserting to db
+		// res.json({ success: true, code: code}); // res with generated code
+		res.redirect("admin");
+	} catch(err){
+		console.log(`Error inserting code: ${code}`);
+		console.log(err)
+		res.status(500).json({ success: false, error: "failed to insert security code properly"});
+	}
+});
+
 
 app.get("/selection", async (req, res) => {
 	const optionLines = await db_query.getOptionRows();

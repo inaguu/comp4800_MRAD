@@ -110,8 +110,49 @@ async function getSelectionResults(postData) {
 	}
 }
 
+
+async function insertSecurityCode(postData){
+	let insertSecurityCodeSQL = `
+	INSERT INTO security_code (security_code)
+	VALUES (:code);
+	`;
+
+	let params = {
+		code: postData.code
+	};
+
+	try {
+		await database.query(insertSecurityCodeSQL, params);
+		console.log(`Successfully inserted code: ${postData.code}`);
+	} catch(err) {
+		console.log(`Error trying to insert code: ${postData.code}`);
+		console.log(err);
+	}
+}
+
+async function getSecurityCode() {
+	let getSecurityCodeSQL = `
+	SELECT security_code
+	FROM security_code
+	ORDER BY security_id DESC
+	LIMIT 1;
+	`;
+
+	try {
+		const results = await database.query(getSecurityCodeSQL);
+		console.log("Successfully retrieved the latest security code");
+		return results[0];
+	} catch (err) {
+		console.log("Error trying to retrieve the latest security code");
+		console.log(err);
+		return false;
+	}
+}
+
 module.exports = {
 	getStudents,
 	getOneStudent,
 	getSelectionResults,
+	insertSecurityCode,
+	getSecurityCode
 };
