@@ -2,7 +2,7 @@ const database = include("database_connection");
 
 async function getStudents(postData) {
 	let getStudentsSQL = `
-        SELECT MRAD_id
+        SELECT MRAD_id, interior_bc, lower_mainland
         FROM users
         JOIN user_type USING (user_type_id)
         WHERE type = 'student';
@@ -23,7 +23,7 @@ async function getStudents(postData) {
 
 async function getOneStudent(postData) {
 	let getOneStudentSQL = `
-        SELECT *
+        SELECT MRAD_id, interior_bc, lower_mainland
         FROM users
         JOIN user_type USING (user_type_id)
         WHERE MRAD_id = :MRADid;
@@ -110,21 +110,20 @@ async function getSelectionResults(postData) {
 	}
 }
 
-
-async function insertSecurityCode(postData){
+async function insertSecurityCode(postData) {
 	let insertSecurityCodeSQL = `
 	INSERT INTO security_code (security_code)
 	VALUES (:code);
 	`;
 
 	let params = {
-		code: postData.code
+		code: postData.code,
 	};
 
 	try {
 		await database.query(insertSecurityCodeSQL, params);
 		console.log(`Successfully inserted code: ${postData.code}`);
-	} catch(err) {
+	} catch (err) {
 		console.log(`Error trying to insert code: ${postData.code}`);
 		console.log(err);
 	}
@@ -149,11 +148,11 @@ async function getSecurityCode() {
 	}
 }
 
-async function createNewIntake(){
+async function createNewIntake() {
 	let newIntake = `
 	INSERT INTO intake (start_date, end_date)
 	VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL 2 YEAR);
-	`
+	`;
 
 	try {
 		await database.query(newIntake);
@@ -165,6 +164,62 @@ async function createNewIntake(){
 	}
 }
 
+async function updateAccomodationInteriorBC(postData) {
+	let updateAccomodationInteriorBCSQL = `
+		update users
+		set interior_bc = :accomodation
+        WHERE MRAD_id = :MRADid;
+	`;
+
+	let params = {
+		MRADid: postData.MRADid,
+		accomodation: postData.accInteriorBC
+	};
+
+	try {
+		const results = await database.query(updateAccomodationInteriorBCSQL, params);
+
+		console.log(
+			"Successfully updated accomodation for Interior BC for " + postData.MRADid
+		);
+		console.log(results[0][0]);
+		return results[0][0];
+	} catch (err) {
+		console.log(
+			"Error trying to updated accomodation for Interior BC for " +
+				postData.MRADid
+		);
+		console.log(err);
+		return false;
+	}
+}
+
+async function updateAccomodationLowerMainland(postData) {
+	let updateAccomodationLowerMainlandSQL = `
+		update users
+		set lower_mainland = :accomodation
+        WHERE MRAD_id = :MRADid;
+	`;
+
+	let params = {
+		MRADid: postData.MRADid,
+		accomodation: postData.accLowerMainland
+	};
+
+	try {
+		const results = await database.query(updateAccomodationLowerMainlandSQL, params);
+
+		console.log(
+			"Successfully updated accomodation for Lower Mainland for " + postData.MRADid);
+		console.log(results[0][0]);
+		return results[0][0];
+	} catch (err) {
+		console.log(
+			"Error trying to updated accomodation for Lower Mainland for " + postData.MRADid);
+		console.log(err);
+		return false;
+	}
+}
 
 module.exports = {
 	getStudents,
@@ -172,5 +227,7 @@ module.exports = {
 	getSelectionResults,
 	insertSecurityCode,
 	getSecurityCode,
-	createNewIntake
+	createNewIntake,
+	updateAccomodationInteriorBC,
+	updateAccomodationLowerMainland
 };
