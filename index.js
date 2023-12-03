@@ -466,9 +466,6 @@ app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, re
 		});
 		console.log("Server student query: " + student.interior_bc);
 
-		//In case there is an error with updating the accomodation in the database, admin-view-students is refreshed with previous data.
-		let results_before = await db_admin.getStudents();
-
 		if (student) {
 
 			if (student.interior_bc == 1) {
@@ -476,38 +473,19 @@ app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, re
 					accInteriorBC: 0,
 					MRADid: req.params.MRADid,
 				});
-				let results_after = await db_admin.getStudents();
-				if (results_after){
-					console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_after
-					});
-				} else {
-					console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_before
-					});
-				}
+				console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
+				res.redirect("/admin-view-students");
 			} else {
 				await db_admin.updateAccomodationInteriorBC({
 					accInteriorBC: 1,
 					MRADid: req.params.MRADid,
 				});
-				let results_after = await db_admin.getStudents();
-				if (results_after){
-					console.log("Server: Successfully updated Interior BC accomodation for " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_after
-					});
-				} else {
-					console.log("Server: Unsuccessful with updating Interior BC accomodation for " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_before
-					});
-				}
+				console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
+				res.redirect("/admin-view-students");
 			}
 		} else {
-			console.log("Server: Error in retrieving student MRADid and accomodation data from database.");
+				console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
+				res.redirect("/admin-view-students");
 		}
 	}
 });
@@ -521,10 +499,7 @@ app.post("/admin-view-students/accomodation/lower_mainland/:MRADid", async (req,
 		let student = await db_admin.getOneStudent({
 			MRADid: req.params.MRADid,
 		});
-		console.log("Server student query: " + student.interior_bc);
-
-		//In case there is an error with updating the accomodation in the database, admin-view-students is refreshed with previous data.
-		let results_before = await db_admin.getStudents(); 
+		console.log("Server student query: " + student.lower_mainland);
 
 		if (student) {
 
@@ -533,38 +508,19 @@ app.post("/admin-view-students/accomodation/lower_mainland/:MRADid", async (req,
 					accLowerMainland: 0,
 					MRADid: req.params.MRADid,
 				});
-				let results_after = await db_admin.getStudents();
-				if (results_after){
-					console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_after
-					});
-				} else {
-					console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_before
-					});
-				}
+					console.log("Server: Successfully updated Lower Mainland accomodation for MRADid: " + req.params.MRADid)
+					res.redirect("/admin-view-students");
 			} else {
 				await db_admin.updateAccomodationLowerMainland({
 					accLowerMainland: 1,
 					MRADid: req.params.MRADid,
 				});
-				let results_after = await db_admin.getStudents();
-				if (results_after){
-					console.log("Server: Successfully updated Interior BC accomodation for " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_after
-					});
-				} else {
-					console.log("Server: Unsuccessful with updating Interior BC accomodation for " + req.params.MRADid)
-					res.render("admin_user_list", {
-						students: results_before
-					});
-				}
+					console.log("Server: Successfully updated Lower Mainland accomodation for " + req.params.MRADid)
+					res.redirect("/admin-view-students");
 			}
 		} else {
-			console.log("Server: Error in retrieving Students MRAD IDs from database.");
+			console.log("Server: Unsuccessful with updating Lower Mainland accomodation for " + req.params.MRADid)
+			res.redirect("/admin-view-students");
 		}
 	}
 });
