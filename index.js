@@ -180,7 +180,7 @@ app.get("/profile", async (req, res) => {
 			},
 		];
 
-		let finalPlacement = await db_admin.getFinalAssignments({ MRAD_id: req.session.MRAd_id })
+		let finalPlacement = await db_admin.getFinalAssignments({ MRAD_id: req.session.MRAD_id })
 
 		if (results) {
 			res.render("profile", {
@@ -312,7 +312,7 @@ app.post("/loggingin", async (req, res) => {
 				req.session.user_type = results[0].type;
 				req.session.name = results[0].name;
 				req.session.email = results[0].email;
-				req.session.MRAd_id = results[0].MRAD_id;
+				req.session.MRAD_id = results[0].MRAD_id;
 				req.session.user_id = results[0].user_id;
 				req.session.cookie.maxAge = expireTime;
 				console.log(req.session.user_type);
@@ -584,7 +584,7 @@ app.post("/submituser", async (req, res) => {
 			req.session.user_type = results[0].type;
 			req.session.name = results[0].name;
 			req.session.email = results[0].email;
-			req.session.MRAd_id = results[0].MRAD_id;
+			req.session.MRAD_id = results[0].MRAD_id;
 			req.session.user_id = results[0].user_id;
 			req.session.cookie.maxAge = expireTime;
 			if (req.session.user_type === "student") {
