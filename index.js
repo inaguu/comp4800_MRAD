@@ -473,11 +473,16 @@ app.post("/admin/send-email", async (req, res) => {
 	} else {
 		let emails = await db_admin.getStudentEmails()
 
+		let email_list = []
+		emails.forEach(element => {
+			email_list.push(element.email)
+		});
+
 		const data = {
 			from: "mrad.selection@gmail.com", // sender address
-			to: emails[0], // list of receivers
+			bcc: email_list, // list of receivers
 			subject: "MRAD Final Selection",
-			text: `yo`,
+			text: req.body.email_content
 		};
 	
 		transporter.sendMail(data, (err, info) => {

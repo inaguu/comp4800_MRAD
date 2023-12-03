@@ -176,7 +176,7 @@ async function getStudentEmails(){
 	try {
 		const results = await database.query(getStudentEmailsSQL);
 		console.log("Successfully grabbed all students email");
-		console.log(results);
+		console.log(results[0]);
 		return results[0];
 	} catch(err) {
 		console.log("Error grabbing all students emails");

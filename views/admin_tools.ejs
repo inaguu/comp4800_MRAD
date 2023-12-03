@@ -2,9 +2,9 @@
 
 
 <div class="bg-gray-200 p-3">
-    <div class="bg-white/80 m-auto w-5/6 rounded-xl h-[870px]">
-        <div class="flex flex-col gap-4 h-full items-center justify-center">
-            <div class="grid grid-cols-1 grid-rows-1 md:grid-cols-2">
+    <div class="bg-gray-200 m-auto w-5/6 rounded-xl h-[870px]">
+        <div class="flex flex-col gap-4 h-full items-center">
+            <div class="grid grid-cols-1 grid-rows-1 md:grid-cols-2 mt-3">
                 <div
                   class="mr-4 block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
                     <div class="p-6">
@@ -18,7 +18,7 @@
                         <form action="/generate-code" method="post">
                             <span>Current Code</span>
                             <input type="text" id="code_display" value="<%= code %>" readonly>
-                            <button type="submit" id="generate" style="color: blue;">Generate Code</button>
+                            <button type="submit" id="generate" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Generate Code</button>
                         </form>
                     </div>
                 </div>
@@ -35,23 +35,34 @@
                         <form action="/newIntake" method="post">
                             <span>Current Intake</span>
                             <input type="text" id="intake_display" value="<%= intake %>" readonly>
-                            <button type="submit" id="generate" style="color: blue;">New Intake</button>
+                            <button type="submit" id="generate" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">New Intake</button>
                         </form>
                     </div>
                 </div>
             </div>
             <div
-                class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
+                class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] w-3/4">
                 <div class="p-6">
                     <h5
                     class="mb-2 text-xl font-medium leading-tight text-neutral-800">
-                        Final Placement
+                        Send Email
                     </h5>
                     <p class="mb-4 text-base text-neutral-600">
-                        Distribute the placements to the students and sends and email to the students that placements have been set.
+                        Send an email to all the students.
                     </p>
-                    <form action="/admin/send-email" method="post">
-                        <button type="submit" id="generate" style="color: blue;">Send Email / Give Placement</button>
+                    <form action="/admin/send-email" method="post" class="flex flex-col">
+                        <textarea name="email_content" id="email_content" cols="30" rows="16" class="px-[20px] py-[12px] box-border resize-none border-solid border-2 rounded border-{#ccc} bg-{#f8f8f8}">Dear Student, 
+
+The site placement process is now finalized. Based on your personal preferences and site popularity, the software has placed students in their clinical pathway for Term 2, 4 and 6. Note that Term 5 will be managed separately due to CT site capacity and variability.
+
+While we recognize you may not have been placed at your preferred site(s), we hope that you will fully embrace the learning opportunities available at each short-term placement location to support your overall success in the program. In the event that the site placements are not acceptable, students have the option to withdraw from the program (for a partial refund less administrative fees) up until the withdrawal deadline: (insert date). It is the student’s responsibility to complete relevant withdrawal forms https://www.bcit.ca/files/pdf/admission/withdrawalft.pdf and communicate with the Medical Radiography Program Head, (insert name) (insert email) regarding withdrawal in a timely manner.
+
+Please log into your site selector account (add link here) to view your clinical site placements.
+
+
+Your clinical partners,
+Caroline and Zahra</textarea>
+                        <button type="submit" id="generate" class="w-96 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Send</button>
                     </form>
                 </div>
             </div>
