@@ -466,9 +466,8 @@ app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, re
 		});
 		console.log("Server student query: " + student.interior_bc);
 
+		//In case there is an error with updating the accomodation in the database, admin-view-students is refreshed with previous data.
 		let results_before = await db_admin.getStudents();
-
-		console.log("server getStudents query: " + results_before[0].MRAD_id);
 
 		if (student) {
 
