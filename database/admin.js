@@ -270,6 +270,53 @@ async function getLineOptions(){
 	}
 }
 
+async function insertFinalAssignments(postData) {
+	let insertQuery = "INSERT IGNORE INTO freedb_team2project.final_placement " +
+	"(MRAD_id, line_assigned, site_one, site_two, site_three, intake_id, user_id) VALUES ";
+
+	const values = postData.map((data, index) => {
+		const escapedOne = data.one.replace(/'/g, "''"); // Escape single quotes
+		const escapedTwo = data.two.replace(/'/g, "''");
+		const escapedThree = data.three.replace(/'/g, "''");
+	  
+		return `('${data.MRAD_id}', '${data.line_option_id}', '${escapedOne}', '${escapedTwo}', '${escapedThree}', '${data.intake_number_id}', '${data.user_id}')`;
+	});
+
+	insertQuery += values.join(', ');
+
+	try {
+		await database.query(insertQuery);
+		console.log("Inserted Final Placements");
+		return true;
+	} catch (err) {
+		console.log("Failed to Insert Final Placements");
+		console.log(err)
+		return false;
+	}
+}
+
+async function getFinalAssignments(postData) {
+	let getFinalPlacementSQL = `
+	SELECT line_assigned, site_one, site_two, site_three
+	FROM final_placement
+	WHERE MRAD_id = :MRAD_id;`
+
+	let params = {
+		MRAD_id: postData.MRAD_id
+	};
+
+
+	try {
+		let results = await database.query(getFinalPlacementSQL, params);
+		console.log(results[0])
+		return results[0];
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+
+}
+
 module.exports = {
 	getStudents,
 	getOneStudent,
@@ -280,5 +327,7 @@ module.exports = {
 	updateAccomodationInteriorBC,
 	updateAccomodationLowerMainland,
 	getLineOptions,
-	getStudentChoices
+	getStudentChoices,
+	insertFinalAssignments,
+	getFinalAssignments
 };

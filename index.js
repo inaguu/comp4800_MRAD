@@ -180,10 +180,13 @@ app.get("/profile", async (req, res) => {
 			},
 		];
 
+		let finalPlacement = await db_admin.getFinalAssignments({ MRAD_id: req.session.MRAd_id })
+
 		if (results) {
 			res.render("profile", {
 				results: results[0],
 				user_selection: user_selection,
+				finalPlacement: finalPlacement
 			});
 		}
 	}
@@ -874,6 +877,7 @@ app.get('/generate-pdf-final-placement', async (req, res) => {
 		}
 	}
 
+	await db_admin.insertFinalAssignments(assignedStudents)
 	// Create an array to store formatted strings for each object
 	const formattedStringsArray = [];
 
