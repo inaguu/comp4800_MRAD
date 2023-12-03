@@ -221,6 +221,55 @@ async function updateAccomodationLowerMainland(postData) {
 	}
 }
 
+async function getStudentChoices(){
+	let getStudentChoicesSQL = `
+	SELECT
+		sc.*,
+		u.MRAD_id,
+		u.interior_bc,
+		u.lower_mainland,
+		u.intake_number
+	FROM student_choices sc
+	JOIN users u USING (user_id)
+	WHERE intake_number = (SELECT MAX(intake_id) FROM intake);
+	`
+
+	try {
+		const results = await database.query(getStudentChoicesSQL);
+		console.log("Successfully retrived student choices for this intake.")
+		return results[0]
+	} catch (error) {
+		console.log("Failed to retrived student choices for this intake.")
+		return false
+	}
+}
+
+async function getLineOptions(){
+	let getLineOptionsSQL = `
+	SELECT line_option_id,
+       one.site_name AS one,
+       two.site_name AS two,
+       three.site_name AS three,
+       intake_number_fk,
+       line_options.site_zone
+	FROM freedb_team2project.line_options
+	JOIN clinical_sites AS one ON (placement_one = one.clinical_sites_id)
+	JOIN clinical_sites AS two ON (placement_two = two.clinical_sites_id)
+	JOIN clinical_sites AS three ON (placement_three = three.clinical_sites_id)
+	WHERE intake_number_fk = (SELECT MAX(intake_id) FROM intake)
+	ORDER BY line_option_id ASC;
+	`
+
+	try {
+		const results = await database.query(getLineOptionsSQL);
+		console.log("Successfully retrived line options for this intake.")
+		return results[0]
+	} catch (error) {
+		console.log("Failed to retrived student choices for this intake.")
+		return false
+	}
+}
+
 module.exports = {
 	getStudents,
 	getOneStudent,
@@ -229,5 +278,7 @@ module.exports = {
 	getSecurityCode,
 	createNewIntake,
 	updateAccomodationInteriorBC,
-	updateAccomodationLowerMainland
+	updateAccomodationLowerMainland,
+	getLineOptions,
+	getStudentChoices
 };
