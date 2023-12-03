@@ -455,6 +455,121 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 	}
 });
 
+//requires admin auth
+app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let student = await db_admin.getOneStudent({
+			MRADid: req.params.MRADid,
+		});
+		console.log("Server student query: " + student.interior_bc);
+
+		let results_before = await db_admin.getStudents();
+
+		console.log("server getStudents query: " + results_before[0].MRAD_id);
+
+		if (student) {
+
+			if (student.interior_bc == 1) {
+				await db_admin.updateAccomodationInteriorBC({
+					accInteriorBC: 0,
+					MRADid: req.params.MRADid,
+				});
+				let results_after = await db_admin.getStudents();
+				if (results_after){
+					console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_after
+					});
+				} else {
+					console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_before
+					});
+				}
+			} else {
+				await db_admin.updateAccomodationInteriorBC({
+					accInteriorBC: 1,
+					MRADid: req.params.MRADid,
+				});
+				let results_after = await db_admin.getStudents();
+				if (results_after){
+					console.log("Server: Successfully updated Interior BC accomodation for " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_after
+					});
+				} else {
+					console.log("Server: Unsuccessful with updating Interior BC accomodation for " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_before
+					});
+				}
+			}
+		} else {
+			console.log("Server: Error in retrieving student MRADid and accomodation data from database.");
+		}
+	}
+});
+
+//requires admin auth
+app.post("/admin-view-students/accomodation/lower_mainland/:MRADid", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let student = await db_admin.getOneStudent({
+			MRADid: req.params.MRADid,
+		});
+		console.log("Server student query: " + student.interior_bc);
+
+		//In case there is an error with updating the accomodation in the database, admin-view-students is refreshed with previous data.
+		let results_before = await db_admin.getStudents(); 
+
+		if (student) {
+
+			if (student.lower_mainland == 1) {
+				await db_admin.updateAccomodationLowerMainland({
+					accLowerMainland: 0,
+					MRADid: req.params.MRADid,
+				});
+				let results_after = await db_admin.getStudents();
+				if (results_after){
+					console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_after
+					});
+				} else {
+					console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_before
+					});
+				}
+			} else {
+				await db_admin.updateAccomodationLowerMainland({
+					accLowerMainland: 1,
+					MRADid: req.params.MRADid,
+				});
+				let results_after = await db_admin.getStudents();
+				if (results_after){
+					console.log("Server: Successfully updated Interior BC accomodation for " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_after
+					});
+				} else {
+					console.log("Server: Unsuccessful with updating Interior BC accomodation for " + req.params.MRADid)
+					res.render("admin_user_list", {
+						students: results_before
+					});
+				}
+			}
+		} else {
+			console.log("Server: Error in retrieving Students MRAD IDs from database.");
+		}
+	}
+});
+
 app.get("/admin/tools", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
@@ -541,12 +656,10 @@ app.post("/generate-code", async (req, res) => {
 	} catch (err) {
 		console.log(`Error inserting code: ${code}`);
 		console.log(err);
-		res
-			.status(500)
-			.json({
-				success: false,
-				error: "failed to insert security code properly",
-			});
+		res.status(500).json({
+			success: false,
+			error: "failed to insert security code properly",
+		});
 	}
 });
 

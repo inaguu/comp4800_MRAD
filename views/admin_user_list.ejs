@@ -31,11 +31,27 @@
         <!-- Description -->
         <div class="md:col-start-2 col-span-11 xl:-ml-5">
           <label class="inline-flex items-center">
-            <input type="checkbox" class="form-checkbox text-blue-500" id="interiorBC<%= student.MRAD_id %>">
+            <% if (student.interior_bc == 1) { %>
+              <form action="/admin-view-students/accomodation/interior-BC/<%= student.MRAD_id %>" method="post">
+                <input type="checkbox" class="form-checkbox text-blue-500" id="interiorBC" onchange="this.form.submit()" checked>
+              </form>
+            <% } else { %>
+              <form action="/admin-view-students/accomodation/interior-BC/<%= student.MRAD_id %>" method="post">
+                <input type="checkbox" class="form-checkbox text-blue-500" id="interiorBC" onchange="this.form.submit()">
+              </form>
+            <% } %>
             <span class="ml-2 text-gray-800">Interior BC Only</span>
           </label>
           <label class="inline-flex items-center ml-6">
-            <input type="checkbox" class="form-checkbox text-blue-500" id="lowerMainland<%= student.MRAD_id %>">
+            <% if (student.lower_mainland == 1) { %>
+              <form action="/admin-view-students/accomodation/lower_mainland/<%= student.MRAD_id %>" method="post">
+                <input type="checkbox" class="form-checkbox text-blue-500" id="lower_mainland" onchange="this.form.submit()" checked>
+              </form>
+            <% } else { %>
+              <form action="/admin-view-students/accomodation/lower_mainland/<%= student.MRAD_id %>" method="post">
+                <input type="checkbox" class="form-checkbox text-blue-500" id="lower_mainland" onchange="this.form.submit()">
+              </form>
+            <% } %>
             <span class="ml-2 text-gray-800">Lower Mainland Only</span>
           </label>
         </div>
