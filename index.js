@@ -6,7 +6,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const bcrypt = require("bcrypt");
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer");
 const saltRounds = 12;
 
 const database = include("database_connection");
@@ -17,6 +17,9 @@ const option_generator = include("generate_selections");
 const db_admin = include("database/admin");
 const db_query = include("database/query");
 const db_selections = include("database/selections");
+
+const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');  
+const fs = require('fs').promises;
 
 const success = db_utils.printMySQLVersion();
 
@@ -177,10 +180,13 @@ app.get("/profile", async (req, res) => {
 			},
 		];
 
+		let finalPlacement = await db_admin.getFinalAssignments({ MRAD_id: req.session.MRAD_id })
+
 		if (results) {
 			res.render("profile", {
 				results: results[0],
 				user_selection: user_selection,
+				finalPlacement: finalPlacement
 			});
 		}
 	}
@@ -306,7 +312,7 @@ app.post("/loggingin", async (req, res) => {
 				req.session.user_type = results[0].type;
 				req.session.name = results[0].name;
 				req.session.email = results[0].email;
-				req.session.MRAd_id = results[0].MRAD_id;
+				req.session.MRAD_id = results[0].MRAD_id;
 				req.session.user_id = results[0].user_id;
 				req.session.cookie.maxAge = expireTime;
 				console.log(req.session.user_type);
@@ -455,16 +461,89 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 	}
 });
 
+//requires admin auth
+app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let student = await db_admin.getOneStudent({
+			MRADid: req.params.MRADid,
+		});
+		console.log("Server student query: " + student.interior_bc);
+
+		if (student) {
+
+			if (student.interior_bc == 1) {
+				await db_admin.updateAccomodationInteriorBC({
+					accInteriorBC: 0,
+					MRADid: req.params.MRADid,
+				});
+				console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
+				res.redirect("/admin-view-students");
+			} else {
+				await db_admin.updateAccomodationInteriorBC({
+					accInteriorBC: 1,
+					MRADid: req.params.MRADid,
+				});
+				console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
+				res.redirect("/admin-view-students");
+			}
+		} else {
+				console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
+				res.redirect("/admin-view-students");
+		}
+	}
+});
+
+//requires admin auth
+app.post("/admin-view-students/accomodation/lower_mainland/:MRADid", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let student = await db_admin.getOneStudent({
+			MRADid: req.params.MRADid,
+		});
+		console.log("Server student query: " + student.lower_mainland);
+
+		if (student) {
+
+			if (student.lower_mainland == 1) {
+				await db_admin.updateAccomodationLowerMainland({
+					accLowerMainland: 0,
+					MRADid: req.params.MRADid,
+				});
+					console.log("Server: Successfully updated Lower Mainland accomodation for MRADid: " + req.params.MRADid)
+					res.redirect("/admin-view-students");
+			} else {
+				await db_admin.updateAccomodationLowerMainland({
+					accLowerMainland: 1,
+					MRADid: req.params.MRADid,
+				});
+					console.log("Server: Successfully updated Lower Mainland accomodation for " + req.params.MRADid)
+					res.redirect("/admin-view-students");
+			}
+		} else {
+			console.log("Server: Unsuccessful with updating Lower Mainland accomodation for " + req.params.MRADid)
+			res.redirect("/admin-view-students");
+		}
+	}
+});
+
 app.get("/admin/tools", async (req, res) => {
 	if (!isAdmin(req)) {
-		res.status(403)
-		res.render("403")
+		res.status(403);
+		res.render("403");
 	} else {
 		let intake = await db_query.getMaxIntake();
 		let code = await db_admin.getSecurityCode();
-		res.render("admin_tools", {code : code[0].security_code, intake: intake.intake_max})
+		res.render("admin_tools", {
+			code: code[0].security_code,
+			intake: intake.intake_max,
+		});
 	}
-})
+});
 
 app.post("/admin/send-email", async (req, res) => {
 	if (!isAdmin(req)) {
@@ -506,17 +585,16 @@ app.post("/submituser", async (req, res) => {
 	let name = req.body.name;
 	let email = req.body.email;
 	let password = req.body.password;
-	let MRAD_id = req.body.MRAD_id;;
+	let MRAD_id = req.body.MRAD_id;
 	let security_code = req.body.security_code;
 
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
 	let code = await db_admin.getSecurityCode();
-	console.log(code)	
-	
-	if(security_code !== code[0].security_code){
-		res.redirect('signup')
-		
+	console.log(code);
+
+	if (security_code !== code[0].security_code) {
+		res.redirect("signup");
 	} else {
 		var success = await db_users.createUser({
 			name: name,
@@ -524,17 +602,17 @@ app.post("/submituser", async (req, res) => {
 			hashedPassword: hashedPassword,
 			MRAD_id: MRAD_id,
 		});
-	
+
 		if (success) {
 			var results = await db_users.getUser({
 				email: email,
 			});
-	
+
 			req.session.authenticated = true;
 			req.session.user_type = results[0].type;
 			req.session.name = results[0].name;
 			req.session.email = results[0].email;
-			req.session.MRAd_id = results[0].MRAD_id;
+			req.session.MRAD_id = results[0].MRAD_id;
 			req.session.user_id = results[0].user_id;
 			req.session.cookie.maxAge = expireTime;
 			if (req.session.user_type === "student") {
@@ -546,30 +624,31 @@ app.post("/submituser", async (req, res) => {
 			console.log("error in creating the user");
 		}
 	}
-
 });
 
-
 function generateSecurityCode() {
-	let code = '';
-	let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$';
+	let code = "";
+	let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$";
 	let charactersLength = characters.length;
 	for (let j = 0; j < 7; j++) {
 		code += characters.charAt(Math.floor(Math.random() * charactersLength));
 	}
 	return code;
-};
+}
 
-app.post('/generate-code', async (req, res) => {
+app.post("/generate-code", async (req, res) => {
 	let code = generateSecurityCode(); // generate only one code now
 
 	try {
-		await db_admin.insertSecurityCode({code: code}); // inserting to db
+		await db_admin.insertSecurityCode({ code: code }); // inserting to db
 		res.redirect("admin");
-	} catch(err){
+	} catch (err) {
 		console.log(`Error inserting code: ${code}`);
-		console.log(err)
-		res.status(500).json({ success: false, error: "failed to insert security code properly"});
+		console.log(err);
+		res.status(500).json({
+			success: false,
+			error: "failed to insert security code properly",
+		});
 	}
 });
 
@@ -670,10 +749,200 @@ app.get("/getSelections", async (req, res) => {
 	return res.json(results);
 });
 
-app.post("/newIntake", async (req,res) => {
+app.post("/newIntake", async (req, res) => {
 	await db_admin.createNewIntake();
 	res.redirect("admin");
-})
+});
+
+// Function to create a PDF with dynamic content
+async function createPdf(contentArray) {
+	const pdfDoc = await PDFDocument.create();
+	const defaultFontSize = 10; // Set your desired font size
+	const linesPerPage = 40;
+	const margin = 50;
+	const lineSpacing = 8; // Set your desired line spacing
+
+	for (let i = 0; i < contentArray.length; i += linesPerPage) {
+		const page = pdfDoc.addPage();
+
+		for (let j = 0; j < linesPerPage && i + j < contentArray.length; j++) {
+		const content = contentArray[i + j];
+		const textOptions = {
+			x: margin,
+			y: page.getHeight() - margin - (j + 1) * (defaultFontSize + lineSpacing),
+		};
+
+		// Add content to the PDF with adjusted font size and spacing
+		page.drawText(content, { ...textOptions, size: defaultFontSize });
+		}
+	}
+
+	// Save the PDF to a buffer
+	const pdfBytes = await pdfDoc.save();
+
+	return pdfBytes;
+}
+
+// Route to generate and download the PDF
+app.get('/generate-pdf-final-placement', async (req, res) => {
+
+	const studentChoices = await db_admin.getStudentChoices();
+	const lineOptions = await db_admin.getLineOptions();
+
+	// Assign students with accommodations
+	const assignedLines = new Set();
+	const assignedStudents = [];
+
+	for (const student of studentChoices) {
+	const isInteriorBC = student.interior_bc === 1;
+	const isLowerMainland = student.lower_mainland === 1;
+
+	const choices = ['choice_1', 'choice_2', 'choice_3', 'choice_4', 'choice_5'];
+	let matchingLine = null;
+
+	for (const choice of choices) {
+		const lineId = student[choice];
+		matchingLine = lineOptions.find(
+		(option) =>
+			option.line_option_id === lineId &&
+			((isInteriorBC && option.site_zone === 'Interior BC') ||
+			(isLowerMainland && option.site_zone === 'Lower Mainland')) &&
+			!assignedLines.has(lineId)
+		);
+
+		if (matchingLine) {
+		assignedStudents.push({
+			MRAD_id: student.MRAD_id,
+			user_id: student.user_id,
+			line_option_id: matchingLine.line_option_id,
+			one: matchingLine.one,
+			two: matchingLine.two,
+			three: matchingLine.three,
+			intake_number_id: matchingLine.intake_number_fk,
+		});
+		assignedLines.add(matchingLine.line_option_id);
+		break;
+		}
+	}
+
+	if (!matchingLine) {
+		// If no matching choice, assign based on accommodations
+		const matchingLineBasedOnAccommodation = lineOptions.find(
+		(option) =>
+			(isInteriorBC &&
+			option.site_zone === 'Interior BC' &&
+			!assignedLines.has(option.line_option_id)) ||
+			(isLowerMainland &&
+			option.site_zone === 'Lower Mainland' &&
+			!assignedLines.has(option.line_option_id))
+		);
+
+		if (matchingLineBasedOnAccommodation) {
+		assignedStudents.push({
+			MRAD_id: student.MRAD_id,
+			user_id: student.user_id,
+			line_option_id: matchingLineBasedOnAccommodation.line_option_id,
+			one: matchingLineBasedOnAccommodation.one,
+			two: matchingLineBasedOnAccommodation.two,
+			three: matchingLineBasedOnAccommodation.three,
+			intake_number_id: matchingLineBasedOnAccommodation.intake_number_fk,
+		});
+		assignedLines.add(matchingLineBasedOnAccommodation.line_option_id);
+		}
+	}
+	}
+
+	// Shuffle remaining students
+	const remainingStudents = studentChoices.filter(
+	(student) =>
+		!assignedStudents.some((assigned) => assigned.user_id === student.user_id)
+	);
+	shuffleArray(remainingStudents);
+
+		// Assign remaining students based on their choices or randomly
+	for (const student of remainingStudents) {
+		const choices = ['choice_1', 'choice_2', 'choice_3', 'choice_4', 'choice_5'];
+		let matchingLine = null;
+
+		for (const choice of choices) {
+			const lineId = student[choice];
+			matchingLine = lineOptions.find(
+			(option) =>
+				option.line_option_id === lineId && !assignedLines.has(lineId)
+			);
+
+			if (matchingLine) {
+			assignedLines.add(matchingLine.line_option_id);
+			break;
+			}
+		}
+
+		// If no matching choice, assign randomly
+		if (!matchingLine) {
+			const unassignedLines = lineOptions.filter(
+			(option) => !assignedLines.has(option.line_option_id)
+			);
+			if (unassignedLines.length > 0) {
+			const randomLine =
+				unassignedLines[
+				Math.floor(Math.random() * unassignedLines.length)
+				];
+			assignedLines.add(randomLine.line_option_id);
+			matchingLine = randomLine;
+			}
+		}
+
+		if (matchingLine) {
+			assignedStudents.push({
+			MRAD_id: student.MRAD_id,
+			user_id: student.user_id,
+			line_option_id: matchingLine.line_option_id,
+			one: matchingLine.one,
+			two: matchingLine.two,
+			three: matchingLine.three,
+			intake_number_id: matchingLine.intake_number_fk,
+			});
+		}
+	}
+
+	await db_admin.insertFinalAssignments(assignedStudents)
+	// Create an array to store formatted strings for each object
+	const formattedStringsArray = [];
+
+	assignedStudents.forEach((data) => {
+		const formattedString = `MRAD_id: ${data.MRAD_id},\t Term Two: ${data.one}, Term Four : ${data.two}, Term Six: ${data.three}, Intake: ${data.intake_number_id}`;
+	
+		formattedStringsArray.push(formattedString);
+	});
+	
+	try {
+		// Fetch content from your database (replace with actual data)
+		const databaseContent = formattedStringsArray;
+
+		// Create the PDF
+		const pdfBytes = await createPdf(databaseContent);
+
+		const currentYear = new Date().getFullYear();
+		// Set the response headers for PDF download
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', `attachment; filename=Final Placement for Intake ${assignedStudents[0].intake_number_id}  - ${currentYear}.pdf`);
+
+		// Send the PDF as the response
+		res.end(pdfBytes, 'binary');
+	} catch (error) {
+		console.error('Error generating PDF:', error);
+		res.status(500).send('Internal Server Error');
+	}
+	
+});
+
+// Helper function to shuffle an array
+function shuffleArray(array) {
+	for (let i = array.length - 1; i > 0; i--) {
+	  const j = Math.floor(Math.random() * (i + 1));
+	  [array[i], array[j]] = [array[j], array[i]];
+	}
+}
 
 app.use(express.static(__dirname + "/public"));
 

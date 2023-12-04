@@ -55,7 +55,7 @@
             Selections
         </h3>
         <p class="mt-1 max-w-2xl text-sm text-gray-500">
-            You can change your info by clicking, editing, then hitting Save.
+            You can view your selection info here.
         </p>
     </div>
     <div class="m-auto w-full max-w-4xl p-4 bg-white shadow-lg rounded-lg">
@@ -99,19 +99,41 @@
             <h2 class="text-gray-700 font-bold mb-4">Final Clinical Placement</h2>
             <div class="overflow-y-auto">
               <ul>
-                  <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
-                    <div class="flex mt-2">
-                      <label class="inline-flex items-center ml-4">
-                        <span class="ml-2 text-gray-700">Site 1: Abbortsford</span>
-                      </label>
-                      <label class="inline-flex items-center ml-4">
-                        <span class="ml-2 text-gray-700">Site 2: Burnaby</span>
-                      </label>
-                      <label class="inline-flex items-center ml-4">
-                        <span class="ml-2 text-gray-700">Site 3: VCH</span>
-                      </label>
-                    </div>
-                  </li>
+                  <% if (finalPlacement.length === 1) { %>
+                    <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+                        <div class="flex mt-2">
+                            <label class="inline-flex items-center ml-4">
+                                <span class="ml-2 text-gray-700">Line #: <%= finalPlacement[0].line_assigned %> </span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                                <span class="ml-2 text-gray-700">Term 2: <%= finalPlacement[0].site_one %> </span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                                <span class="ml-2 text-gray-700">Term 4: <%= finalPlacement[0].site_two %></span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                                <span class="ml-2 text-gray-700">Term 6: <%= finalPlacement[0].site_three %></span>
+                            </label>
+                        </div>
+                    </li>
+                    <% } else { %>
+                        <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+                          <div class="flex mt-2">
+                            <label class="inline-flex items-center ml-4">
+                                <span class="ml-2 text-gray-700">Line #: </span>
+                                </label>
+                            <label class="inline-flex items-center ml-4">
+                              <span class="ml-2 text-gray-700">Term 2: </span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                              <span class="ml-2 text-gray-700">Term 4: </span>
+                            </label>
+                            <label class="inline-flex items-center ml-4">
+                              <span class="ml-2 text-gray-700">Term 6: </span>
+                            </label>
+                          </div>
+                        </li>
+                    <% } %>
               </ul>
             </div>
           </div>

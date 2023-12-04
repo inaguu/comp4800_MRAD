@@ -39,6 +39,36 @@
                         </form>
                     </div>
                 </div>
+                <div
+                  class="mr-4 block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
+                    <div class="p-6">
+                        <h5
+                        class="mb-2 text-xl font-medium leading-tight text-neutral-800">
+                            Generate Lines 
+                        </h5>
+                        <p class="mb-4 text-base text-neutral-600">
+                            Generate lines for the current intake. <br> <p style="color: red;">*Please update intake before creating new lines*</p> 
+                        </p>
+                        <form action="/generateSiteOptions" method="post">
+                            <button type="submit" id="generate" style="color: blue;">Generate Lines</button>
+                        </form>
+                    </div>
+                </div>
+                <div
+                  class="mr-4 block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)]">
+                    <div class="p-6">
+                        <h5
+                        class="mb-2 text-xl font-medium leading-tight text-neutral-800">
+                            Final Placement 
+                        </h5>
+                        <p class="mb-4 text-base text-neutral-600">
+                            Assign current intake their placement.
+                        </p>
+                        <form action="/generate-pdf-final-placement" method="get">
+                            <button type="submit" id="generate" style="color: blue;">Assign Practicum Placement</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div
                 class="block rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] w-3/4">

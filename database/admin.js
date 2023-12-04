@@ -2,7 +2,7 @@ const database = include("database_connection");
 
 async function getStudents(postData) {
 	let getStudentsSQL = `
-        SELECT MRAD_id
+        SELECT MRAD_id, interior_bc, lower_mainland
         FROM users
         JOIN user_type USING (user_type_id)
         WHERE type = 'student';
@@ -23,7 +23,7 @@ async function getStudents(postData) {
 
 async function getOneStudent(postData) {
 	let getOneStudentSQL = `
-        SELECT *
+        SELECT MRAD_id, interior_bc, lower_mainland
         FROM users
         JOIN user_type USING (user_type_id)
         WHERE MRAD_id = :MRADid;
@@ -110,21 +110,20 @@ async function getSelectionResults(postData) {
 	}
 }
 
-
-async function insertSecurityCode(postData){
+async function insertSecurityCode(postData) {
 	let insertSecurityCodeSQL = `
 	INSERT INTO security_code (security_code)
 	VALUES (:code);
 	`;
 
 	let params = {
-		code: postData.code
+		code: postData.code,
 	};
 
 	try {
 		await database.query(insertSecurityCodeSQL, params);
 		console.log(`Successfully inserted code: ${postData.code}`);
-	} catch(err) {
+	} catch (err) {
 		console.log(`Error trying to insert code: ${postData.code}`);
 		console.log(err);
 	}
@@ -149,11 +148,11 @@ async function getSecurityCode() {
 	}
 }
 
-async function createNewIntake(){
+async function createNewIntake() {
 	let newIntake = `
 	INSERT INTO intake (start_date, end_date)
 	VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL 2 YEAR);
-	`
+	`;
 
 	try {
 		await database.query(newIntake);
@@ -180,9 +179,160 @@ async function getStudentEmails(){
 		return results[0];
 	} catch(err) {
 		console.log("Error grabbing all students emails");
+	}
+}
+
+async function updateAccomodationInteriorBC(postData) {
+	let updateAccomodationInteriorBCSQL = `
+		update users
+		set interior_bc = :accomodation
+        WHERE MRAD_id = :MRADid;
+	`;
+
+	let params = {
+		MRADid: postData.MRADid,
+		accomodation: postData.accInteriorBC
+	};
+
+	try {
+		const results = await database.query(updateAccomodationInteriorBCSQL, params);
+
+		console.log(
+			"Successfully updated accomodation for Interior BC for " + postData.MRADid
+		);
+		console.log(results[0][0]);
+		return results[0][0];
+	} catch (err) {
+		console.log(
+			"Error trying to updated accomodation for Interior BC for " +
+				postData.MRADid
+		);
 		console.log(err);
 		return false;
 	}
+}
+
+async function updateAccomodationLowerMainland(postData) {
+	let updateAccomodationLowerMainlandSQL = `
+		update users
+		set lower_mainland = :accomodation
+        WHERE MRAD_id = :MRADid;
+	`;
+
+	let params = {
+		MRADid: postData.MRADid,
+		accomodation: postData.accLowerMainland
+	};
+
+	try {
+		const results = await database.query(updateAccomodationLowerMainlandSQL, params);
+
+		console.log(
+			"Successfully updated accomodation for Lower Mainland for " + postData.MRADid);
+		console.log(results[0][0]);
+		return results[0][0];
+	} catch (err) {
+		console.log(
+			"Error trying to updated accomodation for Lower Mainland for " + postData.MRADid);
+		console.log(err);
+		return false;
+	}
+}
+
+async function getStudentChoices(){
+	let getStudentChoicesSQL = `
+	SELECT
+		sc.*,
+		u.MRAD_id,
+		u.interior_bc,
+		u.lower_mainland,
+		u.intake_number
+	FROM student_choices sc
+	JOIN users u USING (user_id)
+	WHERE intake_number = (SELECT MAX(intake_id) FROM intake);
+	`
+
+	try {
+		const results = await database.query(getStudentChoicesSQL);
+		console.log("Successfully retrived student choices for this intake.")
+		return results[0]
+	} catch (error) {
+		console.log("Failed to retrived student choices for this intake.")
+		return false
+	}
+}
+
+async function getLineOptions(){
+	let getLineOptionsSQL = `
+	SELECT line_option_id,
+       one.site_name AS one,
+       two.site_name AS two,
+       three.site_name AS three,
+       intake_number_fk,
+       line_options.site_zone
+	FROM freedb_team2project.line_options
+	JOIN clinical_sites AS one ON (placement_one = one.clinical_sites_id)
+	JOIN clinical_sites AS two ON (placement_two = two.clinical_sites_id)
+	JOIN clinical_sites AS three ON (placement_three = three.clinical_sites_id)
+	WHERE intake_number_fk = (SELECT MAX(intake_id) FROM intake)
+	ORDER BY line_option_id ASC;
+	`
+
+	try {
+		const results = await database.query(getLineOptionsSQL);
+		console.log("Successfully retrived line options for this intake.")
+		return results[0]
+	} catch (error) {
+		console.log("Failed to retrived student choices for this intake.")
+		return false
+	}
+}
+
+async function insertFinalAssignments(postData) {
+	let insertQuery = "INSERT IGNORE INTO freedb_team2project.final_placement " +
+	"(MRAD_id, line_assigned, site_one, site_two, site_three, intake_id, user_id) VALUES ";
+
+	const values = postData.map((data, index) => {
+		const escapedOne = data.one.replace(/'/g, "''"); // Escape single quotes
+		const escapedTwo = data.two.replace(/'/g, "''");
+		const escapedThree = data.three.replace(/'/g, "''");
+	  
+		return `('${data.MRAD_id}', '${data.line_option_id}', '${escapedOne}', '${escapedTwo}', '${escapedThree}', '${data.intake_number_id}', '${data.user_id}')`;
+	});
+
+	insertQuery += values.join(', ');
+
+	try {
+		await database.query(insertQuery);
+		console.log("Inserted Final Placements");
+		return true;
+	} catch (err) {
+		console.log("Failed to Insert Final Placements");
+		console.log(err)
+		return false;
+	}
+}
+
+async function getFinalAssignments(postData) {
+	let getFinalPlacementSQL = `
+	SELECT line_assigned, site_one, site_two, site_three
+	FROM final_placement
+	WHERE MRAD_id = :MRAD_id;`
+
+	let params = {
+		MRAD_id: postData.MRAD_id
+	};
+
+
+	try {
+		let results = await database.query(getFinalPlacementSQL, params);
+		console.log(results[0])
+		return results[0];
+	} catch (error) {
+		console.log(error);
+		return false;
+	}
+
 }
 
 module.exports = {
@@ -192,5 +342,11 @@ module.exports = {
 	insertSecurityCode,
 	getSecurityCode,
 	createNewIntake,
-	getStudentEmails
+	getStudentEmails,
+	updateAccomodationInteriorBC,
+	updateAccomodationLowerMainland,
+	getLineOptions,
+	getStudentChoices,
+	insertFinalAssignments,
+	getFinalAssignments
 };
