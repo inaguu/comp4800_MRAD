@@ -101,7 +101,6 @@ async function getSelectionResults(postData) {
 	try {
 		const results = await database.query(getSelectionResultsSQL, params);
 		console.log("Successfully found student selection results.");
-		console.log(results);
 		return results[0];
 	} catch (err) {
 		console.log("Error trying to find student selection results.");
@@ -315,7 +314,7 @@ async function insertFinalAssignments(postData) {
 
 async function getFinalAssignments(postData) {
 	let getFinalPlacementSQL = `
-	SELECT line_assigned, site_one, site_two, site_three
+	SELECT final_placement_id, line_assigned, site_one, site_two, site_three
 	FROM final_placement
 	WHERE MRAD_id = :MRAD_id;`
 
@@ -326,13 +325,39 @@ async function getFinalAssignments(postData) {
 
 	try {
 		let results = await database.query(getFinalPlacementSQL, params);
-		console.log(results[0])
 		return results[0];
 	} catch (error) {
 		console.log(error);
 		return false;
 	}
 
+}
+
+async function updateFinalAssignment(postData){
+	let updateFinalPlacementSQL = `
+		UPDATE final_placement
+		SET line_assigned = :line_assigned, site_one = :site_one, site_two = :site_two, site_three = :site_three
+		WHERE final_placement_id = :final_placement_id;
+	`;	
+
+	let params = {
+		line_assigned: postData.line_assigned,
+		site_one: postData.site_one,
+		site_two: postData.site_two,
+		site_three: postData.site_three,
+		final_placement_id: postData.final_placement_id
+	}
+
+	try {
+		const results = await database.query(updateFinalPlacementSQL, params);
+		console.log("Successfully updated final placement");
+		console.log(results);
+		return true;
+	} catch (err) {
+		console.log("Error trying to update final placement");
+		console.log(err);
+		return false;
+	}
 }
 
 module.exports = {
@@ -348,5 +373,6 @@ module.exports = {
 	getLineOptions,
 	getStudentChoices,
 	insertFinalAssignments,
-	getFinalAssignments
+	getFinalAssignments,
+	updateFinalAssignment
 };

@@ -445,7 +445,9 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 			MRADid: req.params.MRADid,
 		});
 
-		console.log(results);
+		let finalSelection = await db_admin.getFinalAssignments({
+			MRAD_id: req.params.MRADid
+		});
 
 		if (results) {
 			console.log(
@@ -453,11 +455,34 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 			);
 			res.render("admin_profile_view", {
 				student: results,
+				finalSelection: finalSelection
 			});
 		} else {
 			console.log("Server: Error in retrieving student details from database.");
 			res.redirect("/admin-view-students");
 		}
+	}
+});
+
+
+app.post("/updateFinalPlacement", async (req, res) => {
+	var line_assigned = req.body.line_assigned;
+	var site_one = req.body.site_one;
+	var site_two = req.body.site_two;
+	var site_three = req.body.site_three;
+	var finalPlacementID = req.body.finalPlacementID;
+
+	if (line_assigned !== "" || site_one !== "" || site_two !== "" || site_three !== "") {
+		let results = await db_admin.updateFinalAssignment({
+			final_placement_id: parseInt(finalPlacementID),
+			line_assigned: line_assigned,
+			site_one: site_one,
+			site_two: site_two,
+			site_three: site_three
+		});
+		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
+	} else {
+		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
 	}
 });
 
