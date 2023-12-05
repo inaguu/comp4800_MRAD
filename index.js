@@ -83,6 +83,7 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
 	res.render("login");
 });
+
 // This is how you send emails
 app.post("/send-mail", (req, res) => {
 	console.log("attempt to send email");
@@ -397,7 +398,7 @@ app.get("/home", (req, res) => {
 	if (!isValidSession(req)) {
 		res.redirect("/");
 	} else {
-		res.render("landing_page", {
+		res.render("disclaimer", {
 			name: req.session.name,
 		});
 	}
@@ -463,7 +464,6 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 		}
 	}
 });
-
 
 app.post("/updateFinalPlacement", async (req, res) => {
 	var line_assigned = req.body.line_assigned;
@@ -616,7 +616,6 @@ app.post("/submituser", async (req, res) => {
 	let hashedPassword = bcrypt.hashSync(password, saltRounds);
 
 	let code = await db_admin.getSecurityCode();
-	console.log(code);
 
 	if (security_code !== code[0].security_code) {
 		res.redirect("signup");
@@ -650,16 +649,6 @@ app.post("/submituser", async (req, res) => {
 		}
 	}
 });
-
-function generateSecurityCode() {
-	let code = "";
-	let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$";
-	let charactersLength = characters.length;
-	for (let j = 0; j < 7; j++) {
-		code += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return code;
-}
 
 app.post("/generate-code", async (req, res) => {
 	let code = generateSecurityCode(); // generate only one code now
@@ -778,35 +767,6 @@ app.post("/newIntake", async (req, res) => {
 	await db_admin.createNewIntake();
 	res.redirect("admin");
 });
-
-// Function to create a PDF with dynamic content
-async function createPdf(contentArray) {
-	const pdfDoc = await PDFDocument.create();
-	const defaultFontSize = 10; // Set your desired font size
-	const linesPerPage = 40;
-	const margin = 50;
-	const lineSpacing = 8; // Set your desired line spacing
-
-	for (let i = 0; i < contentArray.length; i += linesPerPage) {
-		const page = pdfDoc.addPage();
-
-		for (let j = 0; j < linesPerPage && i + j < contentArray.length; j++) {
-		const content = contentArray[i + j];
-		const textOptions = {
-			x: margin,
-			y: page.getHeight() - margin - (j + 1) * (defaultFontSize + lineSpacing),
-		};
-
-		// Add content to the PDF with adjusted font size and spacing
-		page.drawText(content, { ...textOptions, size: defaultFontSize });
-		}
-	}
-
-	// Save the PDF to a buffer
-	const pdfBytes = await pdfDoc.save();
-
-	return pdfBytes;
-}
 
 // Route to generate and download the PDF
 app.get('/generate-pdf-final-placement', async (req, res) => {
@@ -961,6 +921,52 @@ app.get('/generate-pdf-final-placement', async (req, res) => {
 	
 });
 
+app.use(express.static(__dirname + "/public"));
+
+app.get("*", (req, res) => {
+	res.status(404);
+	res.render("404");
+});
+
+function generateSecurityCode() {
+	let code = "";
+	let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$";
+	let charactersLength = characters.length;
+	for (let j = 0; j < 7; j++) {
+		code += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return code;
+}
+
+// Function to create a PDF with dynamic content
+async function createPdf(contentArray) {
+	const pdfDoc = await PDFDocument.create();
+	const defaultFontSize = 10; // Set your desired font size
+	const linesPerPage = 40;
+	const margin = 50;
+	const lineSpacing = 8; // Set your desired line spacing
+
+	for (let i = 0; i < contentArray.length; i += linesPerPage) {
+		const page = pdfDoc.addPage();
+
+		for (let j = 0; j < linesPerPage && i + j < contentArray.length; j++) {
+		const content = contentArray[i + j];
+		const textOptions = {
+			x: margin,
+			y: page.getHeight() - margin - (j + 1) * (defaultFontSize + lineSpacing),
+		};
+
+		// Add content to the PDF with adjusted font size and spacing
+		page.drawText(content, { ...textOptions, size: defaultFontSize });
+		}
+	}
+
+	// Save the PDF to a buffer
+	const pdfBytes = await pdfDoc.save();
+
+	return pdfBytes;
+}
+
 // Helper function to shuffle an array
 function shuffleArray(array) {
 	for (let i = array.length - 1; i > 0; i--) {
@@ -968,13 +974,6 @@ function shuffleArray(array) {
 	  [array[i], array[j]] = [array[j], array[i]];
 	}
 }
-
-app.use(express.static(__dirname + "/public"));
-
-app.get("*", (req, res) => {
-	res.status(404);
-	res.render("404");
-});
 
 function isAdmin(req) {
 	console.log(req.session.user_type);
@@ -995,6 +994,7 @@ function adminAuthorization(req, res, next) {
 		next();
 	}
 }
+
 function isValidSession(req) {
 	if (req.session.authenticated) {
 		return true;
