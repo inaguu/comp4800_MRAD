@@ -84,25 +84,112 @@ app.get("/login", (req, res) => {
 	res.render("login");
 });
 
-// This is how you send emails
-app.post("/send-mail", (req, res) => {
-	console.log("attempt to send email");
-
-	const data = {
-		from: "mrad.selection@gmail.com", // sender address
-		to: "uberduper2@gmail.com", // list of receivers
-		subject: "Sending Email using Node.js",
-		text: "That was easy!",
-	};
-
-	transporter.sendMail(data, (err, info) => {
-		if (err) {
-			console.log(err);
-		}
-		res.status(200).send({ message: "Mail send", message_id: info.messageId });
-	});
+app.get("/signup", (req, res) => {
+	res.render("signup");
 });
-// end of sending emails
+
+app.post("/submituser", async (req, res) => {
+	let name = req.body.name;
+	let email = req.body.email;
+	let password = req.body.password;
+	let MRAD_id = req.body.MRAD_id;
+	let security_code = req.body.security_code;
+
+	let hashedPassword = bcrypt.hashSync(password, saltRounds);
+
+	let code = await db_admin.getSecurityCode();
+
+	if (security_code !== code[0].security_code) {
+		res.redirect("signup");
+	} else {
+		var success = await db_users.createUser({
+			name: name,
+			email: email,
+			hashedPassword: hashedPassword,
+			MRAD_id: MRAD_id,
+		});
+
+		if (success) {
+			var results = await db_users.getUser({
+				email: email,
+			});
+
+			req.session.authenticated = true;
+			req.session.user_type = results[0].type;
+			req.session.name = results[0].name;
+			req.session.email = results[0].email;
+			req.session.MRAD_id = results[0].MRAD_id;
+			req.session.user_id = results[0].user_id;
+			req.session.cookie.maxAge = expireTime;
+			if (req.session.user_type === "student") {
+				await db_query.setSelectionFirstTime({ user_id: results[0].user_id });
+			}
+			res.redirect("/home"); //Goes to landing page upon successful login
+		} else {
+			//Redirect to 404 or Page with Generic Error Message??
+			console.log("error in creating the user");
+		}
+	}
+});
+
+app.post("/loggingin", async (req, res) => {
+	var email = req.body.email;
+	var password = req.body.password;
+	var results = await db_users.getUser({
+		email: email,
+	});
+
+	//Checks DB for user credentials
+	//If user exists, session is created.
+	if (results) {
+		if (results.length == 1) {
+			console.log();
+			//there should only be 1 user in the db that matches
+			if (bcrypt.compareSync(password, results[0].password)) {
+				req.session.authenticated = true;
+				req.session.user_type = results[0].type;
+				req.session.name = results[0].name;
+				req.session.email = results[0].email;
+				req.session.MRAD_id = results[0].MRAD_id;
+				req.session.user_id = results[0].user_id;
+				req.session.cookie.maxAge = expireTime;
+				console.log(req.session.user_type);
+
+				if (!isAdmin(req)) {
+					//Goes to student landing page upon successful login
+					res.redirect("/home");
+				} else {
+					res.redirect("/admin"); //Goes to admin landing page upon successful login
+				}
+
+				return;
+			} else {
+				console.log("invalid password");
+			}
+		} else {
+			console.log(
+				"invalid number of users matched: " + results.length + " (expected 1)."
+			);
+			res.render("login");
+			return;
+		}
+	}
+
+	console.log("user not found");
+	//user and password combination not found
+	res.render("login");
+});
+
+//requires session auth
+app.get("/home", (req, res) => {
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else {
+		res.render("disclaimer", {
+			name: req.session.name,
+		});
+	}
+});
 
 app.get("/profile", async (req, res) => {
 	if (!isValidSession(req)) {
@@ -254,6 +341,105 @@ app.post("/profile/update", async (req, res) => {
 	}
 });
 
+app.get("/selection", async (req, res) => {
+	const optionLines = await db_query.getOptionRows();
+
+	res.render("selection", { options: optionLines, requestMsg: "" });
+});
+
+app.post("/saveChoices", async (req, res) => {
+	const optionLines = await db_query.getOptionRows();
+
+	var selection1 = parseInt(req.body.oneLine);
+	var selection2 = parseInt(req.body.twoLine);
+	var selection3 = parseInt(req.body.threeLine);
+	var selection4 = parseInt(req.body.fourLine);
+	var selection5 = parseInt(req.body.fiveLine);
+	var user_id = req.session.user_id;
+
+	if (
+		selection1 !== selection2 &&
+		selection1 !== selection3 &&
+		selection1 !== selection4 &&
+		selection1 !== selection5 &&
+		selection2 !== selection3 &&
+		selection2 !== selection4 &&
+		selection2 !== selection5 &&
+		selection3 !== selection4 &&
+		selection3 !== selection5 &&
+		selection4 !== selection5
+	) {
+		if (
+			isNaN(selection1) ||
+			isNaN(selection2) ||
+			isNaN(selection3) ||
+			isNaN(selection4) ||
+			isNaN(selection5)
+		) {
+			res.render("selection", {
+				options: optionLines,
+				requestMsg: "You are missing a choice",
+			});
+		} else {
+			try {
+				var result = await db_query.saveSelection({
+					selection1: selection1,
+					selection2: selection2,
+					selection3: selection3,
+					selection4: selection4,
+					selection5: selection5,
+					user_id: user_id,
+				});
+				console.log("Success");
+				res.render("selection", {
+					options: optionLines,
+					requestMsg: "Successfully Saved!",
+				});
+			} catch (error) {
+				console.log("Failure");
+				res.render("selection", {
+					options: optionLines,
+					requestMsg: "Failed to Save",
+				});
+			}
+		}
+	} else {
+		res.render("selection", {
+			options: optionLines,
+			requestMsg: "Please pick 5 unique choices.",
+		});
+		console.log("Non-unique selections.");
+	}
+});
+
+app.get("/getSelections", async (req, res) => {
+	var [results] = await db_query.getActiveClinicalSites();
+	return res.json(results);
+});
+
+app.get("/disclaimer", (req, res) => {
+	res.render("disclaimer");
+});
+
+//requires session auth
+app.get("/admin", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		res.render("admin_home");
+	}
+});
+
+app.get("/admin-site-list", async (req, res) => {
+	try {
+		var [results] = await db_query.getClinicalSites();
+	} catch (err) {
+		console.log("Missing clinical sites");
+	}
+	res.render("admin_site_list", { sites: results });
+});
+
 app.post("/addClinicalSite", async (req, res) => {
 	var siteName = req.body.siteName;
 	var totalSpots = req.body.spotsNumber;
@@ -267,81 +453,46 @@ app.post("/addClinicalSite", async (req, res) => {
 	res.redirect("admin-site-list");
 });
 
-app.post("/generateSiteOptions", async (req, res) => {
-	const sites = await db_query.getActiveClinicalSites();
-	let options = option_generator.generateOptions(sites);
-	const intake_res = await db_query.getMaxIntake();
+app.post("/updateSites", async (req, res) => {
+	const siteName = req.body.siteName;
+	const siteSpots = req.body.siteSpots;
+	const isActive = req.body.active === "on" ? 1 : 2;
+	const clinical_id = req.body.siteID;
 
-	const queryArr = [];
-	for (let i = 0; i < options.length; i++) {
-		queryArr.push([
-			options[i][0].clinical_sites_id,
-			options[i][1].clinical_sites_id,
-			options[i][2].clinical_sites_id,
-			intake_res.intake_max,
-			options[i][3],
-		]);
+	if (siteName !== "" || siteSpots !== "") {
+		var results = await db_query.updateClinicalSites({
+			siteName: siteName,
+			siteSpots: siteSpots,
+			isActive: isActive,
+			clinical_id: clinical_id,
+		});
+		console.log("Sucess Updating Clinical Site");
+		res.redirect("admin-site-list");
+	} else {
+		console.log("Failed to update");
+		res.redirect("admin-site-list");
 	}
-	await db_query.insertOptionRows(queryArr);
-	res.send(queryArr);
 });
 
-app.get("/admin-site-list", async (req, res) => {
-	try {
-		var [results] = await db_query.getClinicalSites();
-	} catch (err) {
-		console.log("Missing clinical sites");
-	}
-	res.render("admin_site_list", { sites: results });
-});
+// This is how you send emails
+app.post("/send-mail", (req, res) => {
+	console.log("attempt to send email");
 
-app.post("/loggingin", async (req, res) => {
-	var email = req.body.email;
-	var password = req.body.password;
-	var results = await db_users.getUser({
-		email: email,
-	});
+	const data = {
+		from: "mrad.selection@gmail.com", // sender address
+		to: "uberduper2@gmail.com", // list of receivers
+		subject: "Sending Email using Node.js",
+		text: "That was easy!",
+	};
 
-	//Checks DB for user credentials
-	//If user exists, session is created.
-	if (results) {
-		if (results.length == 1) {
-			console.log();
-			//there should only be 1 user in the db that matches
-			if (bcrypt.compareSync(password, results[0].password)) {
-				req.session.authenticated = true;
-				req.session.user_type = results[0].type;
-				req.session.name = results[0].name;
-				req.session.email = results[0].email;
-				req.session.MRAD_id = results[0].MRAD_id;
-				req.session.user_id = results[0].user_id;
-				req.session.cookie.maxAge = expireTime;
-				console.log(req.session.user_type);
-
-				if (!isAdmin(req)) {
-					//Goes to student landing page upon successful login
-					res.redirect("/home");
-				} else {
-					res.redirect("/admin"); //Goes to admin landing page upon successful login
-				}
-
-				return;
-			} else {
-				console.log("invalid password");
-			}
-		} else {
-			console.log(
-				"invalid number of users matched: " + results.length + " (expected 1)."
-			);
-			res.render("login");
-			return;
+	transporter.sendMail(data, (err, info) => {
+		if (err) {
+			console.log(err);
 		}
-	}
-
-	console.log("user not found");
-	//user and password combination not found
-	res.render("login");
+		res.status(200).send({ message: "Mail send", message_id: info.messageId });
+	});
 });
+// end of sending emails
 
 app.get("/forgot-password/enter-email", (req, res) => {
 	res.render("enter_email_fp");
@@ -387,32 +538,33 @@ app.post("/forgot-password/password-send", async (req, res) => {
 	}
 });
 
-app.post("/logout", (req, res) => {
-	req.session.authenticated = false;
-	req.session.destroy();
-	res.redirect("/login");
-});
-
-//requires session auth
-app.get("/home", (req, res) => {
-	if (!isValidSession(req)) {
-		res.redirect("/");
+app.post("/admin/send-email", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403)
+		res.render("403")
 	} else {
-		res.render("disclaimer", {
-			name: req.session.name,
+		let emails = await db_admin.getStudentEmails()
+
+		let email_list = []
+		emails.forEach(element => {
+			email_list.push(element.email)
+		});
+
+		const data = {
+			from: "mrad.selection@gmail.com", // sender address
+			bcc: email_list, // list of receivers
+			subject: "MRAD Final Selection",
+			text: req.body.email_content
+		};
+	
+		transporter.sendMail(data, (err, info) => {
+			if (err) {
+				console.log(err);
+			}
+			res.redirect("/admin/tools");
 		});
 	}
-});
-
-//requires session auth
-app.get("/admin", async (req, res) => {
-	if (!isAdmin(req)) {
-		res.status(403);
-		res.render("403");
-	} else {
-		res.render("admin_home");
-	}
-});
+})
 
 //requires admin auth
 app.get("/admin-view-students", async (req, res) => {
@@ -462,27 +614,6 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 			console.log("Server: Error in retrieving student details from database.");
 			res.redirect("/admin-view-students");
 		}
-	}
-});
-
-app.post("/updateFinalPlacement", async (req, res) => {
-	var line_assigned = req.body.line_assigned;
-	var site_one = req.body.site_one;
-	var site_two = req.body.site_two;
-	var site_three = req.body.site_three;
-	var finalPlacementID = req.body.finalPlacementID;
-
-	if (line_assigned !== "" || site_one !== "" || site_two !== "" || site_three !== "") {
-		let results = await db_admin.updateFinalAssignment({
-			final_placement_id: parseInt(finalPlacementID),
-			line_assigned: line_assigned,
-			site_one: site_one,
-			site_two: site_two,
-			site_three: site_three
-		});
-		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
-	} else {
-		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
 	}
 });
 
@@ -556,6 +687,27 @@ app.post("/admin-view-students/accomodation/lower_mainland/:MRADid", async (req,
 	}
 });
 
+app.post("/updateFinalPlacement", async (req, res) => {
+	var line_assigned = req.body.line_assigned;
+	var site_one = req.body.site_one;
+	var site_two = req.body.site_two;
+	var site_three = req.body.site_three;
+	var finalPlacementID = req.body.finalPlacementID;
+
+	if (line_assigned !== "" || site_one !== "" || site_two !== "" || site_three !== "") {
+		let results = await db_admin.updateFinalAssignment({
+			final_placement_id: parseInt(finalPlacementID),
+			line_assigned: line_assigned,
+			site_one: site_one,
+			site_two: site_two,
+			site_three: site_three
+		});
+		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
+	} else {
+		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
+	}
+});
+
 app.get("/admin/tools", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
@@ -570,84 +722,23 @@ app.get("/admin/tools", async (req, res) => {
 	}
 });
 
-app.post("/admin/send-email", async (req, res) => {
-	if (!isAdmin(req)) {
-		res.status(403)
-		res.render("403")
-	} else {
-		let emails = await db_admin.getStudentEmails()
+app.post("/generateSiteOptions", async (req, res) => {
+	const sites = await db_query.getActiveClinicalSites();
+	let options = option_generator.generateOptions(sites);
+	const intake_res = await db_query.getMaxIntake();
 
-		let email_list = []
-		emails.forEach(element => {
-			email_list.push(element.email)
-		});
-
-		const data = {
-			from: "mrad.selection@gmail.com", // sender address
-			bcc: email_list, // list of receivers
-			subject: "MRAD Final Selection",
-			text: req.body.email_content
-		};
-	
-		transporter.sendMail(data, (err, info) => {
-			if (err) {
-				console.log(err);
-			}
-			res.redirect("/admin/tools");
-		});
+	const queryArr = [];
+	for (let i = 0; i < options.length; i++) {
+		queryArr.push([
+			options[i][0].clinical_sites_id,
+			options[i][1].clinical_sites_id,
+			options[i][2].clinical_sites_id,
+			intake_res.intake_max,
+			options[i][3],
+		]);
 	}
-})
-
-app.get("/disclaimer", (req, res) => {
-	res.render("disclaimer");
-});
-
-app.get("/signup", (req, res) => {
-	res.render("signup");
-});
-
-app.post("/submituser", async (req, res) => {
-	let name = req.body.name;
-	let email = req.body.email;
-	let password = req.body.password;
-	let MRAD_id = req.body.MRAD_id;
-	let security_code = req.body.security_code;
-
-	let hashedPassword = bcrypt.hashSync(password, saltRounds);
-
-	let code = await db_admin.getSecurityCode();
-
-	if (security_code !== code[0].security_code) {
-		res.redirect("signup");
-	} else {
-		var success = await db_users.createUser({
-			name: name,
-			email: email,
-			hashedPassword: hashedPassword,
-			MRAD_id: MRAD_id,
-		});
-
-		if (success) {
-			var results = await db_users.getUser({
-				email: email,
-			});
-
-			req.session.authenticated = true;
-			req.session.user_type = results[0].type;
-			req.session.name = results[0].name;
-			req.session.email = results[0].email;
-			req.session.MRAD_id = results[0].MRAD_id;
-			req.session.user_id = results[0].user_id;
-			req.session.cookie.maxAge = expireTime;
-			if (req.session.user_type === "student") {
-				await db_query.setSelectionFirstTime({ user_id: results[0].user_id });
-			}
-			res.redirect("/home"); //Goes to landing page upon successful login
-		} else {
-			//Redirect to 404 or Page with Generic Error Message??
-			console.log("error in creating the user");
-		}
-	}
+	await db_query.insertOptionRows(queryArr);
+	res.send(queryArr);
 });
 
 app.post("/generate-code", async (req, res) => {
@@ -664,103 +755,6 @@ app.post("/generate-code", async (req, res) => {
 			error: "failed to insert security code properly",
 		});
 	}
-});
-
-app.get("/selection", async (req, res) => {
-	const optionLines = await db_query.getOptionRows();
-
-	res.render("selection", { options: optionLines, requestMsg: "" });
-});
-
-app.post("/updateSites", async (req, res) => {
-	const siteName = req.body.siteName;
-	const siteSpots = req.body.siteSpots;
-	const isActive = req.body.active === "on" ? 1 : 2;
-	const clinical_id = req.body.siteID;
-
-	if (siteName !== "" || siteSpots !== "") {
-		var results = await db_query.updateClinicalSites({
-			siteName: siteName,
-			siteSpots: siteSpots,
-			isActive: isActive,
-			clinical_id: clinical_id,
-		});
-		console.log("Sucess Updating Clinical Site");
-		res.redirect("admin-site-list");
-	} else {
-		console.log("Failed to update");
-		res.redirect("admin-site-list");
-	}
-});
-
-app.post("/saveChoices", async (req, res) => {
-	const optionLines = await db_query.getOptionRows();
-
-	var selection1 = parseInt(req.body.oneLine);
-	var selection2 = parseInt(req.body.twoLine);
-	var selection3 = parseInt(req.body.threeLine);
-	var selection4 = parseInt(req.body.fourLine);
-	var selection5 = parseInt(req.body.fiveLine);
-	var user_id = req.session.user_id;
-
-	if (
-		selection1 !== selection2 &&
-		selection1 !== selection3 &&
-		selection1 !== selection4 &&
-		selection1 !== selection5 &&
-		selection2 !== selection3 &&
-		selection2 !== selection4 &&
-		selection2 !== selection5 &&
-		selection3 !== selection4 &&
-		selection3 !== selection5 &&
-		selection4 !== selection5
-	) {
-		if (
-			isNaN(selection1) ||
-			isNaN(selection2) ||
-			isNaN(selection3) ||
-			isNaN(selection4) ||
-			isNaN(selection5)
-		) {
-			res.render("selection", {
-				options: optionLines,
-				requestMsg: "You are missing a choice",
-			});
-		} else {
-			try {
-				var result = await db_query.saveSelection({
-					selection1: selection1,
-					selection2: selection2,
-					selection3: selection3,
-					selection4: selection4,
-					selection5: selection5,
-					user_id: user_id,
-				});
-				console.log("Success");
-				res.render("selection", {
-					options: optionLines,
-					requestMsg: "Successfully Saved!",
-				});
-			} catch (error) {
-				console.log("Failure");
-				res.render("selection", {
-					options: optionLines,
-					requestMsg: "Failed to Save",
-				});
-			}
-		}
-	} else {
-		res.render("selection", {
-			options: optionLines,
-			requestMsg: "Please pick 5 unique choices.",
-		});
-		console.log("Non-unique selections.");
-	}
-});
-
-app.get("/getSelections", async (req, res) => {
-	var [results] = await db_query.getActiveClinicalSites();
-	return res.json(results);
 });
 
 app.post("/newIntake", async (req, res) => {
@@ -921,7 +915,11 @@ app.get('/generate-pdf-final-placement', async (req, res) => {
 	
 });
 
-app.use(express.static(__dirname + "/public"));
+app.post("/logout", (req, res) => {
+	req.session.authenticated = false;
+	req.session.destroy();
+	res.redirect("/login");
+});
 
 app.get("*", (req, res) => {
 	res.status(404);
@@ -1001,6 +999,8 @@ function isValidSession(req) {
 	}
 	return false;
 }
+
+app.use(express.static(__dirname + "/public"));
 
 app.listen(port, () => {
 	console.log("Node application listening on port " + port);
