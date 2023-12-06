@@ -174,7 +174,7 @@ async function saveSelection(postData) {
 async function setSelectionFirstTime(postData){
 	let choiceOnCreation = `
 		INSERT INTO student_choices (choice_1, choice_2, choice_3, choice_4, choice_5, user_id)
-		VALUES (1, 2, 3, 4, 5, :user_id);
+		VALUES (103, 104, 105, 106, 107, :user_id);
 	`;
 
 	let params = {

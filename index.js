@@ -746,7 +746,7 @@ app.post("/generate-code", async (req, res) => {
 
 	try {
 		await db_admin.insertSecurityCode({ code: code }); // inserting to db
-		res.redirect("admin");
+		res.redirect("admin/tools");
 	} catch (err) {
 		console.log(`Error inserting code: ${code}`);
 		console.log(err);
@@ -759,7 +759,7 @@ app.post("/generate-code", async (req, res) => {
 
 app.post("/newIntake", async (req, res) => {
 	await db_admin.createNewIntake();
-	res.redirect("admin");
+	res.redirect("admin/tools");
 });
 
 // Route to generate and download the PDF
