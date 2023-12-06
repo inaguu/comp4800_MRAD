@@ -128,6 +128,7 @@ function addThirdTerm(pairOptions, termThree) {
             outputList.push(newPair);
             seenPairs.add(JSON.stringify(newPair));
             termThree.splice(termThreeIndex, 1);
+            pairOptions.splice(pairOptionsIndex, 1);
         }
     }
 
