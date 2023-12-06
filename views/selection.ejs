@@ -29,7 +29,8 @@
                     <ul id="choice-1" class="hidden py-2 space-y-2">
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="line-1">Line # _</span>
-                            <input type="text" name="oneLine" data-choice="line-number-1" value="" hidden/>
+                            <input type="text" data-choice="line-number-1" value="" hidden/>
+                            <input type="text" name="oneLine" data-choice="line-id-1" value="" hidden/>
                         </li>
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="1-1">1. None</span>
@@ -58,7 +59,8 @@
                     <ul id="choice-2" class="hidden py-2 space-y-2">
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="line-2">Line # _</span>
-                            <input type="text" name="twoLine" data-choice="line-number-2" value="" hidden/>
+                            <input type="text" data-choice="line-number-2" value="" hidden/>
+                            <input type="text" name="twoLine" data-choice="line-id-2" value="" hidden/>
                         </li>
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="2-1">1. None</span>
@@ -87,7 +89,8 @@
                     <ul id="choice-3" class="hidden py-2 space-y-2">
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="line-3">Line # _</span>
-                            <input type="text" name="threeLine" data-choice="line-number-3" value="" hidden/>
+                            <input type="text" data-choice="line-number-3" value="" hidden/>
+                            <input type="text" name="threeLine" data-choice="line-id-3" value="" hidden/>
                         </li>
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="3-1">1. None</span>
@@ -116,7 +119,8 @@
                     <ul id="choice-4" class="hidden py-2 space-y-2">
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="line-4">Line # _</span>
-                            <input type="text" name="fourLine" data-choice="line-number-4" value="" hidden/>
+                            <input type="text" data-choice="line-number-4" value="" hidden/>
+                            <input type="text" name="fourLine" data-choice="line-id-4" value="" hidden/>
                         </li>
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="4-1">1. None</span>
@@ -145,7 +149,8 @@
                     <ul id="choice-5" class="hidden py-2 space-y-2">
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="line-5">Line # _</span>
-                            <input type="text" name="fiveLine" data-choice="line-number-5" value="" hidden/>
+                            <input type="text" data-choice="line-number-5" value="" hidden/>
+                            <input type="text" name="fiveLine" data-choice="line-id-5" value="" hidden/>
                         </li>
                         <li>
                             <span class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group dark:text-white" data-choice="5-1">1. None</span>
@@ -256,6 +261,7 @@
 
                         <% } %>
                         <%= i + 1 %>
+                        <input type="text" name="oneLine" data-choice="line-number-1" value=<%= options[i].line_option_id %> hidden/>
                     </div>
                     <div class="flex p-4 justify-center items-center">
                         <%= options[i].one %>
@@ -265,6 +271,9 @@
                     </div>
                     <div class="flex p-4 justify-center items-center ">
                         <%= options[i].three %>
+                    </div>
+                    <div>
+                        <input class="line_id" type="text" name="oneLine" data-choice="line-number-1" value=<%= options[i].line_option_id %> hidden/>
                     </div>
                 </div>
             <% } %>

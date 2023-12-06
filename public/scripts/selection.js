@@ -26,7 +26,7 @@ function toggleChoice(choice) {
     }
 }
 
-function selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree) {
+function selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree, lineId) {
     if (currentChoice !== 0) {
         choices.currentChoice = [choiceOne, choiceTwo, choiceThree];
     } else {
@@ -49,6 +49,7 @@ function selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree) {
     const selectionOptionThree = document.querySelector(`span[data-choice="${currentChoice}-3"]`);
 
     const lineNumberInput = document.querySelector(`input[data-choice="line-number-${currentChoice}"]`);
+    const lineIdInput = document.querySelector(`input[data-choice="line-id-${currentChoice}"]`);
     const selectionOptionOneInput = document.querySelector(`input[data-choice="input-${currentChoice}-1"]`);
     const selectionOptionTwoInput = document.querySelector(`input[data-choice="input-${currentChoice}-2"]`);
     const selectionOptionThreeInput = document.querySelector(`input[data-choice="input-${currentChoice}-3"]`);
@@ -62,14 +63,10 @@ function selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree) {
     selectionOptionOne.innerHTML = `1. ${choiceOne}`;
     selectionOptionTwo.innerHTML = `2. ${choiceTwo}`;
     selectionOptionThree.innerHTML = `3. ${choiceThree}`;
+
+    lineIdInput.value = lineId;
 }
 
-function testFunction() {
-    const options = document.getElementsByClassName("test-option");
-    for (const child of options[0].children) {
-        console.log(child.textContent);
-    }
-}
 
 document.addEventListener("DOMContentLoaded", function() {
     // Code to be executed when the DOM is ready
@@ -82,7 +79,8 @@ document.addEventListener("DOMContentLoaded", function() {
             const choiceOne = optionChildren[1].textContent;
             const choiceTwo = optionChildren[2].textContent;
             const choiceThree = optionChildren[3].textContent;
-            selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree)
+            const lineId = optionChildren[4].querySelector(`input[data-choice="line-number-1"]`);
+            selectChoice(lineNumber, choiceOne, choiceTwo, choiceThree, lineId.value)
         })
     }
 

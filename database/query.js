@@ -122,7 +122,7 @@ async function insertOptionRows(rows) {
 
 async function getOptionRows(userData) {
 	let getClinicalSites = `
-		SELECT one.site_name as one, two.site_name as two, three.site_name as three, IF(choiceCounter.Count, choiceCounter.Count, 0) as Count
+		SELECT one.site_name as one, two.site_name as two, three.site_name as three, IF(choiceCounter.Count, choiceCounter.Count, 0) as Count, line_option_id
 		FROM freedb_team2project.line_options
 		JOIN clinical_sites as one ON (placement_one = one.clinical_sites_id)
 		JOIN clinical_sites as two ON (placement_two = two.clinical_sites_id)

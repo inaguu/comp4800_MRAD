@@ -356,6 +356,7 @@ app.post("/saveChoices", async (req, res) => {
 	var selection4 = parseInt(req.body.fourLine);
 	var selection5 = parseInt(req.body.fiveLine);
 	var user_id = req.session.user_id;
+	console.log(req.body);
 
 	if (
 		selection1 !== selection2 &&
