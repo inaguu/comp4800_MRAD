@@ -58,14 +58,14 @@ app.use(express.static(__dirname + "/public"));
 const expireTime = 60 * 60 * 1000; //expires after 1 hour  (hours * minutes * seconds * millis)
 app.set("view engine", "ejs");
 
-app.use(express.urlencoded({ extended: false }));
-
 var mongoStore = MongoStore.create({
 	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/?retryWrites=true&w=majority`,
 	crypto: {
 		secret: mongodb_session_secret,
 	},
 });
+
+app.use(express.urlencoded({ extended: false }));
 
 app.use(
 	session({
