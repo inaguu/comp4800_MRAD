@@ -120,18 +120,39 @@ async function insertOptionRows(rows) {
 	}
 }
 
-async function getOptionRows() {
+async function getOptionRows(userData) {
 	let getClinicalSites = `
-		SELECT one.site_name as one, two.site_name as two, three.site_name as three
+		SELECT one.site_name as one, two.site_name as two, three.site_name as three, IF(choiceCounter.Count, choiceCounter.Count, 0) as Count
 		FROM freedb_team2project.line_options
 		JOIN clinical_sites as one ON (placement_one = one.clinical_sites_id)
 		JOIN clinical_sites as two ON (placement_two = two.clinical_sites_id)
 		JOIN clinical_sites as three ON (placement_three = three.clinical_sites_id)
+		LEFT JOIN (SELECT COUNT(choices.choice) as Count, choices.choice as choice
+				FROM
+				(SELECT choice_1 AS choice, user_id
+				FROM student_choices 
+				UNION ALL
+				SELECT choice_2, user_id
+				FROM student_choices
+				UNION ALL
+				SELECT choice_3, user_id
+				FROM student_choices
+				UNION ALL
+				SELECT choice_4, user_id
+				FROM student_choices
+				UNION ALL
+				SELECT choice_5, user_id
+				FROM student_choices
+				) as choices
+				JOIN users USING (user_id)
+				GROUP BY (choices.choice)
+				ORDER BY choice ASC) as choiceCounter ON (choiceCounter.choice = line_option_id)
+		WHERE intake_number_fk = (SELECT intake_number FROM users WHERE user_id = :user_id)
 		ORDER BY one.site_name ASC;
 	`;
 
 	try {
-		const results = await database.query(getClinicalSites);
+		const results = await database.query(getClinicalSites, {user_id: userData});
 		console.log("Successfully retreived option rows");
 		return results[0];
 	} catch (err) {
