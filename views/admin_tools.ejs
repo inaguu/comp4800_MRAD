@@ -15,7 +15,7 @@
                         <p class="mb-4 text-base text-neutral-600">
                             Change the security code needed to make an account. 
                         </p>
-                        <form action="/generate-code" method="post">
+                        <form action="/generate-code" method="post" onsubmit="return confirm('Are you sure you want to generate a new code?');">
                             <span>Current Code</span>
                             <input type="text" id="code_display" value="<%= code %>" readonly>
                             <button type="submit" id="generate" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Generate Code</button>
@@ -32,7 +32,7 @@
                         <p class="mb-4 text-base text-neutral-600">
                             Displays the current intake number since the beginning of this websites creation.
                         </p>
-                        <form action="/newIntake" method="post">
+                        <form action="/newIntake" method="post" onsubmit="return confirm('Are you sure you want to create a new Intake?');">
                             <span>Current Intake</span>
                             <input type="text" id="intake_display" value="<%= intake %>" readonly>
                             <button type="submit" id="generate" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">New Intake</button>
@@ -49,7 +49,7 @@
                         <p class="mb-4 text-base text-neutral-600">
                             Generate lines for the current intake. <br> <p style="color: red;">*Please update intake before creating new lines*</p> 
                         </p>
-                        <form action="/generateSiteOptions" method="post">
+                        <form action="/generateSiteOptions" method="post" onsubmit="return confirm('Are you sure you want to generate new lines?');">
                             <button type="submit" id="generate" class="w-96 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Generate Lines</button>
                         </form>
                     </div>
@@ -64,7 +64,7 @@
                         <p class="mb-4 text-base text-neutral-600">
                             Assign current intake their placement.
                         </p>
-                        <form action="/generate-pdf-final-placement" method="get">
+                        <form action="/generate-pdf-final-placement" method="get" onsubmit="return confirm('Are you sure you want to assign students their final placements?');">
                             <button type="submit" id="generate" class="w-96 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Assign Practicum Placement</button>
                         </form>
                     </div>

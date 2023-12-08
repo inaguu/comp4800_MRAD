@@ -50,7 +50,7 @@ async function createUser(postData) {
 
 async function getUser(postData) {
 	let getUserSQL = `
-		SELECT user_id, name, email, password, MRAD_id, type
+		SELECT user_id, name, email, password, MRAD_id, type, interior_bc, lower_mainland
 		FROM users
 		JOIN user_type USING (user_type_id)
 		WHERE email = :email;

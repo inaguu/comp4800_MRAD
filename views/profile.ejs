@@ -64,6 +64,16 @@
         <!-- Users List -->
         <div class="overflow-y-auto">
             <ul id="usersList">
+                <% console.log(results) %>
+                <% if(results.interior_bc === 1 || results.lower_mainland === 1) { %>
+                    <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
+                        <div class="flex mt-2">
+                          <label class="inline-flex items-center ml-4">
+                              <span class="ml-2 text-gray-700">Your accomodation has been made!</span>
+                          </label>
+                        </div>
+                    </li>
+                <% } %>
                 <% let choice_number = 1 %>
                 <% user_selection.forEach(function(selection) { %>
                     <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
@@ -102,9 +112,6 @@
                   <% if (finalPlacement.length === 1) { %>
                     <li class="flex flex-col py-2 px-4 bg-gray-100 mt-2 rounded shadow-sm">
                         <div class="flex mt-2">
-                            <label class="inline-flex items-center ml-4">
-                                <span class="ml-2 text-gray-700">Line #: <%= finalPlacement[0].line_assigned %> </span>
-                            </label>
                             <label class="inline-flex items-center ml-4">
                                 <span class="ml-2 text-gray-700">Term 2: <%= finalPlacement[0].site_one %> </span>
                             </label>

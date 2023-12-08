@@ -198,7 +198,6 @@ app.get("/profile", async (req, res) => {
 		let results = await db_users.getUser({
 			email: req.session.email,
 		});
-		console.log(results[0]);
 
 		let selectionsC1 = await db_selections.getStudentSelectionC1({
 			user_id: req.session.user_id,
@@ -356,7 +355,6 @@ app.post("/saveChoices", async (req, res) => {
 	var selection4 = parseInt(req.body.fourLine);
 	var selection5 = parseInt(req.body.fiveLine);
 	var user_id = req.session.user_id;
-	console.log(req.body);
 
 	if (
 		selection1 !== selection2 &&
@@ -740,6 +738,7 @@ app.post("/generateSiteOptions", async (req, res) => {
 	}
 	await db_query.insertOptionRows(queryArr);
 	res.send(queryArr);
+	res.redirect("/admin/tools")
 });
 
 app.post("/generate-code", async (req, res) => {
