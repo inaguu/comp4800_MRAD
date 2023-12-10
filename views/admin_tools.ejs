@@ -50,7 +50,7 @@
                             Generate lines for the current intake. <br> <p style="color: red;">*Please update intake before creating new lines*</p> 
                         </p>
                         <form action="/generateSiteOptions" method="post" onsubmit="return confirm('Are you sure you want to generate new lines?');">
-                            <button type="submit" id="generate" class="w-96 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Generate Lines</button>
+                            <button type="submit" id="generate" class="w-auto mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Generate Lines</button>
                         </form>
                     </div>
                 </div>
@@ -65,7 +65,7 @@
                             Assign current intake their placement.
                         </p>
                         <form action="/generate-pdf-final-placement" method="get" onsubmit="return confirm('Are you sure you want to assign students their final placements?');">
-                            <button type="submit" id="generate" class="w-96 mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Assign Practicum Placement</button>
+                            <button type="submit" id="generate" class="w-auto mt-3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Assign Practicum Placement</button>
                         </form>
                     </div>
                 </div>
@@ -78,7 +78,7 @@
                         Send Email
                     </h5>
                     <p class="mb-4 text-base text-neutral-600">
-                        Send an email to all the students.
+                        Send an email to all the students in INTAKE <%= intake %>
                     </p>
                     <form action="/admin/send-email" method="post" class="flex flex-col">
                         <textarea name="email_content" id="email_content" cols="30" rows="16" class="px-[20px] py-[12px] box-border resize-none border-solid border-2 rounded border-{#ccc} bg-{#f8f8f8}">Dear Student, 

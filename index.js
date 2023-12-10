@@ -43,8 +43,8 @@ const transporter = nodemailer.createTransport({
 	port: 465,
 	host: "smtp.gmail.com",
 	auth: {
-		user: "mrad.selection@gmail.com",
-		pass: "nhwxozlwribtokpw",
+		user: process.env.MAIL_EMAIL,
+		pass: process.env.MAIL_PASSWORD,
 	},
 	secure: true, // upgrades later with STARTTLS -- change this based on the PORT
 });
@@ -473,26 +473,6 @@ app.post("/updateSites", async (req, res) => {
 	}
 });
 
-// This is how you send emails
-app.post("/send-mail", (req, res) => {
-	console.log("attempt to send email");
-
-	const data = {
-		from: "mrad.selection@gmail.com", // sender address
-		to: "uberduper2@gmail.com", // list of receivers
-		subject: "Sending Email using Node.js",
-		text: "That was easy!",
-	};
-
-	transporter.sendMail(data, (err, info) => {
-		if (err) {
-			console.log(err);
-		}
-		res.status(200).send({ message: "Mail send", message_id: info.messageId });
-	});
-});
-// end of sending emails
-
 app.get("/forgot-password/enter-email", (req, res) => {
 	res.render("enter_email_fp");
 });
@@ -502,7 +482,7 @@ app.post("/forgot-password/email-send", (req, res) => {
 	req.session.email = email;
 
 	const data = {
-		from: "mrad.selection@gmail.com", // sender address
+		from: process.env.MAIL_EMAIL, // sender address
 		to: email, // list of receivers
 		subject: "MRAD Password Reset",
 		text: `Please click the link to reset your password. \n\n http://localhost:3000/forgot-password/enter-password \n\n If this was not you, then dismiss this email.`,
@@ -512,7 +492,7 @@ app.post("/forgot-password/email-send", (req, res) => {
 		if (err) {
 			console.log(err);
 		}
-		res.render("enter_email_fp");
+		res.redirect("/");
 	});
 });
 
@@ -550,7 +530,7 @@ app.post("/admin/send-email", async (req, res) => {
 		});
 
 		const data = {
-			from: "mrad.selection@gmail.com", // sender address
+			from: process.env.MAIL_EMAIL, // sender address
 			bcc: email_list, // list of receivers
 			subject: "MRAD Final Selection",
 			text: req.body.email_content
@@ -615,6 +595,26 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 		}
 	}
 });
+
+app.post("/admin-view-students/reset-password/:MRAD_id", (async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		let hashedPassword = bcrypt.hashSync("#Mrad12", saltRounds);
+
+		let results = db_admin.resetStudentPassword({
+			password: hashedPassword,
+			mrad_id: req.params.MRAD_id
+		})
+
+		if (results) {
+			res.redirect(`/admin-view-students/${req.params.MRAD_id}`)
+		} else {
+			res.redirect("*")
+		}
+	}
+}))
 
 //requires admin auth
 app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, res) => {
