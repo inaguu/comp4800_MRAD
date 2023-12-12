@@ -168,7 +168,9 @@ async function getStudentEmails(){
 		SELECT email
 		FROM users
 		JOIN user_type USING (user_type_id)
-        WHERE type = 'student';
+        WHERE type = 'student' 
+		AND
+		intake_number = (SELECT MAX(intake_id) FROM intake);
 	`;
 
 	try {
@@ -360,6 +362,30 @@ async function updateFinalAssignment(postData){
 	}
 }
 
+async function resetStudentPassword(postData){
+	let resetStudentPasswordSQL = `
+		UPDATE users
+		SET password = :password
+		WHERE MRAD_id = :mrad_id
+	`;	
+
+	let params = {
+		password: postData.password,
+		mrad_id: postData.mrad_id
+	}
+
+	try {
+		const results = await database.query(resetStudentPasswordSQL, params);
+		console.log("Successfully updated final placement");
+		console.log(results);
+		return true;
+	} catch (err) {
+		console.log("Error trying to update final placement");
+		console.log(err);
+		return false;
+	}
+}
+
 module.exports = {
 	getStudents,
 	getOneStudent,
@@ -374,5 +400,6 @@ module.exports = {
 	getStudentChoices,
 	insertFinalAssignments,
 	getFinalAssignments,
-	updateFinalAssignment
+	updateFinalAssignment,
+	resetStudentPassword
 };
