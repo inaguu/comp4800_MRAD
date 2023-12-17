@@ -721,6 +721,12 @@ app.get("/admin/tools", async (req, res) => {
 	}
 });
 
+app.get("/admin/lines", async (req, res) => {
+	const optionLines = await db_query.getOptionRows(req.session.user_id);
+
+	res.render("admin_lines", {lines: optionLines});
+});
+
 app.post("/generateSiteOptions", async (req, res) => {
 	const sites = await db_query.getActiveClinicalSites();
 	let options = option_generator.generateOptions(sites);

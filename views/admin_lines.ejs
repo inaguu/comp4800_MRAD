@@ -1,0 +1,36 @@
+<%- include("templates/admin_header") %>
+    
+
+<div class="bg-gray-200 p-3">
+
+    <div class="m-auto w-full max-w-6xl p-8 bg-white/80 backdrop-blur-md shadow-xl rounded-xl">
+        <h1 class="text-2xl font-bold mb-4 inline">Lines for Current Intake</h1>
+
+        <!-- Table -->
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr>
+                <th class="py-2 px-4 border-b">Line #</th>
+                <th class="py-2 px-4 border-b">Term 2</th>
+                <th class="py-2 px-4 border-b">Term 4</th>
+                <th class="py-2 px-4 border-b">Term 6</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% let i = 1; %>
+                <% lines.forEach(function(line) { %>
+                    <tr>
+                        <td class="py-2 px-4 border-b text-center"><%= i %></td>
+                        <td class="py-2 px-4 border-b text-center"><%= line.one %></td>
+                        <td class="py-2 px-4 border-b text-center"><%= line.two %></td>
+                        <td class="py-2 px-4 border-b text-center"><%= line.three %></td>
+                    </tr>
+                    <% i++; %>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</div> 
+
+
+<%- include ("templates/footer") %>
