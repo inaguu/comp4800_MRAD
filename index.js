@@ -78,7 +78,7 @@ app.use(
 
 //public - no need for auth check
 app.get("/", (req, res) => {
-	res.render("login");
+	res.render("index");
 });
 
 //public - no need for auth check
