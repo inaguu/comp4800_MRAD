@@ -18,8 +18,8 @@ const db_admin = include("database/admin");
 const db_query = include("database/query");
 const db_selections = include("database/selections");
 
-const { PDFDocument, rgb, StandardFonts } = require('pdf-lib');  
-const fs = require('fs').promises;
+const { PDFDocument, rgb, StandardFonts } = require("pdf-lib");
+const fs = require("fs").promises;
 
 const success = db_utils.printMySQLVersion();
 
@@ -76,18 +76,22 @@ app.use(
 	})
 );
 
+//public - no need for auth check
 app.get("/", (req, res) => {
 	res.render("login");
 });
 
+//public - no need for auth check
 app.get("/login", (req, res) => {
 	res.render("login");
 });
 
+//public - no need for auth check
 app.get("/signup", (req, res) => {
 	res.render("signup");
 });
 
+//public - no need for auth check
 app.post("/submituser", async (req, res) => {
 	let name = req.body.name;
 	let email = req.body.email;
@@ -132,6 +136,7 @@ app.post("/submituser", async (req, res) => {
 	}
 });
 
+//public - no need for auth check
 app.post("/loggingin", async (req, res) => {
 	var email = req.body.email;
 	var password = req.body.password;
@@ -184,6 +189,8 @@ app.post("/loggingin", async (req, res) => {
 app.get("/home", (req, res) => {
 	if (!isValidSession(req)) {
 		res.redirect("/");
+	} else if (isAdmin(req)) {
+		res.redirect("/admin");
 	} else {
 		res.render("disclaimer", {
 			name: req.session.name,
@@ -191,9 +198,12 @@ app.get("/home", (req, res) => {
 	}
 });
 
+//requires session auth
 app.get("/profile", async (req, res) => {
 	if (!isValidSession(req)) {
 		res.redirect("/");
+	} else if (isAdmin(req)) {
+		res.redirect("/admin");
 	} else {
 		let results = await db_users.getUser({
 			email: req.session.email,
@@ -267,13 +277,15 @@ app.get("/profile", async (req, res) => {
 			},
 		];
 
-		let finalPlacement = await db_admin.getFinalAssignments({ MRAD_id: req.session.MRAD_id })
+		let finalPlacement = await db_admin.getFinalAssignments({
+			MRAD_id: req.session.MRAD_id,
+		});
 
 		if (results) {
 			res.render("profile", {
 				results: results[0],
 				user_selection: user_selection,
-				finalPlacement: finalPlacement
+				finalPlacement: finalPlacement,
 			});
 		}
 	}
@@ -340,10 +352,17 @@ app.post("/profile/update", async (req, res) => {
 	}
 });
 
+//requires session auth
 app.get("/selection", async (req, res) => {
-	const optionLines = await db_query.getOptionRows(req.session.user_id);
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else if (isAdmin(req)) {
+		res.redirect("/admin");
+	} else {
+		const optionLines = await db_query.getOptionRows(req.session.user_id);
 
-	res.render("selection", { options: optionLines, requestMsg: "" });
+		res.render("selection", { options: optionLines, requestMsg: "" });
+	}
 });
 
 app.post("/saveChoices", async (req, res) => {
@@ -411,13 +430,27 @@ app.post("/saveChoices", async (req, res) => {
 	}
 });
 
+//requires session auth
 app.get("/getSelections", async (req, res) => {
-	var [results] = await db_query.getActiveClinicalSites();
-	return res.json(results);
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else if (isAdmin(req)) {
+		res.redirect("/admin");
+	} else {
+		var [results] = await db_query.getActiveClinicalSites();
+		return res.json(results);
+	}
 });
 
+//requires session auth
 app.get("/disclaimer", (req, res) => {
-	res.render("disclaimer");
+	if (!isValidSession(req)) {
+		res.redirect("/");
+	} else if (isAdmin(req)) {
+		res.redirect("/admin");
+	} else {
+		res.render("disclaimer");
+	}
 });
 
 //requires session auth
@@ -430,13 +463,19 @@ app.get("/admin", async (req, res) => {
 	}
 });
 
+//requires session auth
 app.get("/admin-site-list", async (req, res) => {
-	try {
-		var [results] = await db_query.getClinicalSites();
-	} catch (err) {
-		console.log("Missing clinical sites");
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		try {
+			var [results] = await db_query.getClinicalSites();
+		} catch (err) {
+			console.log("Missing clinical sites");
+		}
+		res.render("admin_site_list", { sites: results });
 	}
-	res.render("admin_site_list", { sites: results });
 });
 
 app.post("/addClinicalSite", async (req, res) => {
@@ -473,6 +512,7 @@ app.post("/updateSites", async (req, res) => {
 	}
 });
 
+//public - does not need session auth
 app.get("/forgot-password/enter-email", (req, res) => {
 	res.render("enter_email_fp");
 });
@@ -496,6 +536,7 @@ app.post("/forgot-password/email-send", (req, res) => {
 	});
 });
 
+//public - does not need session auth
 app.get("/forgot-password/enter-password", (req, res) => {
 	res.render("enter_password_fp");
 });
@@ -519,23 +560,23 @@ app.post("/forgot-password/password-send", async (req, res) => {
 
 app.post("/admin/send-email", async (req, res) => {
 	if (!isAdmin(req)) {
-		res.status(403)
-		res.render("403")
+		res.status(403);
+		res.render("403");
 	} else {
-		let emails = await db_admin.getStudentEmails()
+		let emails = await db_admin.getStudentEmails();
 
-		let email_list = []
-		emails.forEach(element => {
-			email_list.push(element.email)
+		let email_list = [];
+		emails.forEach((element) => {
+			email_list.push(element.email);
 		});
 
 		const data = {
 			from: process.env.MAIL_EMAIL, // sender address
 			bcc: email_list, // list of receivers
 			subject: "MRAD Final Selection",
-			text: req.body.email_content
+			text: req.body.email_content,
 		};
-	
+
 		transporter.sendMail(data, (err, info) => {
 			if (err) {
 				console.log(err);
@@ -543,7 +584,7 @@ app.post("/admin/send-email", async (req, res) => {
 			res.redirect("/admin/tools");
 		});
 	}
-})
+});
 
 //requires admin auth
 app.get("/admin-view-students", async (req, res) => {
@@ -568,6 +609,7 @@ app.get("/admin-view-students", async (req, res) => {
 	}
 });
 
+//requires admin auth
 app.get("/admin-view-students/:MRADid", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
@@ -578,7 +620,7 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 		});
 
 		let finalSelection = await db_admin.getFinalAssignments({
-			MRAD_id: req.params.MRADid
+			MRAD_id: req.params.MRADid,
 		});
 
 		if (results) {
@@ -587,7 +629,7 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 			);
 			res.render("admin_profile_view", {
 				student: results,
-				finalSelection: finalSelection
+				finalSelection: finalSelection,
 			});
 		} else {
 			console.log("Server: Error in retrieving student details from database.");
@@ -596,7 +638,7 @@ app.get("/admin-view-students/:MRADid", async (req, res) => {
 	}
 });
 
-app.post("/admin-view-students/reset-password/:MRAD_id", (async (req, res) => {
+app.post("/admin-view-students/reset-password/:MRAD_id", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
 		res.render("403");
@@ -605,86 +647,104 @@ app.post("/admin-view-students/reset-password/:MRAD_id", (async (req, res) => {
 
 		let results = db_admin.resetStudentPassword({
 			password: hashedPassword,
-			mrad_id: req.params.MRAD_id
-		})
+			mrad_id: req.params.MRAD_id,
+		});
 
 		if (results) {
-			res.redirect(`/admin-view-students/${req.params.MRAD_id}`)
+			res.redirect(`/admin-view-students/${req.params.MRAD_id}`);
 		} else {
-			res.redirect("*")
-		}
-	}
-}))
-
-//requires admin auth
-app.post("/admin-view-students/accomodation/interior-BC/:MRADid", async (req, res) => {
-	if (!isAdmin(req)) {
-		res.status(403);
-		res.render("403");
-	} else {
-		let student = await db_admin.getOneStudent({
-			MRADid: req.params.MRADid,
-		});
-		console.log("Server student query: " + student.interior_bc);
-
-		if (student) {
-
-			if (student.interior_bc == 1) {
-				await db_admin.updateAccomodationInteriorBC({
-					accInteriorBC: 0,
-					MRADid: req.params.MRADid,
-				});
-				console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
-				res.redirect("/admin-view-students");
-			} else {
-				await db_admin.updateAccomodationInteriorBC({
-					accInteriorBC: 1,
-					MRADid: req.params.MRADid,
-				});
-				console.log("Server: Successfully updated Interior BC accomodation for MRADid: " + req.params.MRADid)
-				res.redirect("/admin-view-students");
-			}
-		} else {
-				console.log("Server: Unsuccessful with updating Interior BC accomodation for MRADid: " + req.params.MRADid)
-				res.redirect("/admin-view-students");
+			res.redirect("*");
 		}
 	}
 });
+
+//requires admin auth
+app.post("admin-view-students/accomodation/interior-BC/:MRADid", async (req, res) => {
+		if (!isAdmin(req)) {
+			res.status(403);
+			res.render("403");
+		} else {
+			let student = await db_admin.getOneStudent({
+				MRADid: req.params.MRADid,
+			});
+			console.log("Server student query: " + student.interior_bc);
+
+			if (student) {
+				if (student.interior_bc == 1) {
+					await db_admin.updateAccomodationInteriorBC({
+						accInteriorBC: 0,
+						MRADid: req.params.MRADid,
+					});
+					console.log(
+						"Server: Successfully updated Interior BC accomodation for MRADid: " +
+							req.params.MRADid
+					);
+					res.redirect("/admin-view-students");
+				} else {
+					await db_admin.updateAccomodationInteriorBC({
+						accInteriorBC: 1,
+						MRADid: req.params.MRADid,
+					});
+					console.log(
+						"Server: Successfully updated Interior BC accomodation for MRADid: " +
+							req.params.MRADid
+					);
+					res.redirect("/admin-view-students");
+				}
+			} else {
+				console.log(
+					"Server: Unsuccessful with updating Interior BC accomodation for MRADid: " +
+						req.params.MRADid
+				);
+				res.redirect("/admin-view-students");
+			}
+		}
+	}
+);
 
 //requires admin auth
 app.post("/admin-view-students/accomodation/lower_mainland/:MRADid", async (req, res) => {
-	if (!isAdmin(req)) {
-		res.status(403);
-		res.render("403");
-	} else {
-		let student = await db_admin.getOneStudent({
-			MRADid: req.params.MRADid,
-		});
-		console.log("Server student query: " + student.lower_mainland);
-
-		if (student) {
-
-			if (student.lower_mainland == 1) {
-				await db_admin.updateAccomodationLowerMainland({
-					accLowerMainland: 0,
-					MRADid: req.params.MRADid,
-				});
-					console.log("Server: Successfully updated Lower Mainland accomodation for MRADid: " + req.params.MRADid)
-					res.redirect("/admin-view-students");
-			} else {
-				await db_admin.updateAccomodationLowerMainland({
-					accLowerMainland: 1,
-					MRADid: req.params.MRADid,
-				});
-					console.log("Server: Successfully updated Lower Mainland accomodation for " + req.params.MRADid)
-					res.redirect("/admin-view-students");
-			}
+		if (!isAdmin(req)) {
+			res.status(403);
+			res.render("403");
 		} else {
-			console.log("Server: Unsuccessful with updating Lower Mainland accomodation for " + req.params.MRADid)
-			res.redirect("/admin-view-students");
+			let student = await db_admin.getOneStudent({
+				MRADid: req.params.MRADid,
+			});
+			console.log("Server student query: " + student.lower_mainland);
+
+			if (student) {
+				if (student.lower_mainland == 1) {
+					await db_admin.updateAccomodationLowerMainland({
+						accLowerMainland: 0,
+						MRADid: req.params.MRADid,
+					});
+					console.log(
+						"Server: Successfully updated Lower Mainland accomodation for MRADid: " +
+							req.params.MRADid
+					);
+					res.redirect("/admin-view-students");
+				} else {
+					await db_admin.updateAccomodationLowerMainland({
+						accLowerMainland: 1,
+						MRADid: req.params.MRADid,
+					});
+					console.log(
+						"Server: Successfully updated Lower Mainland accomodation for " +
+							req.params.MRADid
+					);
+					res.redirect("/admin-view-students");
+				}
+			} else {
+				console.log(
+					"Server: Unsuccessful with updating Lower Mainland accomodation for " +
+						req.params.MRADid
+				);
+				res.redirect("/admin-view-students");
+			}
 		}
 	}
-});
+);
 
 app.post("/updateFinalPlacement", async (req, res) => {
 	var line_assigned = req.body.line_assigned;
@@ -693,13 +753,18 @@ app.post("/updateFinalPlacement", async (req, res) => {
 	var site_three = req.body.site_three;
 	var finalPlacementID = req.body.finalPlacementID;
 
-	if (line_assigned !== "" || site_one !== "" || site_two !== "" || site_three !== "") {
+	if (
+		line_assigned !== "" ||
+		site_one !== "" ||
+		site_two !== "" ||
+		site_three !== ""
+	) {
 		let results = await db_admin.updateFinalAssignment({
 			final_placement_id: parseInt(finalPlacementID),
 			line_assigned: line_assigned,
 			site_one: site_one,
 			site_two: site_two,
-			site_three: site_three
+			site_three: site_three,
 		});
 		res.redirect(`/admin-view-students/${req.body.MRAD_id}`);
 	} else {
@@ -707,6 +772,7 @@ app.post("/updateFinalPlacement", async (req, res) => {
 	}
 });
 
+//requires admin auth
 app.get("/admin/tools", async (req, res) => {
 	if (!isAdmin(req)) {
 		res.status(403);
@@ -721,10 +787,16 @@ app.get("/admin/tools", async (req, res) => {
 	}
 });
 
+//requires admin auth
 app.get("/admin/lines", async (req, res) => {
-	const optionLines = await db_query.getOptionRows(req.session.user_id);
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		const optionLines = await db_query.getOptionRows(req.session.user_id);
 
-	res.render("admin_lines", {lines: optionLines});
+		res.render("admin_lines", { lines: optionLines });
+	}
 });
 
 app.post("/generateSiteOptions", async (req, res) => {
@@ -743,7 +815,7 @@ app.post("/generateSiteOptions", async (req, res) => {
 		]);
 	}
 	await db_query.insertOptionRows(queryArr);
-	res.redirect("/admin/tools")
+	res.redirect("/admin/tools");
 });
 
 app.post("/generate-code", async (req, res) => {
@@ -768,164 +840,181 @@ app.post("/newIntake", async (req, res) => {
 });
 
 app.post("/delete-user", async (req, res) => {
-	let id = req.body.userMradId
+	let id = req.body.userMradId;
 	await db_admin.deleteStudentAccount({
-		mrad_id : id
+		mrad_id: id,
 	});
 	res.redirect("admin/tools");
-})
+});
 
+//requires admin auth
 // Route to generate and download the PDF
-app.get('/generate-pdf-final-placement', async (req, res) => {
+app.get("/generate-pdf-final-placement", async (req, res) => {
+	if (!isAdmin(req)) {
+		res.status(403);
+		res.render("403");
+	} else {
+		const studentChoices = await db_admin.getStudentChoices();
+		const lineOptions = await db_admin.getLineOptions();
 
-	const studentChoices = await db_admin.getStudentChoices();
-	const lineOptions = await db_admin.getLineOptions();
+		// Assign students with accommodations
+		const assignedLines = new Set();
+		const assignedStudents = [];
 
-	// Assign students with accommodations
-	const assignedLines = new Set();
-	const assignedStudents = [];
+		for (const student of studentChoices) {
+			const isInteriorBC = student.interior_bc === 1;
+			const isLowerMainland = student.lower_mainland === 1;
 
-	for (const student of studentChoices) {
-	const isInteriorBC = student.interior_bc === 1;
-	const isLowerMainland = student.lower_mainland === 1;
+			const choices = [
+				"choice_1",
+				"choice_2",
+				"choice_3",
+				"choice_4",
+				"choice_5",
+			];
+			let matchingLine = null;
 
-	const choices = ['choice_1', 'choice_2', 'choice_3', 'choice_4', 'choice_5'];
-	let matchingLine = null;
+			for (const choice of choices) {
+				const lineId = student[choice];
+				matchingLine = lineOptions.find(
+					(option) =>
+						option.line_option_id === lineId &&
+						((isInteriorBC && option.site_zone === "Interior BC") ||
+							(isLowerMainland && option.site_zone === "Lower Mainland")) &&
+						!assignedLines.has(lineId)
+				);
 
-	for (const choice of choices) {
-		const lineId = student[choice];
-		matchingLine = lineOptions.find(
-		(option) =>
-			option.line_option_id === lineId &&
-			((isInteriorBC && option.site_zone === 'Interior BC') ||
-			(isLowerMainland && option.site_zone === 'Lower Mainland')) &&
-			!assignedLines.has(lineId)
-		);
+				if (matchingLine) {
+					assignedStudents.push({
+						MRAD_id: student.MRAD_id,
+						user_id: student.user_id,
+						line_option_id: matchingLine.line_option_id,
+						one: matchingLine.one,
+						two: matchingLine.two,
+						three: matchingLine.three,
+						intake_number_id: matchingLine.intake_number_fk,
+					});
+					assignedLines.add(matchingLine.line_option_id);
+					break;
+				}
+			}
 
-		if (matchingLine) {
-		assignedStudents.push({
-			MRAD_id: student.MRAD_id,
-			user_id: student.user_id,
-			line_option_id: matchingLine.line_option_id,
-			one: matchingLine.one,
-			two: matchingLine.two,
-			three: matchingLine.three,
-			intake_number_id: matchingLine.intake_number_fk,
-		});
-		assignedLines.add(matchingLine.line_option_id);
-		break;
+			if (!matchingLine) {
+				// If no matching choice, assign based on accommodations
+				const matchingLineBasedOnAccommodation = lineOptions.find(
+					(option) =>
+						(isInteriorBC &&
+							option.site_zone === "Interior BC" &&
+							!assignedLines.has(option.line_option_id)) ||
+						(isLowerMainland &&
+							option.site_zone === "Lower Mainland" &&
+							!assignedLines.has(option.line_option_id))
+				);
+
+				if (matchingLineBasedOnAccommodation) {
+					assignedStudents.push({
+						MRAD_id: student.MRAD_id,
+						user_id: student.user_id,
+						line_option_id: matchingLineBasedOnAccommodation.line_option_id,
+						one: matchingLineBasedOnAccommodation.one,
+						two: matchingLineBasedOnAccommodation.two,
+						three: matchingLineBasedOnAccommodation.three,
+						intake_number_id: matchingLineBasedOnAccommodation.intake_number_fk,
+					});
+					assignedLines.add(matchingLineBasedOnAccommodation.line_option_id);
+				}
+			}
 		}
-	}
 
-	if (!matchingLine) {
-		// If no matching choice, assign based on accommodations
-		const matchingLineBasedOnAccommodation = lineOptions.find(
-		(option) =>
-			(isInteriorBC &&
-			option.site_zone === 'Interior BC' &&
-			!assignedLines.has(option.line_option_id)) ||
-			(isLowerMainland &&
-			option.site_zone === 'Lower Mainland' &&
-			!assignedLines.has(option.line_option_id))
+		// Shuffle remaining students
+		const remainingStudents = studentChoices.filter(
+			(student) =>
+				!assignedStudents.some((assigned) => assigned.user_id === student.user_id)
 		);
-
-		if (matchingLineBasedOnAccommodation) {
-		assignedStudents.push({
-			MRAD_id: student.MRAD_id,
-			user_id: student.user_id,
-			line_option_id: matchingLineBasedOnAccommodation.line_option_id,
-			one: matchingLineBasedOnAccommodation.one,
-			two: matchingLineBasedOnAccommodation.two,
-			three: matchingLineBasedOnAccommodation.three,
-			intake_number_id: matchingLineBasedOnAccommodation.intake_number_fk,
-		});
-		assignedLines.add(matchingLineBasedOnAccommodation.line_option_id);
-		}
-	}
-	}
-
-	// Shuffle remaining students
-	const remainingStudents = studentChoices.filter(
-	(student) =>
-		!assignedStudents.some((assigned) => assigned.user_id === student.user_id)
-	);
-	shuffleArray(remainingStudents);
+		shuffleArray(remainingStudents);
 
 		// Assign remaining students based on their choices or randomly
-	for (const student of remainingStudents) {
-		const choices = ['choice_1', 'choice_2', 'choice_3', 'choice_4', 'choice_5'];
-		let matchingLine = null;
+		for (const student of remainingStudents) {
+			const choices = [
+				"choice_1",
+				"choice_2",
+				"choice_3",
+				"choice_4",
+				"choice_5",
+			];
+			let matchingLine = null;
 
-		for (const choice of choices) {
-			const lineId = student[choice];
-			matchingLine = lineOptions.find(
-			(option) =>
-				option.line_option_id === lineId && !assignedLines.has(lineId)
-			);
+			for (const choice of choices) {
+				const lineId = student[choice];
+				matchingLine = lineOptions.find(
+					(option) =>
+						option.line_option_id === lineId && !assignedLines.has(lineId)
+				);
+
+				if (matchingLine) {
+					assignedLines.add(matchingLine.line_option_id);
+					break;
+				}
+			}
+
+			// If no matching choice, assign randomly
+			if (!matchingLine) {
+				const unassignedLines = lineOptions.filter(
+					(option) => !assignedLines.has(option.line_option_id)
+				);
+				if (unassignedLines.length > 0) {
+					const randomLine =
+						unassignedLines[Math.floor(Math.random() * unassignedLines.length)];
+					assignedLines.add(randomLine.line_option_id);
+					matchingLine = randomLine;
+				}
+			}
 
 			if (matchingLine) {
-			assignedLines.add(matchingLine.line_option_id);
-			break;
+				assignedStudents.push({
+					MRAD_id: student.MRAD_id,
+					user_id: student.user_id,
+					line_option_id: matchingLine.line_option_id,
+					one: matchingLine.one,
+					two: matchingLine.two,
+					three: matchingLine.three,
+					intake_number_id: matchingLine.intake_number_fk,
+				});
 			}
 		}
 
-		// If no matching choice, assign randomly
-		if (!matchingLine) {
-			const unassignedLines = lineOptions.filter(
-			(option) => !assignedLines.has(option.line_option_id)
+		await db_admin.insertFinalAssignments(assignedStudents);
+		// Create an array to store formatted strings for each object
+		const formattedStringsArray = [];
+
+		assignedStudents.forEach((data) => {
+			const formattedString = `MRAD_id: ${data.MRAD_id},\t Term Two: ${data.one}, Term Four : ${data.two}, Term Six: ${data.three}, Intake: ${data.intake_number_id}`;
+
+			formattedStringsArray.push(formattedString);
+		});
+
+		try {
+			// Fetch content from your database (replace with actual data)
+			const databaseContent = formattedStringsArray;
+
+			// Create the PDF
+			const pdfBytes = await createPdf(databaseContent);
+
+			const currentYear = new Date().getFullYear();
+			// Set the response headers for PDF download
+			res.setHeader("Content-Type", "application/pdf");
+			res.setHeader(
+				"Content-Disposition",
+				`attachment; filename=Final Placement for Intake ${assignedStudents[0].intake_number_id}  - ${currentYear}.pdf`
 			);
-			if (unassignedLines.length > 0) {
-			const randomLine =
-				unassignedLines[
-				Math.floor(Math.random() * unassignedLines.length)
-				];
-			assignedLines.add(randomLine.line_option_id);
-			matchingLine = randomLine;
-			}
-		}
 
-		if (matchingLine) {
-			assignedStudents.push({
-			MRAD_id: student.MRAD_id,
-			user_id: student.user_id,
-			line_option_id: matchingLine.line_option_id,
-			one: matchingLine.one,
-			two: matchingLine.two,
-			three: matchingLine.three,
-			intake_number_id: matchingLine.intake_number_fk,
-			});
+			// Send the PDF as the response
+			res.end(pdfBytes, "binary");
+		} catch (error) {
+			console.error("Error generating PDF:", error);
+			res.status(500).send("Internal Server Error");
 		}
 	}
-
-	await db_admin.insertFinalAssignments(assignedStudents)
-	// Create an array to store formatted strings for each object
-	const formattedStringsArray = [];
-
-	assignedStudents.forEach((data) => {
-		const formattedString = `MRAD_id: ${data.MRAD_id},\t Term Two: ${data.one}, Term Four : ${data.two}, Term Six: ${data.three}, Intake: ${data.intake_number_id}`;
-	
-		formattedStringsArray.push(formattedString);
-	});
-	
-	try {
-		// Fetch content from your database (replace with actual data)
-		const databaseContent = formattedStringsArray;
-
-		// Create the PDF
-		const pdfBytes = await createPdf(databaseContent);
-
-		const currentYear = new Date().getFullYear();
-		// Set the response headers for PDF download
-		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', `attachment; filename=Final Placement for Intake ${assignedStudents[0].intake_number_id}  - ${currentYear}.pdf`);
-
-		// Send the PDF as the response
-		res.end(pdfBytes, 'binary');
-	} catch (error) {
-		console.error('Error generating PDF:', error);
-		res.status(500).send('Internal Server Error');
-	}
-	
 });
 
 app.post("/logout", (req, res) => {
@@ -961,14 +1050,15 @@ async function createPdf(contentArray) {
 		const page = pdfDoc.addPage();
 
 		for (let j = 0; j < linesPerPage && i + j < contentArray.length; j++) {
-		const content = contentArray[i + j];
-		const textOptions = {
-			x: margin,
-			y: page.getHeight() - margin - (j + 1) * (defaultFontSize + lineSpacing),
-		};
+			const content = contentArray[i + j];
+			const textOptions = {
+				x: margin,
+				y:
+					page.getHeight() - margin - (j + 1) * (defaultFontSize + lineSpacing),
+			};
 
-		// Add content to the PDF with adjusted font size and spacing
-		page.drawText(content, { ...textOptions, size: defaultFontSize });
+			// Add content to the PDF with adjusted font size and spacing
+			page.drawText(content, { ...textOptions, size: defaultFontSize });
 		}
 	}
 
@@ -981,8 +1071,8 @@ async function createPdf(contentArray) {
 // Helper function to shuffle an array
 function shuffleArray(array) {
 	for (let i = array.length - 1; i > 0; i--) {
-	  const j = Math.floor(Math.random() * (i + 1));
-	  [array[i], array[j]] = [array[j], array[i]];
+		const j = Math.floor(Math.random() * (i + 1));
+		[array[i], array[j]] = [array[j], array[i]];
 	}
 }
 
