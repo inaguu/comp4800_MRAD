@@ -386,6 +386,46 @@ async function resetStudentPassword(postData){
 	}
 }
 
+async function deleteStudentAccount(postData) {
+	let params = {
+		mrad_id: postData.mrad_id,
+	};
+
+	try {
+	// Start transaction
+	await database.query('START TRANSACTION');
+
+	// Delete from final_placement
+	await database.query('DELETE FROM final_placement WHERE user_id = (SELECT user_id FROM users WHERE MRAD_id = :mrad_id)', params);
+
+	// Delete from student_choices
+	await database.query('DELETE FROM student_choices WHERE user_id = (SELECT user_id FROM users WHERE MRAD_id = :mrad_id)', params);
+
+	// Delete from users using INNER JOIN
+	await database.query(`
+		DELETE users
+		FROM users
+		INNER JOIN (
+		SELECT user_id
+		FROM users
+		WHERE MRAD_id = :mrad_id
+		) AS subquery ON users.user_id = subquery.user_id
+	`, params);
+
+	// Commit transaction
+	await database.query('COMMIT');
+
+	console.log('Successfully deleted account');
+	return true;
+	} catch (error) {
+	// Rollback transaction on error
+	await database.query('ROLLBACK');
+	console.log('Could not delete user');
+	console.log(error);
+	return false;
+	}
+}
+
 module.exports = {
 	getStudents,
 	getOneStudent,
@@ -401,5 +441,6 @@ module.exports = {
 	insertFinalAssignments,
 	getFinalAssignments,
 	updateFinalAssignment,
-	resetStudentPassword
+	resetStudentPassword,
+	deleteStudentAccount
 };

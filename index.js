@@ -768,6 +768,14 @@ app.post("/newIntake", async (req, res) => {
 	res.redirect("admin/tools");
 });
 
+app.post("/delete-user", async (req, res) => {
+	let id = req.body.userMradId
+	await db_admin.deleteStudentAccount({
+		mrad_id : id
+	});
+	res.redirect("admin/tools");
+})
+
 // Route to generate and download the PDF
 app.get('/generate-pdf-final-placement', async (req, res) => {
 
