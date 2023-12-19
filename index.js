@@ -743,7 +743,6 @@ app.post("/generateSiteOptions", async (req, res) => {
 		]);
 	}
 	await db_query.insertOptionRows(queryArr);
-	res.send(queryArr);
 	res.redirect("/admin/tools")
 });
 
