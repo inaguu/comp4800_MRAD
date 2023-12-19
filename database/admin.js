@@ -147,18 +147,23 @@ async function getSecurityCode() {
 	}
 }
 
-async function createNewIntake() {
+async function createNewIntake(postData) {
 	let newIntake = `
 	INSERT INTO intake (start_date, end_date)
 	VALUES (CURRENT_TIMESTAMP, CURRENT_TIMESTAMP + INTERVAL 2 YEAR);
 	`;
 
+	let params = {
+		user_id: postData.user_id,
+	}
+
 	try {
 		await database.query(newIntake);
+		await databbase.query(`UPDATE freedb_team2project.users SET intake_number = (SELECT MAX(intake_id) AS intake_max FROM intake) WHERE user_id = :user_id;`, params)
 		console.log("New Intake Created");
 		return true;
 	} catch (err) {
-		console.log("Could not complete");
+		console.log("Could not create new intake");
 		return false;
 	}
 }

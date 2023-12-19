@@ -835,7 +835,7 @@ app.post("/generate-code", async (req, res) => {
 });
 
 app.post("/newIntake", async (req, res) => {
-	await db_admin.createNewIntake();
+	await db_admin.createNewIntake({user_id : req.session.user_id});
 	res.redirect("admin/tools");
 });
 
