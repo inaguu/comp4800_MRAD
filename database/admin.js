@@ -159,7 +159,7 @@ async function createNewIntake(postData) {
 
 	try {
 		await database.query(newIntake);
-		await databbase.query(`UPDATE freedb_team2project.users SET intake_number = (SELECT MAX(intake_id) AS intake_max FROM intake) WHERE user_id = :user_id;`, params)
+		await databbase.query(`UPDATE mradselector.users SET intake_number = (SELECT MAX(intake_id) AS intake_max FROM intake) WHERE user_id = :user_id;`, params)
 		console.log("New Intake Created");
 		return true;
 	} catch (err) {
@@ -276,7 +276,7 @@ async function getLineOptions(){
        three.site_name AS three,
        intake_number_fk,
        line_options.site_zone
-	FROM freedb_team2project.line_options
+	FROM mradselector.line_options
 	JOIN clinical_sites AS one ON (placement_one = one.clinical_sites_id)
 	JOIN clinical_sites AS two ON (placement_two = two.clinical_sites_id)
 	JOIN clinical_sites AS three ON (placement_three = three.clinical_sites_id)
@@ -295,7 +295,7 @@ async function getLineOptions(){
 }
 
 async function insertFinalAssignments(postData) {
-	let insertQuery = "INSERT IGNORE INTO freedb_team2project.final_placement " +
+	let insertQuery = "INSERT IGNORE INTO mradselector.final_placement " +
 	"(MRAD_id, line_assigned, site_one, site_two, site_three, intake_id, user_id) VALUES ";
 
 	const values = postData.map((data, index) => {

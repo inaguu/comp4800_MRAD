@@ -123,7 +123,7 @@ async function insertOptionRows(rows) {
 async function getOptionRows(userData) {
 	let getClinicalSites = `
 		SELECT one.site_name as one, two.site_name as two, three.site_name as three, IF(choiceCounter.Count, choiceCounter.Count, 0) as Count, line_option_id
-		FROM freedb_team2project.line_options
+		FROM mradselector.line_options
 		JOIN clinical_sites as one ON (placement_one = one.clinical_sites_id)
 		JOIN clinical_sites as two ON (placement_two = two.clinical_sites_id)
 		JOIN clinical_sites as three ON (placement_three = three.clinical_sites_id)
@@ -195,7 +195,7 @@ async function saveSelection(postData) {
 async function setSelectionFirstTime(postData){
 	let choiceOnCreation = `
 		INSERT INTO student_choices (choice_1, choice_2, choice_3, choice_4, choice_5, user_id)
-		VALUES (103, 104, 105, 106, 107, :user_id);
+		VALUES (1, 2, 3, 4, 5, :user_id);
 	`;
 
 	let params = {
